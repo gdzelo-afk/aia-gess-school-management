@@ -20,12 +20,27 @@ export async function resolveViewer(user: { id: string; name: string }): Promise
     db.select({ role: roleGrant.role }).from(roleGrant).where(eq(roleGrant.userId, user.id)),
   ]);
   const roles = people.length ? grants.map((g) => g.role) : [];
+  const capabilities = capabilitiesFor(roles);
+  // A substitution grants only the actual occurrence read scope, never a directory role.
+  if (people[0] && !capabilities.includes('timetable:own')) {
+    const assigned = await db.execute(sql`select 1 from timetable_exception e
+      join staff f on f.person_id=${people[0].id}
+      where f.starts_on <= (current_timestamp at time zone 'Asia/Tbilisi')::date
+      and (f.ends_on is null or f.ends_on > (current_timestamp at time zone 'Asia/Tbilisi')::date)
+      and e.change->>'teacherId'=${people[0].id}
+      and e.change->>'cancelled'='false'
+      and not exists(select 1 from timetable_exception later
+        where later.version_id=e.version_id and later.lesson_id=e.lesson_id
+        and later.date=e.date and later.sequence>e.sequence)
+      limit 1`);
+    if (assigned.rows.length) capabilities.push('timetable:own');
+  }
   return {
     id: user.id,
     name: user.name,
     personId: people[0]?.id ?? null,
     roles,
-    capabilities: capabilitiesFor(roles),
+    capabilities,
   };
 }
 /** This predicate is applied BEFORE pagination/counting/detail selection. */

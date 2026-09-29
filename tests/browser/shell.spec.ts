@@ -45,9 +45,12 @@ test('director shell, table, command search, theme, preferences and calendar', a
   await expect(page.getByRole('dialog')).toContainText('აკადემიური გუნდის შეხვედრა');
   await expect(page.getByRole('dialog')).toContainText('11:30');
   await page.keyboard.press('Escape');
-  await page.locator('.overview-events button').first().click();
-  await expect(page.getByRole('dialog')).toContainText('სასწავლო დღის დასაწყისი');
-  await page.keyboard.press('Escape');
+  await expect(page.locator('.overview-rhythm')).toContainText('გამოქვეყნებული განრიგი');
+  await page.locator('.overview-rhythm').getByRole('link', { name: 'განრიგის გახსნა' }).click();
+  await expect(
+    page.getByRole('heading', { name: 'გაკვეთილების განრიგი', exact: true }),
+  ).toBeVisible();
+  await page.goto('/');
   await page.clock.setFixedTime(new Date('2026-09-28T13:22:59Z'));
   const clock = page.locator('.tbilisi-clock time');
   await expect(clock).toHaveText('17:22:59');

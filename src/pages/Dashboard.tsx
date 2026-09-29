@@ -1,15 +1,8 @@
+import { TimetableRhythm } from '../components/TimetableRhythm';
 import { useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import {
-  ArrowRight,
-  ArrowUpRight,
-  CalendarDays,
-  Clock3,
-  Check,
-  UsersRound,
-  BookOpen,
-} from 'lucide-react';
+import { ArrowRight, ArrowUpRight, CalendarDays, Check, UsersRound, BookOpen } from 'lucide-react';
 import type { FoundationOverview, Viewer, Announcement, AgendaItem } from '../../shared/contracts';
 import { api } from '../lib/api';
 import { dateLabel } from '../lib/format';
@@ -41,10 +34,7 @@ export function Dashboard() {
   if (!data.demo)
     return (
       <div className="product-dashboard product-ready">
-        <EmptyState
-          title="სასკოლო სივრცე მზად არის"
-          description="სასწავლო მოდულები დაგეგმილია. რეალური მონაცემების დამატებამდე დაასრულეთ სისტემის მომზადება."
-        />
+        {viewer.capabilities.some((c) => c.startsWith('timetable:')) && <TimetableRhythm />}
       </div>
     );
   const parent = viewer.roles.includes('guardian');
@@ -197,7 +187,7 @@ export function Dashboard() {
                     <strong>
                       {teacher ? 'გაკვეთილის სამუშაო სივრცე' : 'სასწავლო პროცესის მიმოხილვა'}
                     </strong>
-                    <small>შემდეგი ეტაპი · მოდული ჯერ დაგეგმილია</small>
+                    <small>სასწავლო სტრუქტურა და მოქმედი კურსები</small>
                   </div>
                   <ArrowUpRight size={18} />
                 </Link>
@@ -230,34 +220,9 @@ export function Dashboard() {
           </section>
         </aside>
       </div>
-      <section className="overview-rhythm" aria-labelledby="day-rhythm-title">
-        <div className="overview-section-head">
-          <h2 id="day-rhythm-title">დღის რიტმი</h2>
-          <span className="overview-rhythm-context">
-            <Clock3 size={14} /> {dateLabel(data.snapshotDate)} · თბილისის დრო
-          </span>
-        </div>
-        <div className="overview-events">
-          {data.agenda.map((item) => (
-            <button
-              key={item.id}
-              className={item.kind === 'meeting' ? 'highlight' : ''}
-              onClick={() => setEvent(item)}
-            >
-              <time className="product-number">{item.time}</time>
-              <span>
-                <strong>{item.title}</strong>
-                <small>{item.detail}</small>
-              </span>
-              <ArrowUpRight size={14} />
-            </button>
-          ))}
-        </div>
-        {!data.agenda.length && <p className="overview-muted">ამ დღეს ღონისძიება არ არის.</p>}
-        <Link to="/calendar" className="overview-inline-link">
-          კალენდრის გახსნა <ArrowRight size={15} />
-        </Link>
-      </section>
+      {viewer.capabilities.some((c) => c.startsWith('timetable:')) && (
+        <TimetableRhythm studentId={parent ? selected?.id : undefined} />
+      )}
       <div className="overview-bottom">
         <section className="overview-people">
           <div className="overview-section-head">

@@ -14,8 +14,8 @@ This preserves the full product vision; phase 1 is not a promise to implement ev
 ## Current sequence
 
 - **1A — Academic Structure + People / Onboarding:** **complete and verified** for the local/demo scope; evidence recorded in implementation-status. Editable academic calendar, temporal enrollment/electives/assignments, student/guardian/staff workflows and administrator-controlled account lifecycle.
-- **1B — Timetable: next implementation stage.** Manual schedule and conflict validation using Stage 1A offerings, effective rosters and staff assignments. Do not begin attendance or gradebook with it.
-- **1C — Attendance.** Dated lesson participation, authorized corrections and history.
+- **1B — Timetable: implementation complete; final browser closure in progress.** Manual versions/publication, roster-aware conflicts, split/combined groups, rooms/bells, availability, substitutions/requests and effective occurrences. See implementation-status for current evidence.
+- **1C — Attendance: next implementation stage.** Dated lesson participation, authorized corrections and history.
 - **1D — Gradebook / daily academic workflows.** Publication/correction policy before official results.
 - **Authentication hardening:** MFA/recovery codes, real delivery provider and production onboarding acceptance before launch. No partial MFA UI in Stage 1A.
 
@@ -39,7 +39,7 @@ This preserves the full product vision; phase 1 is not a promise to implement ev
 ## Risks / debt warnings
 
 - PGlite is useful for local development but cannot validate all PostgreSQL concurrency/deployment behavior; PostgreSQL CI is required as features grow.
-- Stage 1A scopes core/elective assignments; substitute/lesson-level grants still require extension before those workflows ship.
+- Stage 1B isolates substitutes to actual timetable occurrences; future Attendance must reuse this responsibility model without widening directory access.
 - Overview examples are deliberately fixtures and visibly labeled. Never silently promote them to live metrics.
 - Local theme/density are device preferences; per-user persistence later must not leak between shared-device accounts.
 - Auth plugins are architectural extension points, not completed SSO/MFA/passkey implementations.

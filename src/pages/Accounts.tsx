@@ -150,7 +150,7 @@ export function Accounts() {
               .filter(
                 ([r]) =>
                   viewer.roles.includes('super_admin') ||
-                  !['super_admin', 'director', 'it_admin'].includes(r),
+                  !['super_admin', 'director', 'founders_office', 'it_admin'].includes(r),
               )
               .map(([r, l]) => (
                 <label key={r}>

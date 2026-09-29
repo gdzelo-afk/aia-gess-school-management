@@ -2,6 +2,23 @@
 
 Foundation implemented 27 September; selected frontend continued 28 September 2026. This is a local development foundation, not a production EMS release.
 
+## Stage 1B — domain verified; product correction pending
+
+The timetable product layer requires the newly requested scheduling-control-room correction before completion. Existing domain tests and current UI are preserved in a local pre-correction checkpoint.
+
+The pre-timetable local checkpoint is `d7b6ee3`; no GitHub remote was configured. Stage 1C Attendance has not started.
+
+- **Operational timetable:** `/timetable` provides Monday–Friday draft editing, published role-scoped weeks, teacher/section/group/room/subject/day filters, configurable bell periods and numeric rooms. Lesson forms and drag/drop share server validation; a drop opens an explicit review. Conflicts are textual as well as visual. Publication requires exact conflict acknowledgements and a reason; invalid domain relationships cannot be overridden.
+- **Groups and history:** actual effective pupil roster intersections permit disjoint splits, combined whole-section lessons and cross-section electives. Published versions and dated exceptions are immutable; optimistic revisions reject stale edits. The latest applicable effective version resolves stable dated lesson identities for future Attendance. Source calendar holidays suppress normal lessons; explicit extra/special-day actions, moves, substitutions and cancellations retain history.
+- **Availability and requests:** recurring constraints and date/full-day/multi-day unavailability, affected-lesson discovery, teacher proposals, administrative approval/denial and atomic two-day absence resolution. A substitute must be active and pass conflicts but need not hold the permanent course assignment. Non-teaching substitutes gain actual occurrence visibility only, without a student-directory role.
+- **Authorization:** Founders Office is predefined and restricted to explicit timetable capabilities. Families see published applicable lessons only, with current academic guardian rights and child selection. Drafts, internal decisions and other families remain inaccessible. Stage 1A lifecycle, audit, roster and account protections remain intact.
+- **Product integration:** current promoted Vector A tokens/forms/navigation, desktop weekly grid and mobile day view; both themes. Dashboard day rhythm now reads today's scoped published lessons. The next-meeting block remains the established illustrative meeting concept. Login, greeting/cursor, semester placement/progress and all design-lab archives are preserved.
+- **Continuation corrections:** drag feedback no longer shifts its targets; dropping requires preview review; group editing can clear old source selections; draft boundaries derive from the configured academic year; stale preview/mutation and non-teaching substitute access have regression checks.
+
+**Verification so far:** `npm run check` passed (lint, formatting, strict TypeScript, **66 tests**, frontend/server/migration builds). The same **66 tests** passed against PostgreSQL 18.6 using separate foundation/timetable databases. Timetable coverage is **28 checks**, alongside the Stage 1A/foundation/date-format/semester coverage. Browser workflows, compiled smoke and final normal-preview confirmation are still being completed; do not treat this paragraph as a final completion claim yet.
+
+**Boundary:** no attendance, gradebook, assignments, finance, messaging, automatic generation, co-teaching, special block-period model, deployment or GitHub setup. MFA/provider delivery and production hardening remain deferred. Next implementation stage: **Stage 1C — Attendance**, after this verification closes.
+
 ## Stage 1A — current implementation, 29 September 2026
 
 Academic Structure + People / Onboarding is complete for the agreed Stage 1A local/demo scope. The historical foundation/design verification below describes earlier states and does not replace Stage 1A verification.
@@ -13,7 +30,7 @@ Academic Structure + People / Onboarding is complete for the agreed Stage 1A loc
 - **Demo calendar:** validated supplied JSON becomes 21 calendar rows plus the configured 2026–2027 year and semesters. Inclusive source ends are converted to exclusive boundaries in Asia/Tbilisi date semantics. Contradictory grade-1/12 teaching-day totals are recorded as warnings, not promoted to policy. Seed upgrades known fictional records once and preserves later administrator edits.
 - **Design:** existing evolved Vector A, lens, Tatishvili greeting/cursor, command palette, themes and archive remain. New operations use the same main tokens with focused review dialogs, dense lists and contextual histories. Sidebar semester progress uses current Tbilisi date and configured active-year semester dates; gaps/unavailable configuration show a neutral state. The block remains immediately after navigation.
 
-**Still deferred:** Stage 1B Timetable, attendance, gradebook, publications, operational finance, messaging, admissions, other EMS modules; production email delivery, MFA and launch hardening. MFA should use Better Auth TOTP/recovery-code integration with complete security tests. No production-readiness claim.
+**Still deferred after Stage 1B:** attendance, gradebook, assessment publications, operational finance, messaging, admissions, other EMS modules; production email delivery, MFA and launch hardening. MFA should use Better Auth TOTP/recovery-code integration with complete security tests. No production-readiness claim.
 
 **Final verification:**
 

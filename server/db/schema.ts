@@ -390,3 +390,105 @@ export const onboardingToken = pgTable(
     check('onboarding_purpose', sql`${t.purpose} in ('invite','recovery')`),
   ],
 );
+
+// Timetable documents are bounded aggregate snapshots. Published documents never mutate.
+// Source identities stay in Stage 1A; JSON contains only validated references and bell/group structure.
+export const timetableVersion = pgTable(
+  'timetable_version',
+  {
+    id: id(),
+    yearId: uuid('year_id')
+      .notNull()
+      .references(() => academicYear.id),
+    name: text('name').notNull(),
+    startsOn: date('starts_on').notNull(),
+    endsOn: date('ends_on').notNull(),
+    status: text('status').notNull().default('draft'),
+    revision: integer('revision').notNull().default(1),
+    document: jsonb('document')
+      .$type<import('../../shared/timetable.js').TimetableDocument>()
+      .notNull(),
+    labels: jsonb('labels').$type<Record<string, string>>().notNull().default({}),
+    overrides: jsonb('overrides').$type<{ key: string; reason: string }[]>().notNull().default([]),
+    publishedAt: instant('published_at'),
+    publishedBy: text('published_by').references(() => user.id),
+  },
+  (t) => [
+    index('timetable_year_date').on(t.yearId, t.startsOn),
+    check('timetable_interval', sql`${t.endsOn}>${t.startsOn}`),
+    check('timetable_status', sql`${t.status} in ('draft','published')`),
+    uniqueIndex('timetable_publication_start')
+      .on(t.yearId, t.startsOn)
+      .where(sql`${t.status}='published'`),
+  ],
+);
+export const timetableRoom = pgTable(
+  'timetable_room',
+  { id: id(), number: text('number').notNull().unique() },
+  (t) => [check('room_number', sql`${t.number} ~ '^[0-9]{1,6}$'`)],
+);
+export const timetableAvailability = pgTable(
+  'timetable_availability',
+  {
+    id: id(),
+    teacherId: uuid('teacher_id')
+      .notNull()
+      .references(() => person.id),
+    startsOn: date('starts_on').notNull(),
+    endsOn: date('ends_on').notNull(),
+    weekdays: jsonb('weekdays').$type<number[] | null>(),
+    periodNumbers: jsonb('period_numbers').$type<number[]>().notNull(),
+    reason: text('reason').notNull(),
+    revision: integer('revision').notNull().default(1),
+  },
+  (t) => [
+    index('availability_teacher_date').on(t.teacherId, t.startsOn),
+    check('availability_interval', sql`${t.endsOn}>${t.startsOn}`),
+  ],
+);
+export const timetableException = pgTable(
+  'timetable_exception',
+  {
+    sequence: integer('sequence').generatedAlwaysAsIdentity(),
+    id: id(),
+    versionId: uuid('version_id')
+      .notNull()
+      .references(() => timetableVersion.id),
+    lessonId: uuid('lesson_id').notNull(),
+    date: date('date').notNull(),
+    targetDate: date('target_date').notNull(),
+    change: jsonb('change').$type<import('../../shared/timetable.js').LessonChange>().notNull(),
+    labels: jsonb('labels').$type<Record<string, string>>().notNull(),
+    reason: text('reason').notNull(),
+    overrides: jsonb('overrides').$type<{ key: string; reason: string }[]>().notNull().default([]),
+    createdAt: instant('created_at').notNull().defaultNow(),
+    actorId: text('actor_id')
+      .notNull()
+      .references(() => user.id),
+  },
+  (t) => [
+    index('exception_occurrence').on(t.versionId, t.date, t.lessonId),
+    index('exception_target_date').on(t.targetDate),
+  ],
+);
+export const timetableRequest = pgTable(
+  'timetable_request',
+  {
+    id: id(),
+    teacherId: uuid('teacher_id')
+      .notNull()
+      .references(() => person.id),
+    state: text('state').notNull().default('pending'),
+    revision: integer('revision').notNull().default(1),
+    reason: text('reason').notNull(),
+    changes: jsonb('changes').$type<import('../../shared/timetable.js').LessonChange[]>().notNull(),
+    absence: jsonb('absence').$type<import('../../shared/timetable.js').Availability | null>(),
+    affected: jsonb('affected').$type<{ id: string; revision: string }[]>().notNull(),
+    decision: text('decision'),
+    createdAt: instant('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    index('request_teacher_state').on(t.teacherId, t.state),
+    check('request_state', sql`${t.state} in ('pending','approved','denied','cancelled')`),
+  ],
+);

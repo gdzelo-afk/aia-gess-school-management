@@ -60,3 +60,11 @@ Foundation routes: `/`, `/students` (read-only scope demonstration), `/calendar`
 > =1200px: 232px rail, 32px workspace inset, main/aside ratio ~2:1. 768–1199px: condensed spacing, single content column as necessary. <768px: modal navigation, 16px inset, stacked summaries, touch targets >=44px; wide tables scroll inside a labeled region. Never shrink gradebook cells into illegibility; future mobile gradebook uses one assessment at a time.
 
 Tab follows DOM order. Ctrl/Cmd+K searches, Escape closes. Do not override native browser shortcuts. Respect reduced motion. Foundation native select/date controls are intentional accessible defaults; use custom autocomplete only for large sets.
+
+## Stage 1B operational timetable
+
+`/timetable` opens the effective published week. Administrators can filter by teacher/room/section/group/subject/day, select a private draft, edit through an explicit dialog or drag to a weekday/period, inspect conflict warnings, and publish deliberately. Drop previews run server validation; saves revalidate under concurrency control. Bell periods and cohort sources live under configuration for the selected version. Published versions are reference-only; create a future draft to change the recurring pattern.
+
+Selecting a published lesson opens details or the authorized exception/request form. Teachers can request changes and one/two-day absence with an affected-lesson preview. Administrators review a request, adjust substitutions or cancel affected lessons, and approve or reject with a reason. Family views show teacher, room and changed/cancelled state, with a scoped child selector. Phones use a day selector and vertical agenda instead of squeezing the weekly grid.
+
+The approved dashboard meeting component remains illustrative meeting data. `დღის რიტმი` now presents today's real, scoped published lessons and opens the timetable. The design-lab remains an unchanged historical archive. No attendance interaction is present.

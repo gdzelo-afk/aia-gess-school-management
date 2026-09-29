@@ -23,7 +23,7 @@ async function rolePolicy(tx: Transaction, viewer: Viewer, personId: string, rol
   if (new Set(roles).size !== roles.length) fail('როლები არ უნდა განმეორდეს.', 'VALIDATION', 400);
   if (
     !viewer.roles.includes('super_admin') &&
-    roles.some((r) => ['super_admin', 'director', 'it_admin'].includes(r))
+    roles.some((r) => ['super_admin', 'director', 'founders_office', 'it_admin'].includes(r))
   )
     fail('ამ როლის მინიჭების უფლება არ გაქვთ.', 'FORBIDDEN', 403);
   if (personId === viewer.personId) fail('საკუთარი როლების შეცვლა დაუშვებელია.', 'FORBIDDEN', 403);
@@ -74,7 +74,9 @@ async function protectedAccount(tx: Transaction, viewer: Viewer, userId: string)
   if (userId === viewer.id) fail('საკუთარი ანგარიშის შეცვლა ამ გზით დაუშვებელია.');
   const roles = await tx.select().from(s.roleGrant).where(eq(s.roleGrant.userId, userId));
   if (
-    roles.some((r) => ['super_admin', 'director', 'it_admin'].includes(r.role)) &&
+    roles.some((r) =>
+      ['super_admin', 'director', 'founders_office', 'it_admin'].includes(r.role),
+    ) &&
     !viewer.roles.includes('super_admin')
   )
     fail('დაცულ ანგარიშზე უფლებამოსილება არ გაქვთ.', 'FORBIDDEN', 403);

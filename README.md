@@ -1,6 +1,6 @@
 # AIA-GESS · სასკოლო სივრცე
 
-A Georgian-only school workspace with Stage 1A academic structure and people/onboarding workflows. React/Vite + Fastify + Drizzle/PostgreSQL + Better Auth. This is a polished local demonstration and engineering baseline, **not a production-ready school system**.
+A Georgian-only school workspace with Stage 1A academic structure/people and Stage 1B manual timetable workflows. React/Vite + Fastify + Drizzle/PostgreSQL + Better Auth. This is a polished local demonstration and engineering baseline, **not a production-ready school system**.
 
 ## Run locally
 
@@ -30,6 +30,7 @@ Local demo password for these accounts: `AiaDemo-2026!`. All four passed browser
 - Georgian login and four distinct dashboard experiences; original light/dark design, self-hosted Georgian typography, responsive navigation.
 - Real password/session authentication, role grants and SQL-scoped student queries (director 12, teacher 3, guardian 2 children, student 1).
 - Scoped searchable student administration, effective enrollment/guardian history, academic year/semester/calendar configuration, subjects/offerings/elective rosters, staff/teaching assignments and account invitation/activation/recovery/disable.
+- `/timetable`: versioned private drafts/publication, configurable bell periods and numeric rooms, split/combined/elective groups, roster-based conflicts and reasoned overrides, dated substitutions, teacher availability and approval requests. Dashboard day rhythm reads the scoped published timetable; the illustrative next-meeting block remains an agenda concept.
 - Reviewed SQL migrations, repeatable fictional seed, temporal identity/academic baseline, protected audit events, metadata/outbox foundations.
 - Staff/parent/student sample data, illustrative 1–10 grades and GEL invoice preview. Fictional fixed-date agenda: 28 September 2026.
 
@@ -66,7 +67,7 @@ Browser tests now perform real writes. Use an isolated fictional database as des
 
 ## External PostgreSQL
 
-Use a dedicated empty database and set `DATABASE_URL=postgresql://...` in `.env`. Apply the same migrations; seed only in demo development. `TEST_DATABASE_URL=postgresql://... npm test` runs integration tests against a **dedicated disposable test database**; do not point this at real data. The CI service provides a clean database.
+Use a dedicated empty database and set `DATABASE_URL=postgresql://...` in `.env`. Apply the same migrations; seed only in demo development. `TEST_DATABASE_URL=postgresql://... TEST_TIMETABLE_DATABASE_URL=postgresql://... npm test` runs integration tests against a **dedicated disposable test database**; do not point this at real data. Use two distinct disposable databases because the foundation and timetable test files run independently. CI creates both.
 
 ## Deployment boundary
 

@@ -584,7 +584,7 @@
   margin-top: 18px;
   border-top: 1px solid var(--border);
 }
-.overview-events button {
+:is(.overview-events button, .overview-events > a) {
   display: flex;
   align-items: flex-start;
   flex: 1;
@@ -595,10 +595,10 @@
   border-right: 1px solid var(--border);
   transition: color 150ms;
 }
-.overview-events button:first-child {
+:is(.overview-events button, .overview-events > a):first-child {
   padding-left: 0;
 }
-.overview-events button:last-child {
+:is(.overview-events button, .overview-events > a):last-child {
   padding-right: 0;
   border-right: 0;
 }
@@ -608,13 +608,13 @@
   min-width: 42px;
   color: var(--muted);
 }
-.overview-events button > span {
+:is(.overview-events button, .overview-events > a) > span {
   padding-left: 12px;
   border-left: 2px solid var(--border);
   flex: 1;
   min-width: 0;
 }
-.overview-events button.highlight > span {
+:is(.overview-events button, .overview-events > a).highlight > span {
   border-left-color: var(--accent);
 }
 .overview-events strong {
@@ -630,12 +630,12 @@
   line-height: 1.5;
   margin-top: 4px;
 }
-.overview-events button > svg {
+:is(.overview-events button, .overview-events > a) > svg {
   margin-top: 5px;
   color: var(--muted);
 }
-.overview-events button:hover strong,
-.overview-events button:hover time {
+:is(.overview-events button, .overview-events > a):hover strong,
+:is(.overview-events button, .overview-events > a):hover time {
   color: var(--accent);
 }
 .overview-inline-link {
@@ -905,12 +905,12 @@
   .overview-meeting-time time {
     font-size: 32px;
   }
-  .overview-events button {
+  :is(.overview-events button, .overview-events > a) {
     padding: 18px 12px;
     gap: 10px;
     flex-wrap: wrap;
   }
-  .overview-events button > span {
+  :is(.overview-events button, .overview-events > a) > span {
     flex-basis: calc(100% - 30px);
   }
   .overview-events time {
@@ -1146,7 +1146,7 @@
   .overview-events {
     flex-direction: column;
   }
-  .overview-events button {
+  :is(.overview-events button, .overview-events > a) {
     padding: 17px 0;
     border-right: 0;
     border-bottom: 1px solid var(--border);

@@ -38,6 +38,16 @@ export function navigation(viewer: Viewer) {
       icon: BookOpen,
       group: 'სასკოლო სივრცე',
     },
+    ...(viewer.capabilities.some((c) => c.startsWith('timetable:'))
+      ? [
+          {
+            path: '/timetable',
+            label: 'გაკვეთილების განრიგი',
+            icon: CalendarDays,
+            group: 'სასკოლო სივრცე',
+          },
+        ]
+      : []),
     { path: '/calendar', label: 'კალენდარი', icon: CalendarDays, group: 'სასკოლო სივრცე' },
     { path: '/messages', label: 'შეტყობინებები', icon: MessageSquare, group: 'სასკოლო სივრცე' },
     ...(viewer.capabilities.includes('people:manage')

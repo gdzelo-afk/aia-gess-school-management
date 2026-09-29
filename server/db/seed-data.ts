@@ -1,3 +1,4 @@
+import { seedTimetable } from './timetable-seed.js';
 import { eq } from 'drizzle-orm';
 import calendarSource from '../../scripts/fixtures/calendar-2026-27.json' with { type: 'json' };
 import { parseDemoCalendar } from './calendar-import.js';
@@ -219,4 +220,5 @@ export async function seedDemo() {
       })
       .onConflictDoNothing();
   });
+  await seedTimetable();
 }

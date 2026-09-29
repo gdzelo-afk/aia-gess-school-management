@@ -46,7 +46,7 @@ Production managed daily backups/PITR recommended; encrypt at rest and restrict 
 6. Demo accounts absent from production database; fixtures cannot appear in live school dashboards.
 7. Approved data retention/provider arrangements and staff onboarding.
 
-## Stage 1A browser verification
+## Operational browser verification
 
 The browser suite writes real fictional records. Stop the normal dev server first. Use a new dedicated database directory per full run; do not reset the normal `.local/database`:
 
@@ -56,4 +56,6 @@ DATABASE_URL=pglite://.local/e2e-run npm run db:seed
 DATABASE_URL=pglite://.local/e2e-run npm run test:e2e
 ```
 
-Playwright starts the application with that environment when no server exists. Never reuse a normal running dev server for mutation tests. Use a fresh dedicated directory when repeating the full baseline-count suite. The final Stage 1A browser journey runs after the original read-only/lab tests and creates uniquely labeled records; it reuses administrator authentication, waits for the preceding suite’s sign-in window to expire and paces writes/full-page visual reloads to respect existing limits. It does not bypass auth. Stop the test server before resuming `npm run dev` against the normal database. Recovery delivery files remain private under ignored `.local/delivery`; tokens never belong in screenshots/logs shared externally.
+Playwright starts the application with that environment when no server exists. Never reuse a normal running dev server for mutation tests. Use a fresh dedicated directory when repeating the full baseline-count suite. The Stage 1A and timetable browser journeys run after the original read-only/lab tests and creates uniquely labeled records; it reuses administrator authentication, waits for the preceding suite’s sign-in window to expire and paces writes/full-page visual reloads to respect existing limits. It does not bypass auth. Stop the test server before resuming `npm run dev` against the normal database. Recovery delivery files remain private under ignored `.local/delivery`; tokens never belong in screenshots/logs shared externally.
+
+PostgreSQL integration verification uses separate disposable databases for `TEST_DATABASE_URL` (foundation/Stage 1A) and `TEST_TIMETABLE_DATABASE_URL` (Stage 1B). Never point both concurrent suites at the same database. Timetable migrations and fictional seed are part of the normal setup; seed preserves subsequent administrator edits.

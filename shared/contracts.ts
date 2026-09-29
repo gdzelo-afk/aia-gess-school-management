@@ -1,6 +1,7 @@
 export const roleLabels = {
   super_admin: 'მთავარი ადმინისტრატორი',
   director: 'დირექტორი',
+  founders_office: 'დამფუძნებელთა ოფისის წევრი',
   principal: 'სასწავლო ხელმძღვანელი',
   vice_principal: 'ხელმძღვანელის მოადგილე',
   administrator: 'ადმინისტრატორი',
@@ -31,9 +32,25 @@ export type Capability =
   | 'academics:manage'
   | 'people:manage'
   | 'staff:manage'
-  | 'access:roles';
+  | 'access:roles'
+  | 'timetable:school'
+  | 'timetable:manage'
+  | 'timetable:publish'
+  | 'timetable:override'
+  | 'timetable:request'
+  | 'timetable:own'
+  | 'timetable:children'
+  | 'timetable:self';
+const timetableManagement: Capability[] = [
+  'timetable:school',
+  'timetable:manage',
+  'timetable:publish',
+  'timetable:override',
+];
 export const roleCapabilities: Record<Role, readonly Capability[]> = {
+  founders_office: [...timetableManagement],
   super_admin: [
+    ...timetableManagement,
     'school:overview',
     'students:school',
     'finance:school',
@@ -45,6 +62,7 @@ export const roleCapabilities: Record<Role, readonly Capability[]> = {
     'access:roles',
   ],
   director: [
+    ...timetableManagement,
     'school:overview',
     'students:school',
     'finance:school',
@@ -54,13 +72,25 @@ export const roleCapabilities: Record<Role, readonly Capability[]> = {
     'access:manage',
     'access:roles',
   ],
-  principal: ['school:overview', 'students:school', 'academics:manage', 'people:manage'],
-  vice_principal: ['school:overview', 'students:school', 'academics:manage', 'people:manage'],
-  administrator: ['students:school', 'people:manage'],
-  teacher: ['students:assigned'],
-  homeroom_teacher: ['students:assigned'],
-  student: ['students:self'],
-  guardian: ['students:children', 'finance:children'],
+  principal: [
+    ...timetableManagement,
+    'school:overview',
+    'students:school',
+    'academics:manage',
+    'people:manage',
+  ],
+  vice_principal: [
+    ...timetableManagement,
+    'school:overview',
+    'students:school',
+    'academics:manage',
+    'people:manage',
+  ],
+  administrator: [...timetableManagement, 'students:school', 'people:manage'],
+  teacher: ['students:assigned', 'timetable:own', 'timetable:request'],
+  homeroom_teacher: ['students:assigned', 'timetable:own', 'timetable:request'],
+  student: ['students:self', 'timetable:self'],
+  guardian: ['students:children', 'finance:children', 'timetable:children'],
   accountant: ['finance:school'],
   hr: ['staff:manage'],
   librarian: [],

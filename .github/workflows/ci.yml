@@ -25,9 +25,14 @@ jobs:
       - run: npm ci
       - run: npm run setup
       - run: npm run check
+      - name: Prepare timetable PostgreSQL database
+        run: node --input-type=module -e 'import pg from "pg"; const c = new pg.Client({connectionString:process.env.TEST_DATABASE_URL}); await c.connect(); await c.query("CREATE DATABASE aia_timetable_test"); await c.end();'
+        env:
+          TEST_DATABASE_URL: postgresql://aia:ci-only-password@localhost:5432/aia_test
       - run: npm test
         env:
           TEST_DATABASE_URL: postgresql://aia:ci-only-password@localhost:5432/aia_test
+          TEST_TIMETABLE_DATABASE_URL: postgresql://aia:ci-only-password@localhost:5432/aia_timetable_test
       - run: npx playwright install --with-deps chromium
       - name: Browser checks
         run: |

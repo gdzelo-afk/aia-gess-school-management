@@ -173,15 +173,23 @@ describe('server-side scopes', () => {
       .update(guardianLink)
       .set({ endsOn: null })
       .where(eq(guardianLink.id, id(400)));
-    await db
-      .update(teachingAssignment)
-      .set({ endsOn: '2021-01-01' })
-      .where(eq(teachingAssignment.id, id(500)));
+    const assignments = await db
+      .select()
+      .from(teachingAssignment)
+      .where(eq(teachingAssignment.staffPersonId, id(2)));
+    for (const assignment of assignments)
+      await db
+        .update(teachingAssignment)
+        .set({
+          endsOn: new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tbilisi' }).format(new Date()),
+        })
+        .where(eq(teachingAssignment.id, assignment.id));
     expect((await get('/api/foundation/students', 'teacher')).json().total).toBe(0);
-    await db
-      .update(teachingAssignment)
-      .set({ endsOn: null })
-      .where(eq(teachingAssignment.id, id(500)));
+    for (const assignment of assignments)
+      await db
+        .update(teachingAssignment)
+        .set({ endsOn: assignment.endsOn })
+        .where(eq(teachingAssignment.id, assignment.id));
   });
   it('combines roles without granting unrelated school access', async () => {
     await db.insert(roleGrant).values({ userId: 'demo-parent', role: 'teacher' });
