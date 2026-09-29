@@ -1,0 +1,418 @@
+.command-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--product-overlay);
+  backdrop-filter: blur(7px);
+  z-index: 60;
+  animation: command-veil-in 130ms ease-out;
+}
+.product-command {
+  position: fixed;
+  z-index: 61;
+  left: 50%;
+  top: clamp(64px, 13vh, 150px);
+  width: min(820px, calc(100vw - 48px));
+  max-height: calc(100dvh - 120px);
+  transform: translateX(-50%);
+  border-radius: 14px;
+  background: var(--product-glass);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, var(--surface));
+  box-shadow:
+    0 30px 90px #0b163b33,
+    0 2px 5px #0b163b13;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: command-open 170ms var(--product-ease);
+  outline: 0;
+}
+.product-command[data-state='closed'] {
+  animation: command-close 100ms ease-in;
+}
+.command-backdrop[data-state='closed'] {
+  animation: command-veil-out 100ms ease-in;
+}
+.command-heading {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 19px 0 25px;
+}
+.command-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+  letter-spacing: 0;
+  flex: 1;
+}
+.command-heading > span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.command-heading .product-icon {
+  width: 28px;
+  height: 28px;
+}
+.command-search {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 0;
+  padding: 14px 24px 21px;
+  border-bottom: 2px solid var(--accent);
+  color: var(--muted);
+}
+.command-search input {
+  border: 0;
+  outline: 0 !important;
+  box-shadow: none;
+  background: transparent;
+  font-size: 22px;
+  font-weight: 400;
+  padding: 0;
+  min-width: 0;
+  height: 46px;
+  color: var(--ink);
+  border-radius: 0;
+}
+.command-search input::placeholder {
+  color: var(--muted);
+  opacity: 0.9;
+}
+.command-search kbd {
+  font-size: 10px;
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.command-search .product-icon {
+  width: 29px;
+  height: 29px;
+}
+.command-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+.command-list-wrap {
+  min-width: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 8px;
+  border-right: 1px solid var(--border);
+}
+.command-list {
+  min-width: 0;
+}
+.command-group {
+  font-size: 10px;
+  color: var(--muted);
+  padding: 12px 12px 7px;
+}
+.command-option {
+  border-radius: 7px;
+  border: 1px solid transparent;
+}
+.command-option[aria-selected='true'] {
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 17%, transparent);
+}
+.command-option > button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 13px;
+  width: 100%;
+  text-align: left;
+  min-height: 63px;
+}
+.command-option-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  color: var(--muted);
+}
+.command-option[aria-selected='true'] .command-option-icon {
+  color: var(--accent);
+}
+.command-option .avatar {
+  width: 30px;
+  height: 30px;
+  font-size: 11px;
+}
+.command-option button > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.command-option strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 450;
+  line-height: 1.5;
+}
+.command-option small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.command-option button > svg {
+  color: var(--muted);
+}
+.command-preview {
+  padding: 26px 24px;
+  overflow-y: auto;
+  background: color-mix(in srgb, var(--rail) 75%, transparent);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.command-preview .product-eyebrow {
+  font-size: 10px;
+}
+.command-preview-symbol {
+  height: 62px;
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+  margin-top: 15px;
+}
+.command-preview-symbol .avatar {
+  width: 48px;
+  height: 48px;
+  font-size: 17px;
+  border-radius: 12px;
+}
+.command-preview h3 {
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 1.45;
+  margin: 9px 0 8px;
+  overflow-wrap: anywhere;
+}
+.command-preview p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.command-preview p.command-preview-note {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+}
+.command-preview dl {
+  margin: 18px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+}
+.command-preview dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+}
+.command-preview dt {
+  color: var(--muted);
+}
+.command-preview dd {
+  margin: 0;
+}
+.command-preview dd.product-number {
+  font-size: 13px;
+}
+.command-preview-enter {
+  margin-top: auto;
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.command-preview-enter kbd {
+  background: var(--surface);
+}
+.command-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 285px;
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+}
+.command-empty h3 {
+  font-size: 17px;
+  color: var(--ink);
+  margin-top: 16px;
+}
+.command-empty p {
+  font-size: 12px;
+  margin: 8px 0 20px;
+}
+.command-empty .product-secondary {
+  font-size: 11px;
+}
+.command-status {
+  padding: 24px 16px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.command-status button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+  padding: 10px 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.command-search-hint {
+  font-size: 10px;
+  color: var(--muted);
+  padding: 14px 12px 10px;
+}
+.command-footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid var(--border);
+  padding: 12px 21px;
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--surface);
+}
+.command-footer > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.command-footer kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  min-width: 20px;
+  font-size: 10px;
+}
+.command-result-count {
+  margin-left: auto;
+  white-space: nowrap;
+}
+@keyframes command-open {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px) scale(0.986);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+@keyframes command-close {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.993);
+  }
+}
+@keyframes command-veil-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes command-veil-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@media (max-width: 700px) {
+  .product-command {
+    top: 35px;
+    width: calc(100vw - 28px);
+    max-height: calc(100dvh - 70px);
+    border-radius: 12px;
+  }
+  .command-body {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .command-preview {
+    display: none;
+  }
+  .command-list-wrap {
+    border-right: 0;
+    max-height: min(440px, calc(100dvh - 255px));
+  }
+  .command-heading {
+    flex-shrink: 0;
+    padding: 12px 15px 0 18px;
+  }
+  .command-heading .product-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .command-search {
+    flex-shrink: 0;
+    padding: 7px 18px 15px;
+    gap: 11px;
+  }
+  .command-search input {
+    font-size: 16px;
+    height: 44px;
+  }
+  .command-search .product-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .command-search > kbd {
+    display: none;
+  }
+  .command-footer {
+    flex-shrink: 0;
+    padding: 12px 16px;
+    gap: 10px;
+    font-size: 9px;
+  }
+  .command-footer > span:nth-child(3) {
+    display: none;
+  }
+  .command-option > button {
+    padding: 12px;
+    min-height: 65px;
+  }
+  .command-option strong {
+    font-size: 14px;
+  }
+  .command-option small {
+    font-size: 11px;
+  }
+  .command-empty {
+    min-height: 250px;
+  }
+  .command-search-hint {
+    font-size: 11px;
+  }
+}

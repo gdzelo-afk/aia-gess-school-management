@@ -1,0 +1,148 @@
+[
+  {
+    "id": "mersad",
+    "name": "Mersad",
+    "file": "mersad.ttf",
+    "source": "https://typeface.ge/assets/fonts/uploads/Mersad-26958361069.ttf",
+    "bytes": 162772,
+    "page": "https://typeface.ge/ka/font/Mersad",
+    "axes": [["wght", 100.0, 293.0, 900.0]],
+    "sha256": "1723dbcfc1b4f96bbfb3e78c336f7ee21ff7659259ca8666bedb4746c2a6e142",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "antena",
+    "name": "123 Antena",
+    "file": "antena.ttf",
+    "source": "https://typeface.ge/assets/fonts/uploads/123-AntenaVF-16124562136.ttf",
+    "bytes": 95024,
+    "page": "https://typeface.ge/ka/font/123+Antena",
+    "axes": [
+      ["wght", 100.0, 100.0, 700.0],
+      ["ital", -100.0, 0.0, 100.0]
+    ],
+    "sha256": "6140073b3fcdd34b6265584235666d3ed7f3fcacc78736099e831c3275c46d1f",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "mecomicse",
+    "name": "TF Mecomicse",
+    "file": "mecomicse.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/TFMecomicse-Regular-59522229166.otf",
+    "bytes": 37820,
+    "page": "https://typeface.ge/ka/font/TF+Mecomicse",
+    "axes": [],
+    "sha256": "d95b86dc7eb1a19e296954162aab7e069027a433e2e2f94c4f5b5b31819a55e7",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "eurostile",
+    "name": "Eurostile GEO_Nus",
+    "file": "eurostile.ttf",
+    "source": "https://typeface.ge/assets/fonts/uploads/Eurostile GEO_Nus-21273687974.ttf",
+    "bytes": 120036,
+    "page": "https://typeface.ge/ka/font/Eurostile+GEONus",
+    "axes": [],
+    "sha256": "31becde26da61c303c1ca5a2d73d5b4412f6c84435355347de410519e0f03c29",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "neobau",
+    "name": "MCh NeoBau",
+    "file": "neobau.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/MChNeobau-Regular-3394124541.otf",
+    "bytes": 31764,
+    "page": "https://typeface.ge/ka/font/MCh+NeoBau",
+    "axes": [],
+    "sha256": "9ee9c407d12459361c342ae2a2b21afe42d84e5b31ff90256d26c1de6603ff6c",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "nino",
+    "name": "BPG Nino Medium",
+    "file": "nino.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/BPGNinoMedium-99985463091.otf",
+    "bytes": 29492,
+    "page": "https://typeface.ge/ka/font/BPG+Nino+Medium",
+    "axes": [],
+    "sha256": "a6c7cf96b52a8821314b49710f060fd55b614fb74b9d944e04fa13c45965e529",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "nino-cond",
+    "name": "BPG Nino Elite Cond",
+    "file": "nino-cond.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/bpg_nino_elite_cond-67556368681.otf",
+    "bytes": 33832,
+    "page": "https://typeface.ge/ka/font/BPG+Nino+Elite+Cond",
+    "axes": [],
+    "sha256": "779c28b2283d62adba560a97c8e8d48ef4d24630395e68ed66a68f308cf7cfca",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "rioni",
+    "name": "BPG Rioni Vera Condensed Light",
+    "file": "rioni.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/bpg_rioni_vera_condenced_light-74673614165.otf",
+    "bytes": 40104,
+    "page": "https://typeface.ge/ka/font/BPG+Rioni+Vera+Condensed+Light",
+    "axes": [],
+    "sha256": "a33c72ab1ae71df30d955d60bb41151ccad2de98010bcef6870fdaea3e57ec5e",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "bpg-sans",
+    "name": "BPG Sans",
+    "file": "bpg-sans.ttf",
+    "source": "https://typeface.ge/assets/fonts/uploads/bpg_sans_2008-64019087255.ttf",
+    "bytes": 46204,
+    "page": "https://typeface.ge/ka/font/BPG+Sans",
+    "axes": [],
+    "sha256": "9210c76f7143b3419b8f6497ffa2dd3f0ca576e59e7e875d835261c9324d99be",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "dejavu",
+    "name": "BPG DejaVu Sans",
+    "file": "dejavu.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/bpg_dejavu_sans-67553242003.otf",
+    "bytes": 80036,
+    "page": "https://typeface.ge/ka/font/BPG+DejaVu+Sans",
+    "axes": [],
+    "sha256": "80a5c207a883bbfd57d86953d7961fe027c756fbc746cf2fb1bf3140562394d8",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "pillar",
+    "name": "MS Pillar",
+    "file": "pillar.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/MSPillar-Regular-2089623269.otf",
+    "bytes": 13464,
+    "page": "https://typeface.ge/ka/font/MS+Pillar",
+    "axes": [],
+    "sha256": "67971f5035f6623fb5fd2707d40ca21170f1519db031895daa7c121107164177",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "vardi",
+    "name": "MCh Ma Si Vardi Serif",
+    "file": "vardi.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/MCh Ma Si Vardi Serif-25315667570.otf",
+    "bytes": 96020,
+    "page": "https://typeface.ge/ka/font/MCh+Ma+Si+Vardi+Serif",
+    "axes": [],
+    "sha256": "bedde722fa3e7d9b808a7e3edca420053e62314c72b9f1aff6336f960236c4a6",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "neobau-bold",
+    "name": "MCh NeoBau Bold",
+    "file": "neobau-bold.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/MChNeobau-Bold-3394124541.otf",
+    "page": "https://typeface.ge/ka/font/MCh+NeoBau",
+    "axes": [],
+    "bytes": 34884,
+    "sha256": "78958732397c0ba7fba8cc1c7243f015aada84af6215f9eac0cf6b6ee73a87a6",
+    "productionLicenseStatus": "Production license verification required."
+  }
+]

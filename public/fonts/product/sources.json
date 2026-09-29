@@ -1,0 +1,53 @@
+[
+  {
+    "id": "mersad",
+    "name": "Mersad",
+    "file": "mersad.ttf",
+    "source": "https://typeface.ge/assets/fonts/uploads/Mersad-26958361069.ttf",
+    "bytes": 162772,
+    "page": "https://typeface.ge/ka/font/Mersad",
+    "axes": [
+      [
+        "wght",
+        100.0,
+        293.0,
+        900.0
+      ]
+    ],
+    "sha256": "1723dbcfc1b4f96bbfb3e78c336f7ee21ff7659259ca8666bedb4746c2a6e142",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "neobau",
+    "name": "MCh NeoBau",
+    "file": "neobau.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/MChNeobau-Regular-3394124541.otf",
+    "bytes": 31764,
+    "page": "https://typeface.ge/ka/font/MCh+NeoBau",
+    "axes": [],
+    "sha256": "9ee9c407d12459361c342ae2a2b21afe42d84e5b31ff90256d26c1de6603ff6c",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "neobau-bold",
+    "name": "MCh NeoBau Bold",
+    "file": "neobau-bold.otf",
+    "source": "https://typeface.ge/assets/fonts/uploads/MChNeobau-Bold-3394124541.otf",
+    "page": "https://typeface.ge/ka/font/MCh+NeoBau",
+    "axes": [],
+    "bytes": 34884,
+    "sha256": "78958732397c0ba7fba8cc1c7243f015aada84af6215f9eac0cf6b6ee73a87a6",
+    "productionLicenseStatus": "Production license verification required."
+  },
+  {
+    "id": "tatishvili",
+    "name": "GL Tatishvili 12 Normal",
+    "file": "gl-tatishvili-12-normal.ttf",
+    "source": "https://typeface.ge/assets/fonts/uploads/gl-tatishvili-12-normal-59403032485.ttf",
+    "page": "https://typeface.ge/ka/font/GL+Tatishvili+12+Normal",
+    "bytes": 106984,
+    "sha256": "8a6bbe747d779c974989e6795c6bde5fa165f73e58fa8ea696a35b5739ebe589",
+    "axes": [],
+    "productionLicenseStatus": "Production license verification required."
+  }
+]

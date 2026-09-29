@@ -1,0 +1,34 @@
+EMBEDDED FONT NOTICES — copied from name tables, without alteration.
+Retrieved 27 September 2026 from the sources recorded in sources.json.
+These records are evidence, not a blanket license grant for the collection.
+
+
+## Mersad / mersad.ttf
+name ID 0:
+Copyright © 2022 by Nikoloz Khipashvili. All rights reserved.
+name ID 8:
+Nikoloz Khipashvili
+name ID 9:
+Nikoloz Khipashvili
+
+## MCh NeoBau / neobau.otf
+name ID 0:
+Copyright © Mariam Chachanidze. All rights reserved.
+name ID 9:
+Mariam Chachanidze
+
+## MCh NeoBau Bold / neobau-bold.otf
+name ID 0:
+Copyright © Mariam Chachanidze. All rights reserved.
+name ID 9:
+Mariam Chachanidze
+
+
+GL Tatishvili 12 Normal — original embedded names/notices
+0: Copyright © 2017 by Natia Beruashvili. All rights reserved.
+1: GL Tatishvili 12
+2: Normal
+4: GL Tatishvili 12 Normal
+6: GLTatishvili12-Normal
+1: GL Tatishvili 12 Normal
+2: Regular

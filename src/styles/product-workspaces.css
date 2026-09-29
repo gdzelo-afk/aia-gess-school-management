@@ -1,0 +1,574 @@
+/* Shared main-route presentation; never imported by the archival design lab. */
+.product-shell .page-intro {
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 30px;
+}
+.product-shell .page-kicker {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 9px;
+  letter-spacing: 0;
+}
+.product-shell .page-intro h1 {
+  font: 450 33px/1.4 var(--product-ui);
+  letter-spacing: -0.035em;
+}
+.product-shell .page-intro p {
+  font-size: 13px;
+  line-height: 1.8;
+  margin-top: 9px;
+  max-width: 650px;
+}
+.product-shell .page-intro > .badge {
+  margin-top: 29px;
+}
+.product-theme .button {
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 450;
+}
+.product-theme .button-primary:hover {
+  background: color-mix(in srgb, var(--accent) 88%, var(--ink));
+}
+.product-theme .icon-button {
+  border-radius: 6px;
+}
+.product-theme .badge {
+  border-radius: 4px;
+  font-weight: 400;
+}
+.product-shell .card {
+  box-shadow: var(--product-shadow);
+}
+.product-theme .empty-state h3 {
+  font-size: 21px;
+  font-weight: 450;
+}
+.product-theme .empty-state p {
+  font-size: 13px;
+  line-height: 1.8;
+  max-width: 480px;
+}
+.product-theme .section-heading h2 {
+  font-size: 17px;
+  font-weight: 450;
+}
+.product-theme .dialog-title {
+  font-family: var(--product-ui);
+  font-weight: 450;
+}
+.product-theme .dialog-description {
+  font-size: 12px;
+}
+.product-theme .toast {
+  background: var(--surface);
+  box-shadow: var(--product-shadow);
+}
+.product-shell .directory-toolbar {
+  padding: 22px 24px;
+  background: var(--surface);
+}
+.product-shell .directory-toolbar .input-with-icon {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  margin-right: auto;
+}
+.product-shell .directory-toolbar .filter-select {
+  flex: 0 0 180px;
+}
+.product-shell .directory-toolbar > select {
+  flex: 0 1 320px;
+  width: 320px;
+}
+.product-shell .directory-toolbar input,
+.product-shell .directory-toolbar > select,
+.product-shell .filter-select select {
+  font-size: 13px;
+  height: 42px;
+  background: var(--rail);
+}
+.product-shell .directory-card table {
+  font-size: 13px;
+}
+.product-shell .directory-card th {
+  background: var(--rail);
+  font-size: 11px;
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+.product-shell .directory-card td {
+  padding-top: calc(var(--row-padding) + 3px);
+  padding-bottom: calc(var(--row-padding) + 3px);
+  border-color: var(--product-line);
+}
+.product-shell .directory-card tbody tr {
+  transition: background 120ms ease;
+}
+.product-shell .directory-card tbody tr:hover,
+.product-shell .directory-card tbody tr:focus-within,
+.product-shell .directory-card tbody tr[data-selected] {
+  background: var(--accent-soft);
+}
+.product-shell .directory-card .person-cell {
+  gap: 12px;
+  min-height: 36px;
+}
+.product-shell .directory-card .person-cell strong {
+  font-size: 14px;
+  font-weight: 450;
+}
+.product-shell .directory-card .avatar {
+  border-radius: 9px;
+  width: 33px;
+  height: 33px;
+}
+.product-shell .directory-card td.product-number {
+  font-size: 15px;
+  letter-spacing: 0;
+}
+.product-shell .pagination {
+  font-size: 12px;
+  padding: 17px 24px;
+  background: var(--rail);
+}
+.product-shell .pagination .button {
+  min-height: 36px;
+  min-width: 36px;
+  background: var(--surface);
+}
+.product-shell .pagination > div > span {
+  font-family: var(--product-number);
+  font-size: 17px;
+}
+.product-shell .privacy-caption {
+  font-size: 12px;
+  line-height: 1.7;
+  align-items: flex-start;
+}
+.product-shell .privacy-caption > svg {
+  margin-top: 3px;
+}
+.product-theme.student-dialog {
+  width: min(640px, calc(100vw - 32px));
+}
+.product-theme .student-detail-head {
+  gap: 16px;
+}
+.product-theme .student-detail-head > .avatar {
+  border-radius: 12px;
+}
+.product-theme .student-detail-head h2 {
+  font-size: 22px;
+  font-weight: 450;
+}
+.product-theme .student-detail-head p {
+  font-size: 12px;
+}
+.product-theme .detail-grid strong {
+  font-weight: 400;
+}
+.product-theme .sample-grades {
+  border-radius: 0;
+  border-inline: 0;
+  padding: 20px 0;
+}
+.product-theme .sample-grades strong,
+.product-theme .finance-example > strong {
+  font-family: var(--product-number);
+  font-weight: 400;
+  font-size: 23px;
+}
+.product-theme .sample-grades h3 {
+  font-size: 14px;
+}
+.product-theme .finance-example {
+  background: var(--rail);
+  border: 1px solid var(--border);
+}
+.workspace-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.workspace-section-heading svg {
+  color: var(--muted);
+}
+.workspace-section-heading h2 {
+  font-size: 16px;
+  font-weight: 450;
+  letter-spacing: -0.01em;
+}
+.workspace-boundary {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+  max-width: 540px;
+  margin: 13px 0 28px;
+}
+.academic-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(260px, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.academic-structure {
+  padding: 28px 30px 8px;
+  min-width: 0;
+}
+.academic-year {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 0;
+  border-block: 1px solid var(--border);
+}
+.academic-year > span {
+  font-size: 13px;
+}
+.academic-year strong {
+  font-size: 34px;
+  line-height: 1.2;
+}
+.academic-year small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 11px;
+}
+.academic-sections details {
+  border-bottom: 1px solid var(--product-line);
+}
+.academic-sections details:last-child {
+  border-bottom: 0;
+}
+.academic-sections summary {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 25px 0;
+  list-style: none;
+  cursor: pointer;
+}
+.academic-sections summary::-webkit-details-marker {
+  display: none;
+}
+.academic-sections summary > span {
+  color: var(--muted);
+  font-size: 16px;
+}
+.academic-sections summary h3 {
+  font-size: 14px;
+  font-weight: 450;
+  flex: 1;
+}
+.academic-sections summary small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.academic-sections summary svg {
+  color: var(--muted);
+  transition: transform 150ms;
+}
+.academic-sections details[open] summary svg {
+  transform: rotate(180deg);
+}
+.academic-sections details p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.9;
+  padding: 0 0 25px 33px;
+  max-width: 540px;
+}
+.academic-context {
+  border-left: 1px solid var(--border);
+  padding: 30px;
+  background: var(--rail);
+}
+.academic-context > h2 {
+  font-size: 26px;
+  line-height: 1.5;
+  font-weight: 450;
+  margin: 18px 0 32px;
+}
+.academic-context > a {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 20px 0;
+  border-top: 1px solid var(--border);
+}
+.academic-context > a:hover {
+  color: var(--accent);
+}
+.academic-context > a > span {
+  flex: 1;
+}
+.academic-context strong {
+  font-size: 13px;
+  font-weight: 450;
+  display: block;
+}
+.academic-context small {
+  font-size: 11px;
+  color: var(--muted);
+  display: block;
+  margin-top: 5px;
+}
+.workspace-footnote {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding-top: 22px;
+  margin-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.workspace-footnote svg {
+  margin-top: 3px;
+}
+.messages-workspace {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  min-height: 570px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.conversation-index {
+  padding: 24px;
+  background: var(--rail);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+}
+.conversation-unavailable {
+  padding: 43px 0;
+}
+.conversation-index-rule {
+  display: block;
+  width: 28px;
+  height: 2px;
+  background: var(--border);
+  margin-bottom: 20px;
+}
+.conversation-unavailable h3 {
+  font-size: 14px;
+  font-weight: 450;
+  line-height: 1.7;
+}
+.conversation-unavailable p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.9;
+  margin-top: 13px;
+}
+.conversation-index-note {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.conversation-stage {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.conversation-stage-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--product-line);
+  font-size: 12px;
+}
+.conversation-stage-header > span:last-child {
+  color: var(--muted);
+  font-size: 11px;
+}
+.conversation-empty {
+  padding: 40px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  max-width: 600px;
+  margin-inline: auto;
+}
+.conversation-symbol {
+  color: var(--accent);
+  margin-bottom: 26px;
+}
+.conversation-empty h2 {
+  font-size: 29px;
+  font-weight: 450;
+  line-height: 1.5;
+  margin: 12px 0 16px;
+}
+.conversation-empty p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.9;
+  max-width: 390px;
+}
+.conversation-empty .product-secondary {
+  margin-top: 27px;
+  font-size: 12px;
+}
+.conversation-stage-footer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 20px 28px;
+  border-top: 1px solid var(--product-line);
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.product-shell .calendar-event time {
+  font-family: var(--product-number);
+  font-size: 23px;
+}
+.product-shell .theme-preview {
+  border-color: #dce2eb;
+  background: #f1f3f7;
+}
+.product-shell .theme-preview > i {
+  background: #e9edf4;
+}
+.product-shell .theme-preview b {
+  background: #dce2eb;
+}
+.product-shell .preview-dark {
+  background: #10151f;
+  border-color: #303d53;
+}
+.product-shell .preview-dark > i {
+  background: #1b2332;
+}
+.product-shell .preview-dark b {
+  background: #303d53;
+}
+.lab-archive-link {
+  margin-bottom: 24px;
+}
+@media (max-width: 1150px) {
+  .academic-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .academic-context {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+  .academic-context > h2 br {
+    display: none;
+  }
+  .messages-workspace {
+    grid-template-columns: 245px minmax(0, 1fr);
+  }
+  .conversation-empty {
+    padding: 30px;
+  }
+  .conversation-empty h2 {
+    font-size: 25px;
+  }
+}
+@media (max-width: 650px) {
+  .product-shell .page-intro {
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 24px;
+  }
+  .product-shell .page-intro h1 {
+    font-size: 28px;
+  }
+  .product-shell .page-intro > .badge {
+    margin-top: 0;
+  }
+  .product-shell .directory-toolbar {
+    flex-direction: column;
+    padding: 18px;
+    gap: 12px;
+  }
+  .product-shell .directory-toolbar .input-with-icon,
+  .product-shell .directory-toolbar > select,
+  .product-shell .directory-toolbar .filter-select {
+    flex: none;
+    width: 100%;
+  }
+  .product-shell .directory-card td {
+    padding-block: 15px;
+  }
+  .product-shell .pagination {
+    padding: 14px 16px;
+    gap: 9px;
+    font-size: 11px;
+  }
+  .product-shell .pagination > div {
+    gap: 7px;
+  }
+  .product-theme .student-detail-head {
+    flex-wrap: wrap;
+  }
+  .product-theme .student-detail-head h2 {
+    font-size: 19px;
+  }
+  .academic-structure,
+  .academic-context {
+    padding: 23px 20px;
+  }
+  .academic-year strong {
+    font-size: 27px;
+  }
+  .academic-sections summary {
+    gap: 10px;
+  }
+  .academic-sections summary small {
+    display: none;
+  }
+  .messages-workspace {
+    grid-template-columns: 1fr;
+  }
+  .conversation-index {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 22px;
+  }
+  .conversation-unavailable {
+    padding: 18px 0 0;
+  }
+  .conversation-index-rule,
+  .conversation-index-note {
+    display: none;
+  }
+  .conversation-unavailable p {
+    margin-top: 7px;
+  }
+  .conversation-stage-header {
+    padding: 18px 22px;
+  }
+  .conversation-empty {
+    padding: 30px 22px;
+    width: 100%;
+  }
+  .conversation-stage-footer {
+    padding: 18px 22px;
+  }
+}
+
+.product-shell .table-scroll {
+  position: relative;
+  overscroll-behavior-x: contain;
+}

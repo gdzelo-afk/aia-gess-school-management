@@ -1,0 +1,168 @@
+EMBEDDED FONT NOTICES — copied from name tables, without alteration.
+Retrieved 27 September 2026 from the sources recorded in sources.json.
+These records are evidence, not a blanket license grant for the collection.
+
+
+## Mersad / mersad.ttf
+name ID 0:
+Copyright © 2022 by Nikoloz Khipashvili. All rights reserved.
+name ID 8:
+Nikoloz Khipashvili
+name ID 9:
+Nikoloz Khipashvili
+
+## 123 Antena / antena.ttf
+name ID 0:
+© Mate Kharchilava
+name ID 9:
+Mate Kharchilava
+name ID 13:
+Free
+
+## TF Mecomicse / mecomicse.otf
+name ID 0:
+Copyright (c) 2025 by Mariam Chachanidze. All rights reserved.
+name ID 8:
+Typeface.ge ; Mecomicse
+name ID 9:
+Mariam Chachanidze
+name ID 13:
+TF Mecomicse is a free comic book font created to support the development of comics in Georgia. It is free for personal and commercial use.
+
+## Eurostile GEO_Nus / eurostile.ttf
+name ID 0:
+Copyright (c) 2025 by GF Fonts. All rights reserved.
+name ID 8:
+GF Fonts
+name ID 9:
+Merab Getsadze
+name ID 13:
+Free
+name ID 14:
+upload@typeface.ge
+
+## MCh NeoBau / neobau.otf
+name ID 0:
+Copyright © Mariam Chachanidze. All rights reserved.
+name ID 9:
+Mariam Chachanidze
+
+## BPG Nino Medium / nino.otf
+name ID 0:
+Copyright (c) BPG InfoTech, 2009. All rights reserved.
+name ID 8:
+BPG InfoTech
+name ID 9:
+BPG-InfoTech
+name ID 13:
+BPG-InfoTech free gift by Bessarion Gugushvili by name of Nino Gugushvili-Mikaberidze
+
+May be distributed under the terms 
+of General Public License(GPL).
+http://www.gnu.org/licenses/gpl.html
+
+Are licensed for free distribution by individuals and by
+companies independently, or along with any GNU 
+Linux System or other open-source software, 
+as well for free use of the typefaces for commercial
+and noncommercial needs.
+
+BPG-InfoTech
+Besarion Paata Gugushvili
+besarioni@gmail.com
+besarion.gugushvili@hotmail.com
+
+http://besariongugushvili.spaces.live.com
+http://groups.google.com/group/bpg-fonts
+name ID 14:
+http://besariongugushvili.spaces.live.com
+
+## BPG Nino Elite Cond / nino-cond.otf
+name ID 0:
+Copyright (c) 2008 by BPG InfoTech. All rights reserved.
+name ID 8:
+BPG InfoTech
+name ID 9:
+BPG-InfoTech
+name ID 13:
+BPG-InfoTech free gift by Bessarion Gugushvili by name of Nino Gugushvili-Mikaberidze
+name ID 14:
+http://besariongugushvili.spaces.live.com
+
+## BPG Rioni Vera Condensed Light / rioni.otf
+name ID 0:
+Copyright (c) BPG-InfoTech, 2005. All rights reserved.
+name ID 8:
+BPG-InfoTech
+name ID 9:
+BPG-InfoTech
+name ID 13:
+BPG-InfoTech
+name ID 14:
+http://www.geocities.com/bpgfonts
+
+## BPG Sans / bpg-sans.ttf
+name ID 0:
+Copyright (c) BPG InfoTech, 2008. All rights reserved.
+name ID 8:
+BPG InfoTech
+name ID 9:
+BPG-InfoTech
+name ID 13:
+BPG-InfoTech free gift by Bessarion Gugushvili
+name ID 14:
+http://besariongugushvili.spaces.live.com
+
+## BPG DejaVu Sans / dejavu.otf
+name ID 0:
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved.
+DejaVu changes are in public domain
+name ID 8:
+Stepan Roh and DejaVu fonts team
+name ID 9:
+Georgian by BOG-InfoTech
+name ID 13:
+Fonts are (c) Bitstream (see below). DejaVu changes are in public domain.
+
+Bitstream Vera Fonts Copyright
+------------------------------
+
+Copyright (c) 2003 by Bitstream, Inc. All Rights Reserved. Bitstream Vera is a trademark of Bitstream, Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of the fonts accompanying this license ("Fonts") and associated documentation files (the "Font Software"), to reproduce and distribute the Font Software, including without limitation the rights to use, copy, merge, publish, distribute, and/or sell copies of the Font Software, and to permit persons to whom the Font Software is furnished to do so, subject to the following conditions:
+
+The above copyright and trademark notices and this permission notice shall be included in all copies of one or more of the Font Software typefaces.
+
+The Font Software may be modified, altered, or added to, and in particular the designs of glyphs or characters in the Fonts may be modified and additional glyphs or  or characters may be added to the Fonts, only if the fonts are renamed to names not containing either the words "Bitstream" or the word "Vera".
+
+This License becomes null and void to the extent applicable to Fonts or Font Software that has been modified and is distributed under the "Bitstream Vera" names.
+
+The Font Software may be sold as part of a larger software package but no copy of one or more of the Font Software typefaces may be sold by itself.
+
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL BITSTREAM OR THE GNOME FOUNDATION BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.
+
+Except as contained in this notice, the names of Gnome, the Gnome Foundation, and Bitstream Inc., shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Font Software without prior written authorization from the Gnome Foundation or Bitstream Inc., respectively. For further information, contact: fonts at gnome dot org. 
+name ID 14:
+http://dejavu.sourceforge.net/wiki/index.php/License
+
+## MS Pillar / pillar.otf
+name ID 0:
+© მარიამ აქულაშვილი 2025
+name ID 8:
+Maryam Sasha
+name ID 9:
+Maryam Sasha
+
+## MCh Ma Si Vardi Serif / vardi.otf
+name ID 0:
+Copyright (c) 2025 by Mariam Chachanidze. All rights reserved.
+name ID 9:
+Mariam Chachanidze
+name ID 13:
+Developed through the Font Design Programme at the Georgian Calligraphers Association and is Free for use, both commercial and Non comercial use
+
+## MCh NeoBau Bold / neobau-bold.otf
+name ID 0:
+Copyright © Mariam Chachanidze. All rights reserved.
+name ID 9:
+Mariam Chachanidze

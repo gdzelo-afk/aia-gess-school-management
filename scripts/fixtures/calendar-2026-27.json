@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "metadata": {
+    "academic_year": "2026-2027",
+    "jurisdiction": "Georgia",
+    "governing_body": "Ministry of Education and Science of Georgia",
+    "title_ka": "2026-2027 სასწავლო წელი",
+    "title_en": "2026-2027 Academic Year",
+    "date_format": "YYYY-MM-DD",
+    "week_structure": {
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "working_days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "weekend_days": ["Saturday", "Sunday"]
+    }
+  },
+  "grade_cohort_rules": {
+    "Grade_1": {
+      "start_date": "2026-09-15",
+      "end_date": "2027-05-27",
+      "total_school_days": 156,
+      "term_1_days": 74,
+      "term_2_days": 82,
+      "notes_ka": "I კლასისთვის სულ 156 სასწავლო დღეა (I სემესტრი: 74, II სემესტრი: 82). სწავლას ასრულებს 27 მაისს."
+    },
+    "Grades_2_to_11": {
+      "start_date": "2026-09-15",
+      "end_date": "2027-06-15",
+      "total_school_days": 169,
+      "term_1_days": 74,
+      "term_2_days": 95,
+      "notes_ka": "II-XI კლასისთვის სულ 169 სასწავლო დღეა (I სემესტრი: 74, II სემესტრი: 95)."
+    },
+    "Grade_12": {
+      "start_date": "2026-09-15",
+      "end_date": "2027-05-20",
+      "total_school_days": 152,
+      "term_1_days": 74,
+      "term_2_days": 78,
+      "notes_ka": "XII კლასისთვის სულ 152 სასწავლო დღეა (I სემესტრი: 74, II სემესტრი: 78). სწავლას ასრულებს 20 მაისს."
+    }
+  },
+  "visual_legend_mapping": {
+    "RED": {
+      "hex": "#FF0000",
+      "label_ka": "უქმე დღე",
+      "label_en": "Official Public Holiday",
+      "is_school_day": false
+    },
+    "GREEN": {
+      "hex": "#84CC16",
+      "label_ka": "სწავლის დაწყების ან დასრულების დღე",
+      "label_en": "Academic Milestone (Start or End Date)",
+      "is_school_day": true
+    },
+    "YELLOW": {
+      "hex": "#FACC15",
+      "label_ka": "საგაზაფხულო ან სააღდგომო არდადეგები",
+      "label_en": "Spring or Easter Vacation",
+      "is_school_day": false
+    },
+    "GREY": {
+      "hex": "#9CA3AF",
+      "label_ka": "საზაფხულო ან ზამთრის არდადეგები",
+      "label_en": "Summer or Winter Vacation",
+      "is_school_day": false
+    }
+  },
+  "official_holidays": [
+    {
+      "date": "2026-10-14",
+      "name_ka": "მცხეთობის დღე",
+      "name_en": "Mtskhetoba (Svetitskhovloba)",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2026-11-23",
+      "name_ka": "გიორგობის დღე",
+      "name_en": "Saint George's Day (Giorgoba)",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-01-01",
+      "name_ka": "ახალი წლის სადღესასწაულო დღე",
+      "name_en": "New Year's Day (Day 1)",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-01-02",
+      "name_ka": "ახალი წლის სადღესასწაულო დღე",
+      "name_en": "New Year's Day (Day 2)",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-01-07",
+      "name_ka": "ქრისტეს შობის დღე",
+      "name_en": "Orthodox Christmas Day",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-01-19",
+      "name_ka": "ნათლისღება",
+      "name_en": "Epiphany",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-03-03",
+      "name_ka": "დედის დღე",
+      "name_en": "Mother's Day",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-03-08",
+      "name_ka": "ქალთა საერთაშორისო დღე",
+      "name_en": "International Women's Day",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-04-09",
+      "name_ka": "სახელმწიფოებრივი დამოუკიდებლობის აღდგენის დღე",
+      "name_en": "Day of Restoration of State Independence",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-05-12",
+      "name_ka": "ანდრია მოციქულის ხსენების დღე",
+      "name_en": "Saint Andrew the First-Called Day",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-05-17",
+      "name_ka": "ოჯახის სიწმინდისა და მშობლების პატივისცემის დღე",
+      "name_en": "Day of Family Purity and Respect for Parents",
+      "type": "PUBLIC_HOLIDAY"
+    },
+    {
+      "date": "2027-05-26",
+      "name_ka": "საქართველოს დამოუკიდებლობის დღე",
+      "name_en": "Independence Day of Georgia",
+      "type": "PUBLIC_HOLIDAY"
+    }
+  ],
+  "vacation_periods": [
+    {
+      "name_ka": "ზამთრის არდადეგები",
+      "name_en": "Winter Vacation",
+      "start_date": "2026-12-30",
+      "end_date": "2027-01-14",
+      "visual_code": "GREY"
+    },
+    {
+      "name_ka": "საგაზაფხულო არდადეგები",
+      "name_en": "Spring Vacation",
+      "start_date": "2027-03-08",
+      "end_date": "2027-03-14",
+      "visual_code": "YELLOW"
+    },
+    {
+      "name_ka": "სააღდგომო არდადეგები",
+      "name_en": "Easter Vacation",
+      "start_date": "2027-04-30",
+      "end_date": "2027-05-03",
+      "visual_code": "YELLOW"
+    }
+  ],
+  "academic_milestones": [
+    {
+      "date": "2026-09-15",
+      "event": "Academic Year Begins (All Grades)",
+      "visual_code": "GREEN"
+    },
+    {
+      "date": "2026-12-29",
+      "event": "Term 1 Ends (All Grades)",
+      "visual_code": "GREEN"
+    },
+    {
+      "date": "2027-01-15",
+      "event": "Term 2 Begins (All Grades)",
+      "visual_code": "GREEN"
+    },
+    {
+      "date": "2027-05-20",
+      "event": "School Year Concludes for Grade 12",
+      "visual_code": "GREEN"
+    },
+    {
+      "date": "2027-05-27",
+      "event": "School Year Concludes for Grade 1",
+      "visual_code": "GREEN"
+    },
+    {
+      "date": "2027-06-15",
+      "event": "School Year Concludes for Grades 2–11",
+      "visual_code": "GREEN"
+    }
+  ],
+  "monthly_school_days_breakdown": [
+    {
+      "year": 2026,
+      "month": 9,
+      "month_name": "September",
+      "school_days_grade_1": 12,
+      "school_days_grades_2_11": 12,
+      "school_days_grade_12": 12,
+      "calendar_label": "სექტემბერი (12 სასწ. დღე)"
+    },
+    {
+      "year": 2026,
+      "month": 10,
+      "month_name": "October",
+      "school_days_grade_1": 21,
+      "school_days_grades_2_11": 21,
+      "school_days_grade_12": 21,
+      "calendar_label": "ოქტომბერი (21 სასწ. დღე)"
+    },
+    {
+      "year": 2026,
+      "month": 11,
+      "month_name": "November",
+      "school_days_grade_1": 20,
+      "school_days_grades_2_11": 20,
+      "school_days_grade_12": 20,
+      "calendar_label": "ნოემბერი (20 სასწ. დღე)"
+    },
+    {
+      "year": 2026,
+      "month": 12,
+      "month_name": "December",
+      "school_days_grade_1": 21,
+      "school_days_grades_2_11": 21,
+      "school_days_grade_12": 21,
+      "calendar_label": "დეკემბერი (21 სასწ. დღე)"
+    },
+    {
+      "year": 2027,
+      "month": 1,
+      "month_name": "January",
+      "school_days_grade_1": 10,
+      "school_days_grades_2_11": 10,
+      "school_days_grade_12": 10,
+      "calendar_label": "იანვარი (10 სასწ. დღე)"
+    },
+    {
+      "year": 2027,
+      "month": 2,
+      "month_name": "February",
+      "school_days_grade_1": 20,
+      "school_days_grades_2_11": 20,
+      "school_days_grade_12": 20,
+      "calendar_label": "თებერვალი (20 სასწ. დღე)"
+    },
+    {
+      "year": 2027,
+      "month": 3,
+      "month_name": "March",
+      "school_days_grade_1": 17,
+      "school_days_grades_2_11": 17,
+      "school_days_grade_12": 17,
+      "calendar_label": "მარტი (17 სასწ. დღე)"
+    },
+    {
+      "year": 2027,
+      "month": 4,
+      "month_name": "April",
+      "school_days_grade_1": 20,
+      "school_days_grades_2_11": 20,
+      "school_days_grade_12": 20,
+      "calendar_label": "აპრილი (20 სასწ. დღე)"
+    },
+    {
+      "year": 2027,
+      "month": 5,
+      "month_name": "May",
+      "school_days_grade_1": 11,
+      "school_days_grades_2_11": 17,
+      "school_days_grade_12": 15,
+      "calendar_label": "მაისი (11/15/17 სასწ. დღე)"
+    },
+    {
+      "year": 2027,
+      "month": 6,
+      "month_name": "June",
+      "school_days_grade_1": 0,
+      "school_days_grades_2_11": 11,
+      "school_days_grade_12": 0,
+      "calendar_label": "ივნისი (11 სასწ. დღე)"
+    }
+  ]
+}
