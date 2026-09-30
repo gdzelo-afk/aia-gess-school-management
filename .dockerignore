@@ -6,3 +6,6 @@ node_modules
 dist
 test-results
 playwright-report
+
+# Private local reference documents; never publish or package.
+school-finanical-docs/

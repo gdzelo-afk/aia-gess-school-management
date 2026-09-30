@@ -221,6 +221,13 @@ export async function timetableWeek(
     return {
       from: q.from,
       items: items.map(publicOccurrence),
+      // Public bell context aligns empty periods without exposing private draft/group rosters.
+      days: Array.from({ length: q.days }, (_, i) => addDays(q.from, i)).flatMap((date) => {
+        const v = effectiveVersion(vs, date);
+        return v
+          ? [{ date, startsOn: v.startsOn, endsOn: v.endsOn, periods: v.document.periods }]
+          : [];
+      }),
       conflicts: canManage(viewer) ? conflictsFor(ctx, os) : [],
       versions: canManage(viewer) ? vs.map(summary) : [],
       children: allowed,

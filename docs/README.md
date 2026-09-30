@@ -1,6 +1,6 @@
 # AIA-GESS product and engineering context
 
-Status: Stage 1A operational implementation, 29 September 2026. Read this index, then `implementation-status.md` before changing code. The full product vision is larger than the implemented foundation.
+Status: Stage 1A + Stage 1B operational implementation, 30 September 2026. Read this index, then `implementation-status.md` before changing code. The full product vision is larger than the implemented foundation.
 
 | Document                                          | Use it for                                                |
 | ------------------------------------------------- | --------------------------------------------------------- |
@@ -25,7 +25,7 @@ Status: Stage 1A operational implementation, 29 September 2026. Read this index,
 3. Semester-based, grades 1–10, GEL stored in integer tetri, school timezone Asia/Tbilisi.
 4. A person can have multiple roles; a guardian can have multiple children. Authorization is server-side and relationship-aware.
 5. Historical academic meaning survives transfers, staff departures and renamed classes.
-6. Stage 1A implements academic structure and people/onboarding. Timetable, attendance, grading, finance and messaging remain future work; this is not a production release.
+6. Stage 1A implements academic structure and people/onboarding; Stage 1B adds the manual timetable. Attendance, grading, finance and messaging remain future work; this is not a production release.
 7. School website is context and logo source only; never use its design as the interface specification.
 8. No Mermaid diagrams. Update docs with changed requirements; these are working decisions, not immutable instructions.
 

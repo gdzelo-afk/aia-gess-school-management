@@ -11,6 +11,14 @@ async function login(page: Page, role: string) {
   await page.getByRole('button', { name: role, exact: true }).click();
   await expect(page.locator('.overview-heading')).toBeVisible();
 }
+async function scope(page: Page, query: string, name: string) {
+  await page.locator('.tt-lens-heading button').click();
+  await page.getByLabel('განრიგის ჭრილის ძებნა').fill(query);
+  await page
+    .locator('.tt-scope-results button')
+    .filter({ has: page.getByText(name, { exact: true }) })
+    .click();
+}
 test('timetable draft editing, conflicts, publication, requests and role-scoped mobile views', async ({
   page,
   browser,
@@ -24,7 +32,21 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   page.on('pageerror', (e) => errors.push(e.message));
   await login(page, 'დირექტორი');
   await page.goto('/timetable');
-  await expect(page.locator('.tt-published-week')).toBeVisible();
+  await expect(page.locator('.tt-matrix')).toBeVisible();
+  await scope(page, 'მარიამ', 'მარიამ კაპანაძე');
+  await expect(page.locator('.tt-lens-heading')).toContainText('მასწავლებელი');
+  await scope(page, '101', 'ოთახი 101');
+  await expect(page.locator('.tt-lens-heading')).toContainText('ოთახი');
+  await scope(page, 'VII ა', 'VII ა');
+  const bands = await page
+    .locator('.tt-matrix tbody tr')
+    .evaluateAll((rows) =>
+      rows.map((row) =>
+        Array.from(row.querySelectorAll('td')).map((td) => td.getBoundingClientRect().top),
+      ),
+    );
+  expect(bands.every((row) => row.every((top) => Math.abs(top - row[0]!) < 1))).toBe(true);
+
   await page.getByRole('button', { name: 'სამუშაო ვერსია', exact: true }).click();
   await page.getByLabel('ვერსიის სახელი', { exact: true }).fill(`სატესტო კვირა ${Date.now()}`);
   await page.getByLabel('დაწყება', { exact: true }).fill('2026-10-26');
@@ -32,45 +54,41 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await page.getByLabel('არსებული ვერსიის კოპირება').selectOption(fixture(1600));
   await reviewed(page);
   const versionId = await page.getByLabel('განრიგის ვერსია', { exact: true }).inputValue();
-  await expect(page.locator('.tt-grid')).toBeVisible();
+  await expect(page.locator('.tt-matrix')).toBeVisible();
   // Drag a whole section into its split-group period: real server validation must flag it.
-  const source = page
-    .locator('.tt-grid-row')
-    .nth(0)
-    .locator('.tt-slot')
-    .nth(0)
-    .locator('.tt-lesson');
-  const destination = page.locator('.tt-grid-row').nth(2).locator('.tt-slot').nth(1);
+  const source = page.locator('.tt-matrix td[data-period="1"][data-day="1"] .tt-tile');
+  const destination = page.locator('.tt-matrix td[data-period="3"][data-day="2"]');
   await source.dragTo(destination, { targetPosition: { x: 4, y: 4 } });
   await expect(page.getByRole('dialog')).toContainText('პოზიციას აქვს კონფლიქტები');
   await page.getByLabel('ვტოვებ ჩამოთვლილ კონფლიქტებს სამუშაო ვერსიაში გადასაწყვეტად').check();
   await reviewed(page);
-  await expect(page.locator('.tt-conflict-summary')).toBeVisible();
-  await page.locator('.tt-conflict-summary summary').click();
-  await expect(page.locator('.tt-conflicts')).toContainText('ერთდროული');
+  await page.getByRole('button', { name: /კონფლიქტები ·/ }).click();
+  await expect(page.locator('.tt-conflict-row').first()).toContainText('ერთდროული');
   await page.screenshot({ path: 'test-results/timetable/conflict-light.png', fullPage: true });
-  await page.getByRole('button', { name: 'გამოქვეყნება', exact: true }).click();
+  await page.getByRole('button', { name: 'გამოქვეყნების განხილვა', exact: true }).click();
+  await page.getByRole('button', { name: 'გამოქვეყნების დადასტურება', exact: true }).click();
   await page.getByLabel('ვადასტურებ ზემოთ ჩამოთვლილ კონფლიქტებს').check();
   await page.getByRole('button', { name: 'გადახედვა', exact: true }).click();
   await expect(page.getByLabel('კონფლიქტების დაშვების დასაბუთება')).toBeFocused();
   await page.getByRole('button', { name: 'დახურვა', exact: true }).click();
   // Explicit keyboard/form alternative moves it back.
-  await destination.locator('.tt-lesson').filter({ hasText: 'VII ა · ქართული' }).click();
+  await page.getByRole('button', { name: 'განრიგი', exact: true }).click();
+  await destination.locator('.tt-tile').filter({ hasText: 'VII ა · ქართული' }).click();
+  await expect(page.locator('.tt-inspector')).toBeVisible();
+  await page.getByRole('button', { name: 'რედაქტირება / გადატანა' }).click();
   await page.getByLabel('კვირის დღე', { exact: true }).selectOption('1');
   await page.getByLabel('პერიოდი', { exact: true }).selectOption(fixture(1400));
   await reviewed(page);
-  await expect(page.locator('.tt-conflict-summary')).toBeHidden();
-  await page.getByRole('button', { name: 'გამოქვეყნება', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'კონფლიქტები · 0', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'გამოქვეყნების განხილვა', exact: true }).click();
+  await page.getByRole('button', { name: 'გამოქვეყნების დადასტურება', exact: true }).click();
   await reviewed(page);
   await expect(page.getByRole('status')).toContainText('გამოქვეყნებულია');
   await page.getByLabel('განრიგის კვირა').fill('2026-10-26');
-  await expect(page.locator('.tt-published-week .tt-lesson')).toHaveCount(13);
-  await page.getByLabel('ოთახის ფილტრი').selectOption(fixture(1302));
-  await expect(page.locator('.tt-published-week .tt-lesson')).toHaveCount(1);
-  await page.getByLabel('ოთახის ფილტრი').selectOption('');
-  await page.getByLabel('დღის ფილტრი').selectOption('1');
-  await expect(page.locator('.tt-published-week .tt-day')).toHaveCount(1);
-  await page.getByLabel('დღის ფილტრი').selectOption('');
+  await expect(page.locator('.tt-matrix .tt-tile')).toHaveCount(13);
+  await scope(page, '201', 'ოთახი 201');
+  await expect(page.locator('.tt-matrix .tt-tile')).toHaveCount(1);
+  await scope(page, 'VII ა', 'VII ა');
   // Room and bell/group operational controls retain existing sources.
   await page.getByRole('button', { name: 'კონფიგურაცია', exact: true }).click();
   await page.getByRole('button', { name: 'ოთახის დამატება', exact: true }).click();
@@ -82,7 +100,7 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await login(tp, 'მასწავლებელი');
   await tp.goto('/timetable');
   await expect(tp.getByRole('button', { name: 'სამუშაო ვერსია', exact: true })).toHaveCount(0);
-  await tp.getByRole('button', { name: 'მიუწვდომლობა', exact: true }).click();
+  await tp.getByRole('button', { name: 'ჩემი მიუწვდომლობა', exact: true }).click();
   await tp.getByRole('button', { name: 'დროებითი მიუწვდომლობის მოთხოვნა' }).click();
   await tp.getByLabel('დაწყება', { exact: true }).fill('2026-10-26');
   await tp.getByLabel('დასრულება (არ შედის)', { exact: true }).fill('2026-10-28');
@@ -103,6 +121,7 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await expect(fields.first()).toBeVisible();
   expect(await fields.count()).toBeGreaterThan(1);
   for (let i = 0; i < (await fields.count()); i++) {
+    await fields.nth(i).locator('summary').click();
     await fields.nth(i).getByLabel('გაკვეთილის გაუქმება').uncheck();
     await fields
       .nth(i)
@@ -113,9 +132,12 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await page.getByRole('button', { name: 'შემოწმება', exact: true }).click();
   await page.getByRole('button', { name: 'დადასტურება და შენახვა', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeHidden();
+  await expect(page.locator('.tt-inspector')).toBeHidden();
+  await page.getByRole('button', { name: 'დამტკიცებული', exact: true }).click();
   await expect(page.locator('.tt-request').first()).toContainText('დამტკიცებული');
   await tp.reload();
   await tp.getByRole('button', { name: /მოთხოვნები ·/ }).click();
+  await tp.getByRole('button', { name: 'დამტკიცებული', exact: true }).click();
   await expect(tp.locator('.tt-request').first()).toContainText('დამტკიცებული');
   // Student and parent read the actual substitute; no access to admin drafts or unrelated children.
   const sc = await browser.newContext();
@@ -123,15 +145,15 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await login(sp, 'მოსწავლე');
   await sp.goto('/timetable');
   await sp.getByLabel('განრიგის კვირა').fill('2026-10-26');
-  await expect(sp.locator('.tt-published-week')).toContainText('თამარ ჯაფარიძე');
-  await expect(sp.locator('.tt-published-week')).not.toContainText('VII ა · ჯგუფი 2');
+  await expect(sp.locator('.tt-matrix')).toContainText('თამარ ჯაფარიძე');
+  await expect(sp.locator('.tt-matrix')).not.toContainText('VII ა · ჯგუფი 2');
   expect((await sp.request.get(`/api/timetable/drafts/${versionId}`)).status()).toBe(403);
   const gc = await browser.newContext();
   const gp = await gc.newPage();
   await login(gp, 'მშობელი');
   await gp.goto('/timetable');
   await gp.getByLabel('შვილის განრიგი').selectOption(fixture(201));
-  await expect(gp.locator('.tt-published-week')).not.toContainText('VII ა · ქართული');
+  await expect(gp.locator('.tt-matrix')).not.toContainText('VII ა · ქართული');
   expect(
     (
       await gp.request.get(`/api/timetable/week?from=2026-10-26&studentId=${fixture(203)}`)
@@ -143,7 +165,7 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   for (const theme of ['light', 'dark']) {
     await page.evaluate((t) => localStorage.setItem('aia-theme', t), theme);
     await page.reload();
-    await expect(page.locator('.tt-published-week')).toBeVisible();
+    await expect(page.locator('.tt-matrix')).toBeVisible();
     for (const width of [1440, 1024, 390]) {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
       await page.evaluate(() => document.fonts.ready);

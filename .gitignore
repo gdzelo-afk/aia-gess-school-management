@@ -7,3 +7,15 @@ dist/
 playwright-report/
 test-results/
 *.log
+
+# Private local reference documents; never publish or package.
+school-finanical-docs/
+
+# Local credentials, databases, browser captures and temporary exports.
+.auth/
+playwright/.auth/
+*.sqlite
+*.sqlite3
+*.db
+*.har
+*.trace.zip

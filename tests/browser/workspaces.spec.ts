@@ -1,4 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type BrowserContext } from '@playwright/test';
+
+// Reuse this file's real director session; layout checks do not need another sign-in.
+let directorCookies: Awaited<ReturnType<BrowserContext['cookies']>> | undefined;
 
 test('selected system covers functional students and honest academic/message workspaces', async ({
   page,
@@ -9,6 +12,7 @@ test('selected system covers functional students and honest academic/message wor
   await page.goto('/');
   await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
   await expect(page.locator('.overview-heading')).toBeVisible();
+  directorCookies = await page.context().cookies();
   await page.evaluate(() => document.fonts.ready);
   await expect(page.locator('.greeting')).toHaveCSS('font-family', /AIA Tatishvili/);
   expect(
@@ -103,8 +107,13 @@ test('selected system covers functional students and honest academic/message wor
 test('people directory filters keep usable search width and compact mobile spacing', async ({
   page,
 }) => {
-  await page.goto('/login');
-  await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
+  if (directorCookies) {
+    await page.context().addCookies(directorCookies);
+    await page.goto('/');
+  } else {
+    await page.goto('/login');
+    await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
+  }
   await expect(page.locator('.overview-heading')).toBeVisible();
   for (const route of ['students', 'guardians', 'staff']) {
     await page.goto(`/${route}`);

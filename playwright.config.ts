@@ -15,7 +15,8 @@ export default defineConfig({
   },
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173',
+    // Wait for Vite's proxy and the database-backed API, not just the HTML server.
+    url: 'http://localhost:5173/api/health',
     reuseExistingServer: !process.env.CI,
     timeout: 60000,
   },

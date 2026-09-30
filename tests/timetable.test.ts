@@ -649,3 +649,12 @@ it('active non-teaching substitute receives only actual lesson visibility and lo
     await db.insert(s.roleGrant).values(original);
   }
 });
+it('published bell context aligns empty periods without exposing private document rosters', async () => {
+  const result = await week(student, '2026-09-28');
+  expect(result.days).toHaveLength(7);
+  expect(result.days[0]!.periods).toHaveLength(7);
+  expect(result.days[0]!.periods[0]).toMatchObject({ number: 1, start: '09:00', end: '09:45' });
+  expect(Object.keys(result.days[0]!).sort()).toEqual(['date', 'endsOn', 'periods', 'startsOn']);
+  expect(result.versions).toEqual([]);
+  expect(JSON.stringify(result.days)).not.toContain('studentIds');
+});

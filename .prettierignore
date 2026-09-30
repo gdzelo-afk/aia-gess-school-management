@@ -6,3 +6,6 @@ test-results
 package-lock.json
 public/fonts
 migrations/meta
+
+# Private local reference documents; never publish or package.
+school-finanical-docs/

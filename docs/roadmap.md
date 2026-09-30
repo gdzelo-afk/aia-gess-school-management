@@ -14,7 +14,7 @@ This preserves the full product vision; phase 1 is not a promise to implement ev
 ## Current sequence
 
 - **1A — Academic Structure + People / Onboarding:** **complete and verified** for the local/demo scope; evidence recorded in implementation-status. Editable academic calendar, temporal enrollment/electives/assignments, student/guardian/staff workflows and administrator-controlled account lifecycle.
-- **1B — Timetable: implementation complete; final browser closure in progress.** Manual versions/publication, roster-aware conflicts, split/combined groups, rooms/bells, availability, substitutions/requests and effective occurrences. See implementation-status for current evidence.
+- **1B — Timetable: complete and verified, including the scheduling-control-room UX correction.** Manual versions/publication, roster-aware conflicts, split/combined groups, rooms/bells, availability, substitutions/requests and effective occurrences. See implementation-status for current evidence.
 - **1C — Attendance: next implementation stage.** Dated lesson participation, authorized corrections and history.
 - **1D — Gradebook / daily academic workflows.** Publication/correction policy before official results.
 - **Authentication hardening:** MFA/recovery codes, real delivery provider and production onboarding acceptance before launch. No partial MFA UI in Stage 1A.
