@@ -9,6 +9,7 @@ import {
   Settings2,
   Shapes,
   GraduationCap,
+  ClipboardCheck,
 } from 'lucide-react';
 import type { Viewer } from '../../shared/contracts';
 export function navigation(viewer: Viewer) {
@@ -47,6 +48,9 @@ export function navigation(viewer: Viewer) {
             group: 'სასკოლო სივრცე',
           },
         ]
+      : []),
+    ...(viewer.capabilities.some((c) => c.startsWith('attendance:'))
+      ? [{ path: '/attendance', label: 'დასწრება', icon: ClipboardCheck, group: 'სასკოლო სივრცე' }]
       : []),
     { path: '/calendar', label: 'კალენდარი', icon: CalendarDays, group: 'სასკოლო სივრცე' },
     { path: '/messages', label: 'შეტყობინებები', icon: MessageSquare, group: 'სასკოლო სივრცე' },

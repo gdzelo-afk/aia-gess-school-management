@@ -33,7 +33,13 @@ export async function resolveViewer(user: { id: string; name: string }): Promise
         where later.version_id=e.version_id and later.lesson_id=e.lesson_id
         and later.date=e.date and later.sequence>e.sequence)
       limit 1`);
-    if (assigned.rows.length) capabilities.push('timetable:own');
+    if (assigned.rows.length)
+      capabilities.push(
+        'timetable:own',
+        'attendance:own',
+        'attendance:write',
+        'attendance:request',
+      );
   }
   return {
     id: user.id,

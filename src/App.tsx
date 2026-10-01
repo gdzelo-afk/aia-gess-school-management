@@ -6,6 +6,9 @@ import { api, ApiError } from './lib/api';
 import { Shell } from './components/Shell';
 import { Skeleton, ErrorState } from './components/ui';
 import { Login } from './pages/Login';
+const Attendance = lazy(() =>
+  import('./pages/Attendance').then((m) => ({ default: m.Attendance })),
+);
 const Timetable = lazy(() => import('./pages/Timetable').then((m) => ({ default: m.Timetable })));
 const Dashboard = lazy(() => import('./pages/Dashboard').then((m) => ({ default: m.Dashboard })));
 const Students = lazy(() => import('./pages/Students').then((m) => ({ default: m.Students })));
@@ -71,6 +74,7 @@ export function App() {
                   <Route element={<Shell viewer={me.data} onLogout={refresh} />}>
                     <Route index element={<Dashboard />} />
                     <Route path="students" element={<Students />} />
+                    <Route path="attendance" element={<Attendance />} />
                     <Route path="timetable" element={<Timetable />} />
                     <Route path="calendar" element={<Academics calendarOnly />} />
                     <Route path="settings" element={<Settings />} />

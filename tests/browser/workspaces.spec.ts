@@ -1,15 +1,31 @@
-import { test, expect, type BrowserContext } from '@playwright/test';
+import { test, expect, type BrowserContext, type Page } from '@playwright/test';
 
 // Reuse this file's real director session; layout checks do not need another sign-in.
 let directorCookies: Awaited<ReturnType<BrowserContext['cookies']>> | undefined;
 
+// Full-page viewport/theme sweeps may exhaust the real global API budget on fast CI.
+// Respect server-provided reset timing instead of weakening production throttling.
+async function navigate(page: Page, path: string) {
+  const budget = await page.request.get('/api/health');
+  const remaining = Number(budget.headers()['x-ratelimit-remaining'] ?? 180);
+  if (budget.status() === 429 || remaining < 25) {
+    const retry = Number(
+      budget.headers()['retry-after'] ?? budget.headers()['x-ratelimit-reset'] ?? 60,
+    );
+    await new Promise((resolve) =>
+      setTimeout(resolve, Math.min(Math.max(retry, 1), 60) * 1000 + 100),
+    );
+  }
+  await page.goto(path);
+}
+
 test('selected system covers functional students and honest academic/message workspaces', async ({
   page,
 }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(240_000);
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/');
+  await navigate(page, '/');
   await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
   await expect(page.locator('.overview-heading')).toBeVisible();
   directorCookies = await page.context().cookies();
@@ -48,7 +64,7 @@ test('selected system covers functional students and honest academic/message wor
   ).toBe(1);
   for (const theme of ['light', 'dark']) {
     await page.evaluate((value) => localStorage.setItem('aia-theme', value), theme);
-    await page.goto('/students');
+    await navigate(page, '/students');
     await expect(page.getByRole('region', { name: 'მოსწავლეთა სია' })).toBeVisible();
     await expect(page.locator('.product-shell')).toHaveCSS('font-family', /AIA Mersad/);
     await page.getByLabel('კლასის ფილტრი').selectOption('VII ბ');
@@ -63,20 +79,20 @@ test('selected system covers functional students and honest academic/message wor
     await expect(page.getByRole('heading', { name: 'ჩანაწერი ვერ მოიძებნა' })).toBeVisible();
     await page.getByRole('button', { name: 'ფილტრების გასუფთავება' }).click();
     await expect(page.getByText('1–6 / 12 ჩანაწერი')).toBeVisible();
-    await page.goto('/academics');
+    await navigate(page, '/academics');
     await expect(
       page.getByRole('heading', { name: 'სასწავლო პროცესი', exact: true }),
     ).toBeVisible();
     await expect(page.locator('.op-year-overview')).toContainText('2026–2027');
     await page.locator('.op-tabs').getByRole('button', { name: 'საგნები', exact: true }).click();
     await expect(page.locator('.op-record-list')).toContainText('მათემატიკა');
-    await page.goto('/messages');
+    await navigate(page, '/messages');
     await expect(page.getByRole('heading', { name: 'მიმოწერა ჯერ არ არის ჩართული' })).toBeVisible();
     await expect(page.locator('textarea')).toHaveCount(0);
     for (const width of [1440, 1024, 390]) {
       await page.setViewportSize({ width, height: width === 390 ? 844 : 1000 });
       for (const route of ['students', 'academics', 'messages']) {
-        await page.goto(`/${route}`);
+        await navigate(page, `/${route}`);
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
         await page.evaluate(() => document.fonts.ready);
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
@@ -97,7 +113,7 @@ test('selected system covers functional students and honest academic/message wor
   const footer = await page.locator('.command-footer').boundingBox();
   expect(footer!.y + footer!.height).toBeLessThanOrEqual(command!.y + command!.height);
   await page.keyboard.press('Escape');
-  await page.goto('/design');
+  await navigate(page, '/design');
   await page.getByRole('link', { name: /ვიზუალური ლაბორატორია/ }).click();
   await expect(page.locator('.dl-hub')).toBeVisible();
   await expect(page.locator('.product-shell')).toHaveCount(0);
@@ -107,16 +123,17 @@ test('selected system covers functional students and honest academic/message wor
 test('people directory filters keep usable search width and compact mobile spacing', async ({
   page,
 }) => {
+  test.setTimeout(120_000);
   if (directorCookies) {
     await page.context().addCookies(directorCookies);
-    await page.goto('/');
+    await navigate(page, '/');
   } else {
-    await page.goto('/login');
+    await navigate(page, '/login');
     await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
   }
   await expect(page.locator('.overview-heading')).toBeVisible();
   for (const route of ['students', 'guardians', 'staff']) {
-    await page.goto(`/${route}`);
+    await navigate(page, `/${route}`);
     await expect(page.locator('.directory-toolbar')).toBeVisible();
     for (const width of [1440, 390]) {
       await page.setViewportSize({ width, height: 1000 });

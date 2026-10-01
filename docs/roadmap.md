@@ -15,8 +15,8 @@ This preserves the full product vision; phase 1 is not a promise to implement ev
 
 - **1A — Academic Structure + People / Onboarding:** **complete and verified** for the local/demo scope; evidence recorded in implementation-status. Editable academic calendar, temporal enrollment/electives/assignments, student/guardian/staff workflows and administrator-controlled account lifecycle.
 - **1B — Timetable: complete and verified, including the scheduling-control-room UX correction.** Manual versions/publication, roster-aware conflicts, split/combined groups, rooms/bells, availability, substitutions/requests and effective occurrences. See implementation-status for current evidence.
-- **1C — Attendance: next implementation stage.** Dated lesson participation, authorized corrections and history.
-- **1D — Gradebook / daily academic workflows.** Publication/correction policy before official results.
+- **1C — Attendance: complete and verified for the local/demo scope.** Exact occurrence/roster snapshots, explicit teacher roll call, immutable corrections, guardian explanations, scoped history and missing-roll-call control room. See implementation-status for final evidence.
+- **1D — Gradebook basics: next implementation stage (not started).** Publication/correction policy before official results.
 - **Authentication hardening:** MFA/recovery codes, real delivery provider and production onboarding acceptance before launch. No partial MFA UI in Stage 1A.
 
 ## Open questions and reversible defaults
@@ -39,7 +39,7 @@ This preserves the full product vision; phase 1 is not a promise to implement ev
 ## Risks / debt warnings
 
 - PGlite is useful for local development but cannot validate all PostgreSQL concurrency/deployment behavior; PostgreSQL CI is required as features grow.
-- Stage 1B isolates substitutes to actual timetable occurrences; future Attendance must reuse this responsibility model without widening directory access.
+- Stage 1B isolates substitutes to actual timetable occurrences; Attendance reuses this responsibility model without widening directory access.
 - Overview examples are deliberately fixtures and visibly labeled. Never silently promote them to live metrics.
 - Local theme/density are device preferences; per-user persistence later must not leak between shared-device accounts.
 - Auth plugins are architectural extension points, not completed SSO/MFA/passkey implementations.

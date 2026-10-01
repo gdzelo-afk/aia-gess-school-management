@@ -6,6 +6,7 @@ import { fromNodeHeaders } from 'better-auth/node';
 import { z, ZodError } from 'zod';
 import { sql, eq } from 'drizzle-orm';
 import { user as appUser } from './db/schema.js';
+import { attendanceRoutes } from './modules/attendance-routes.js';
 import { timetableRoutes } from './modules/timetable-routes.js';
 import { stage1aRoutes } from './modules/stage1a-routes.js';
 import { DomainError } from './modules/operations.js';
@@ -180,6 +181,7 @@ export async function buildApp(logging = true) {
     });
     await stage1aRoutes(protectedApp);
     await timetableRoutes(protectedApp);
+    await attendanceRoutes(protectedApp);
     protectedApp.get('/api/me', async (req) => req.viewer);
     protectedApp.get('/api/foundation/overview', async (req) => overview(req.viewer));
     protectedApp.get('/api/foundation/students', async (req) => {

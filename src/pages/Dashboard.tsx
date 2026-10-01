@@ -1,3 +1,4 @@
+import { AttendancePulse } from '../components/AttendancePulse';
 import { TimetableRhythm } from '../components/TimetableRhythm';
 import { useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
@@ -34,6 +35,7 @@ export function Dashboard() {
   if (!data.demo)
     return (
       <div className="product-dashboard product-ready">
+        {viewer.capabilities.some((c) => c.startsWith('attendance:')) && <AttendancePulse />}
         {viewer.capabilities.some((c) => c.startsWith('timetable:')) && <TimetableRhythm />}
       </div>
     );
@@ -222,6 +224,9 @@ export function Dashboard() {
       </div>
       {viewer.capabilities.some((c) => c.startsWith('timetable:')) && (
         <TimetableRhythm studentId={parent ? selected?.id : undefined} />
+      )}
+      {viewer.capabilities.some((c) => c.startsWith('attendance:')) && (
+        <AttendancePulse studentId={parent ? selected?.id : undefined} />
       )}
       <div className="overview-bottom">
         <section className="overview-people">

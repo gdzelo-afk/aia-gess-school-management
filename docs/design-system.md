@@ -89,3 +89,7 @@ Academic setup uses a year context and compact tabs; people use searchable rows 
 ## Timetable scheduling workspace (Stage 1B)
 
 Use `components/timetable/Matrix`, `Panel`, `Forms` and the timetable stylesheet with existing product tokens. Draft and published schedules share period rows, a sticky time axis and weekday headings. Keep one searchable scheduling lens; do not restore independent day-card stacks or permanent filter walls. Neutral lesson cells disclose full context through an inspector, not through dense inline controls. Desktop inspectors use a separate column; at 1100px and below use the modal sheet, with a single-day matrix on phones. Drag feedback occupies a fixed overlay so targets never move during preview. Conflict text/icons and explicit reasons supplement color. Operational queues and configuration use separators and hierarchy rather than nested cards. These components are main-product only; the historical design-lab is unchanged.
+
+### Attendance extension
+
+Attendance uses the same opaque operational surfaces, fine separators, Mersad UI and NeoBau numeric roles. Compact pupil rows use labeled status controls; time details disclose inline. The mobile roll-call summary/explicit submit remains sticky, with no horizontal roster scroll. Unresolved/unsaved/submitted states use text as well as restrained semantic color. Monthly history uses date buttons with accessible day-state labels and a separate completeness summary. Review dialogs remain bounded to the viewport. These are main-product patterns; the archived design-lab is unchanged.

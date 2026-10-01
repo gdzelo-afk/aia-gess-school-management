@@ -2,6 +2,25 @@
 
 Foundation implemented 27 September; selected frontend continued 28 September 2026. This is a local development foundation, not a production EMS release.
 
+## Stage 1C — Attendance complete (1 October 2026)
+
+Branch: `stage-1c-attendance`, based on verified Stage 1B commit `0b311a8`. The private `gdzelo-afk/aia-gess-school-management` remote and annotated `stage-1b-complete-2026-09-30` milestone are preserved; master is not merged or rewritten.
+
+- **Operational product:** `/attendance` has teacher lesson-first selection, compact exact roster, local-only Mark All Present, timed exceptions and explicit atomic Submit. Opening a lesson creates no record. Unsaved state never enters localStorage. Teachers have overdue and locked-request paths; administration has Today/Missing/Students/History and contextual explanation/correction queues. Guardian/student history includes child switching where appropriate, monthly Georgian controls, accessible mobile symbols and percentage completeness. Founders Office is whole-school read/analytics only. Timetable details, navigation/commands, a restrained dashboard pulse and in-app notices integrate with the existing product.
+- **Domain/history:** reuses Stage 1B's actual effective occurrence resolver; cancelled/non-rostered lessons are excluded. Submission snapshots preserve the exact roster, lesson and subject/year/duration metadata. Corrections and reconciliations append before/after/actor/time history. Pending teacher requests preserve original/proposed entries and lesson/roster context even after cancellation. Semantic comparison avoids PostgreSQL JSONB key-order errors. Transactional revision/tokens/idempotency prevent stale overwrites and duplicate commands.
+- **Policy:** Present/Late are attended; Absent/Authorized Absence are missed. Late requires reported/estimated time and displays approximate duration. Early Departure is a separate timed observation, explicitly not permission to release a child; administrative release workflow is deferred. Subject teachers/actual substitutes record attendance from lesson start; after +15 it is overdue, direct teacher corrections end 24 hours after effective lesson end. Teacher corrections and all administrative historical changes require reasons. Locked requests can be approved, adjusted or denied. Guardian explanations may cover past/current/future ranges; approval never fabricates attendance or converts actual Present/Late. Missing roll calls remain unknown and make percentages provisional.
+- **Privacy/events:** teachers do not receive internal administrative/guardian notes. Families see only current authorized children/self; substitute scope is occurrence-only. Founders Office mutation is denied server-side. Absence, Late and Early Departure each deduplicate per child/day via outbox events; in-app notices recheck current guardian rights and contain no private narrative. No external message delivery is claimed.
+- **Scope:** fictional local data only. Idempotent demonstration history covers 21–25 September; current/future roll calls stay unfilled. Staff attendance, medical/release modules, the historical approximately 30% subject-absence examination consequence, Gradebook, external delivery and launch hardening/MFA are deferred. Current calendar/bells remain authoritative.
+
+**Final verification:**
+
+- **97 tests passed on PGlite and the same 97 on PostgreSQL 18.6**, including 27 focused Attendance checks. Formatting, ESLint, strict TypeScript and production frontend/server/migration builds passed. The final queue-refresh-only UI fix passed static checks/build again; backend/domain code remained unchanged.
+- **All 21 browser workflows verified across the final runs**, using isolated fictional databases: the 18 archive/product/shell/workspace checks, Stage 1A academic/people/account write journey (5.7 minutes), corrected Stage 1B timetable journey (2.0 minutes), and Stage 1C role journey (2.2 minutes). Attendance covers mobile unresolved/local-only Mark All Present, late/early/absent exceptions, explicit submission, reasoned correction, locked requests, guardian switching/planned explanations, administrative approval/denial, daily history, student isolation and Founders Office read-only analytics/drill-down with direct mutation denied. Authentication and request limits were not relaxed.
+- The final browser pass exposed a stale decision queue after a request arrived from another session. Entering either decision queue now refetches it; this does not reset an active roll-call edit. Earlier corrections addressed mobile calendar crowding, Georgian month fallback, small mobile controls, correction-mode refresh races, historical request context and private decision-note projections.
+- Compiled server/React smoke passed with production React `bundleType=0`, real Director sign-in, Attendance roster detail and no runtime exceptions. Main/lab asset isolation passed. Desktop 100%, 1440/1024/390px role screens and both themes were reviewed. Actual Chrome 67% at 1920×1080 reported 2880 CSS px without horizontal overflow. Mobile calendar symbols retain full accessible labels and a legend; the teacher's unsaved summary and Submit remain visible.
+- Migrations and seed ran twice against the preserved normal database; the compiled migration command also passed. Checksums for all 16 existing people/academic/timetable tables remained identical. Only the intended fictional historical Attendance seed was added; browser writes never used the normal database. All four canonical demo accounts signed in through the compiled application with expected student scopes (12/3/2/1), valid teacher occurrence access, and guardian/student history.
+- `/design-lab` source/assets remain identical to the Stage 1B milestone. Stage 1C stays on its separate private review branch; master and the Stage 1B annotated tag are unchanged. Next: **Stage 1D — Gradebook basics**, not started. Production hardening remains a later gate.
+
 ## Stage 1B — complete, including product/UX correction (30 September 2026)
 
 The manual timetable vertical slice and scheduling-control-room correction are complete for the agreed local/demo scope. The pre-correction implementation remains recoverable in local Git checkpoint `75ea07c`. No new design direction or operational module was started.
@@ -28,7 +47,7 @@ The pre-timetable local checkpoint is `d7b6ee3`. Stage 1C Attendance has not sta
 
 Changes review compares recurring structure to the publication effective at the draft's start; dated exceptions stay with their original historical version and are reviewed through lesson/request context. This is manual scheduling, not automatic generation or a production-readiness certification.
 
-**Boundary:** no attendance, gradebook, assignments, finance, messaging, automatic generation, co-teaching, special block-period model, deployment or GitHub setup. MFA/provider delivery and production hardening remain deferred. Next implementation stage: **Stage 1C — Attendance**. It has not started.
+**Boundary at the Stage 1B milestone:** no attendance, gradebook, assignments, finance, messaging, automatic generation, co-teaching, special block-period model, deployment or GitHub setup. MFA/provider delivery and production hardening remain deferred. Next implementation stage: **Stage 1C — Attendance**. It has not started.
 
 ## Stage 1A — current implementation, 29 September 2026
 
@@ -143,6 +162,6 @@ Exploration checks passed: lint/format/typecheck, 18 existing Vitest checks, pro
 
 ## Next implementation task
 
-**Stage 1C — Attendance.** Build dated lesson participation and authorized corrections on the verified effective-occurrence and roster model. Preserve publication, substitution and temporal scopes; do not rebuild timetable resolution. Production delivery/MFA remain explicit parallel launch-hardening follow-ups. Stage 1C has not started.
+**Stage 1D — Gradebook basics**, after Stage 1C final verification/manual review. No Gradebook work has started. Production delivery/MFA remain separate launch-hardening follow-ups.
 
-The historical shell does not imply completed attendance, grading, finance, library, messaging, payroll, admissions or migration.
+The historical shell does not imply completed grading, finance, library, messaging, payroll, admissions or migration. Attendance status is recorded in the Stage 1C section above.

@@ -73,3 +73,9 @@ The main UI adds AcademicManagement, StudentAdministration, PeopleManagement and
 ## Stage 1B timetable
 
 `shared/timetable.ts` defines bounded aggregate documents, mutation commands and explicit public occurrence DTOs. `timetable-engine.ts` owns date-only resolution, effective roster intersections and conflict fingerprints. `timetable.ts` owns capabilities, transactional publication/exceptions/requests and scoped projections; `timetable-routes.ts` validates transport. See [publication decision](decisions/0004-timetable-publication.md). The main `/timetable` route is lazy loaded with main-only CSS. The dashboard's existing day-rhythm composition now reads today's scoped published occurrences; the illustrative meeting component retains its meeting meaning.
+
+## Stage 1C attendance
+
+`shared/attendance.ts` owns bounded commands, attendance states and Tbilisi time-window helpers. `attendance.ts` reuses the existing effective timetable resolver; reads create no attendance state. Atomic commands use the established administration transaction lock, semantic occurrence token, revision and idempotent command receipt. Session snapshots and append-only revisions preserve the original academic meaning. Correction requests capture original/proposed entries and lesson/roster context independently of mutable timetable data. SQL triggers protect revision/receipt and decided-request history.
+
+The lazy `/attendance` route imports main-only scoped CSS. Roll call uses ephemeral React state and explicit submission, with no localStorage persistence. Dashboard pulse and published timetable details link to the same route. Minimal attendance events use the existing outbox, unique child/day/kind keys and current guardian checks; no external worker/provider or new infrastructure was introduced. Annual subject/academic-rule aggregation can reuse stable subject/year/duration snapshot metadata and bounded effective-occurrence ranges; no exam threshold engine exists.

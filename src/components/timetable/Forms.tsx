@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Panel } from './Panel';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -389,6 +390,14 @@ export function ChangeDialog({
             : 'გამოქვეყნებული განმეორებადი გაკვეთილი.'}{' '}
           ცვლილება არ გადააკეთებს ძირითად კვირას.
         </p>
+        {!o.cancelled && (
+          <Link
+            className="overview-inline-link"
+            to={`/attendance?lesson=${encodeURIComponent(o.id)}&date=${o.targetDate}`}
+          >
+            დასწრების გახსნა
+          </Link>
+        )}
         {o.cancelled && <p className="tt-inspector-warning">გაკვეთილი გაუქმებულია</p>}
       </Panel>
     );

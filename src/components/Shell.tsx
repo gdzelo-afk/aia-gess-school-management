@@ -1,3 +1,4 @@
+import { AttendanceNotices } from './AttendanceNotices';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -165,6 +166,7 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
         className="notification-dialog"
         themeClass="product-theme"
       >
+        <AttendanceNotices viewer={viewer} open={notifications} />
         <div className="notification-toolbar">
           <Badge>{read ? 0 : (overview.data?.announcements.length ?? 0)} წაუკითხავი</Badge>
           <Button variant="ghost" onClick={() => setRead(true)}>

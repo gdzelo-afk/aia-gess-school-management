@@ -1,3 +1,4 @@
+import { seedAttendance } from './attendance-seed.js';
 import { seedTimetable } from './timetable-seed.js';
 import { eq } from 'drizzle-orm';
 import calendarSource from '../../scripts/fixtures/calendar-2026-27.json' with { type: 'json' };
@@ -221,4 +222,5 @@ export async function seedDemo() {
       .onConflictDoNothing();
   });
   await seedTimetable();
+  if (config.NODE_ENV !== 'test') await seedAttendance();
 }

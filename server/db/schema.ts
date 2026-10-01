@@ -492,3 +492,144 @@ export const timetableRequest = pgTable(
     check('request_state', sql`${t.state} in ('pending','approved','denied','cancelled')`),
   ],
 );
+
+// Attendance snapshots preserve submitted meaning independently of later timetable/roster edits.
+export const attendanceSession = pgTable(
+  'attendance_session',
+  {
+    id: id(),
+    occurrenceId: text('occurrence_id').notNull().unique(),
+    versionId: uuid('version_id')
+      .notNull()
+      .references(() => timetableVersion.id),
+    schoolDate: date('school_date').notNull(),
+    teacherId: uuid('teacher_id')
+      .notNull()
+      .references(() => person.id),
+    snapshot: jsonb('snapshot')
+      .$type<import('../../shared/attendance.js').AttendanceSnapshot>()
+      .notNull(),
+    revision: integer('revision').notNull().default(1),
+    submittedBy: text('submitted_by')
+      .notNull()
+      .references(() => user.id),
+    submittedAt: instant('submitted_at').notNull(),
+    overdue: boolean('overdue').notNull(),
+  },
+  (t) => [
+    index('attendance_date_teacher').on(t.schoolDate, t.teacherId),
+    check('attendance_revision', sql`${t.revision}>0`),
+  ],
+);
+export const attendanceRecord = pgTable(
+  'attendance_record',
+  {
+    sessionId: uuid('session_id')
+      .notNull()
+      .references(() => attendanceSession.id),
+    studentId: uuid('student_id')
+      .notNull()
+      .references(() => student.id),
+    status: text('status').$type<import('../../shared/attendance.js').AttendanceStatus>().notNull(),
+    arrival: text('arrival'),
+    departure: text('departure'),
+    timeSource: text('time_source').$type<'reported' | 'estimated'>().notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.sessionId, t.studentId] }),
+    index('attendance_student_status').on(t.studentId, t.status),
+    check('attendance_status', sql`${t.status} in ('present','absent','late','authorized')`),
+    check('attendance_arrival', sql`(${t.status}='late')=(${t.arrival} is not null)`),
+    check('attendance_departure', sql`${t.departure} is null or ${t.status} in ('present','late')`),
+    check(
+      'attendance_times',
+      sql`(${t.arrival} is null or ${t.arrival} ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$') and (${t.departure} is null or ${t.departure} ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$')`,
+    ),
+    check('attendance_time_source', sql`${t.timeSource} in ('reported','estimated')`),
+  ],
+);
+export const attendanceRevision = pgTable(
+  'attendance_revision',
+  {
+    id: id(),
+    sessionId: uuid('session_id')
+      .notNull()
+      .references(() => attendanceSession.id),
+    revision: integer('revision').notNull(),
+    actorId: text('actor_id')
+      .notNull()
+      .references(() => user.id),
+    action: text('action').notNull(),
+    reason: text('reason'),
+    before: jsonb('before').$type<import('../../shared/attendance.js').AttendanceState | null>(),
+    after: jsonb('after').$type<import('../../shared/attendance.js').AttendanceState>().notNull(),
+    createdAt: instant('created_at').notNull(),
+  },
+  (t) => [uniqueIndex('attendance_session_revision').on(t.sessionId, t.revision)],
+);
+export const attendanceExplanation = pgTable(
+  'attendance_explanation',
+  {
+    id: id(),
+    studentId: uuid('student_id')
+      .notNull()
+      .references(() => student.id),
+    guardianId: uuid('guardian_id')
+      .notNull()
+      .references(() => person.id),
+    startsOn: date('starts_on').notNull(),
+    endsOn: date('ends_on').notNull(),
+    reason: text('reason').notNull(),
+    state: text('state').$type<'pending' | 'approved' | 'denied'>().notNull().default('pending'),
+    revision: integer('revision').notNull().default(1),
+    reviewerId: text('reviewer_id').references(() => user.id),
+    decision: text('decision'),
+    decidedAt: instant('decided_at'),
+    createdAt: instant('created_at').notNull(),
+  },
+  (t) => [
+    index('attendance_explanation_student_date').on(t.studentId, t.startsOn),
+    index('attendance_explanation_queue').on(t.state),
+    check('attendance_explanation_interval', sql`${t.endsOn}>${t.startsOn}`),
+    check('attendance_explanation_state', sql`${t.state} in ('pending','approved','denied')`),
+  ],
+);
+export const attendanceRequest = pgTable(
+  'attendance_request',
+  {
+    id: id(),
+    teacherId: uuid('teacher_id')
+      .notNull()
+      .references(() => person.id),
+    occurrenceId: text('occurrence_id').notNull(),
+    snapshot: jsonb('snapshot').$type<
+      import('../../shared/attendance.js').AttendanceSnapshot & {
+        originalEntries?: import('../../shared/attendance.js').AttendanceEntry[];
+      }
+    >(),
+    proposal: jsonb('proposal')
+      .$type<import('../../shared/attendance.js').RollCallInput>()
+      .notNull(),
+    reason: text('reason').notNull(),
+    state: text('state').$type<'pending' | 'approved' | 'denied'>().notNull().default('pending'),
+    revision: integer('revision').notNull().default(1),
+    reviewerId: text('reviewer_id').references(() => user.id),
+    decision: text('decision'),
+    decidedAt: instant('decided_at'),
+    createdAt: instant('created_at').notNull(),
+  },
+  (t) => [
+    index('attendance_request_queue').on(t.teacherId, t.state),
+    check('attendance_request_state', sql`${t.state} in ('pending','approved','denied')`),
+  ],
+);
+// Transactional idempotency receipts cover commands, including multi-session authorization.
+export const attendanceReceipt = pgTable('attendance_receipt', {
+  id: uuid('id').primaryKey(),
+  actorId: text('actor_id')
+    .notNull()
+    .references(() => user.id),
+  fingerprint: text('fingerprint').notNull(),
+  result: jsonb('result').$type<{ id: string; revision: number }>().notNull(),
+  createdAt: instant('created_at').notNull(),
+});
