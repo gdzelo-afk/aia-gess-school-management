@@ -3,9 +3,18 @@ type Theme = 'light' | 'dark';
 const PreferenceContext = createContext<{
   theme: Theme;
   setTheme: (value: Theme) => void;
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (value: boolean) => void;
   compact: boolean;
   setCompact: (value: boolean) => void;
-}>({ theme: 'light', setTheme: () => {}, compact: false, setCompact: () => {} });
+}>({
+  sidebarCollapsed: false,
+  setSidebarCollapsed: () => {},
+  theme: 'light',
+  setTheme: () => {},
+  compact: false,
+  setCompact: () => {},
+});
 function read(key: string) {
   try {
     return localStorage.getItem(key);
@@ -23,12 +32,18 @@ function write(key: string, value: string) {
 export function Preferences({ children }: { children: ReactNode }) {
   const [theme, set] = useState<Theme>(() => (read('aia-theme') === 'dark' ? 'dark' : 'light'));
   const [compact, setDense] = useState(() => read('aia-compact') === 'true');
+  const [sidebarCollapsed, setCollapsed] = useState(() => read('aia-sidebar-collapsed') === 'true');
   document.documentElement.dataset.theme = theme;
   document.documentElement.dataset.density = compact ? 'compact' : 'comfortable';
   return (
     <PreferenceContext.Provider
       value={{
         theme,
+        sidebarCollapsed,
+        setSidebarCollapsed: (value) => {
+          setCollapsed(value);
+          write('aia-sidebar-collapsed', String(value));
+        },
         compact,
         setTheme: (value) => {
           set(value);

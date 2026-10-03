@@ -49,9 +49,9 @@ test('selected system covers functional students and honest academic/message wor
   await expect(page.locator('.overview-heading')).toBeVisible();
   directorCookies = await page.context().cookies();
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.locator('.greeting')).toHaveCSS('font-family', /AIA Tatishvili/);
+  await expect(page.locator('.greeting')).toHaveCSS('font-family', /AIA Mersad/);
   expect(
-    await page.evaluate(() => document.fonts.check('36px "AIA Tatishvili"', 'გამარჯობა, თამარ.')),
+    await page.evaluate(() => document.fonts.check('36px "AIA Mersad"', 'გამარჯობა, თამარ.')),
   ).toBe(true);
   // Sample the browser's actual animation frames: fixed geometry, binary opacity, 1s cycles.
   const caret = await page.locator('.presence-cursor').evaluate((el) => {

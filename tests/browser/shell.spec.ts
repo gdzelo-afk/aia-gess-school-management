@@ -2,13 +2,15 @@ import { test, expect } from '@playwright/test';
 async function login(page: import('@playwright/test').Page, role = 'დირექტორი') {
   await page.goto('/');
   await page.getByRole('button', { name: role, exact: true }).click();
-  await expect(page.getByRole('heading', { name: /გამარჯობა/ })).toBeVisible();
+  await expect(page.locator('.greeting')).toBeVisible();
 }
 test('director shell, table, command search, theme, preferences and calendar', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   await login(page);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ka');
-  await expect(page.getByText('28 სექტემბერი', { exact: true }).first()).toBeVisible();
+  await expect(page.locator('.overview-heading time')).toContainText(
+    /ორშაბათი|სამშაბათი|ოთხშაბათი|ხუთშაბათი|პარასკევი|შაბათი|კვირა/,
+  );
   await page.evaluate(() => document.fonts.ready);
   const order = await page.evaluate(() => {
     const rhythm = document.querySelector('.overview-rhythm')!;
@@ -94,6 +96,18 @@ test('parent and student receive distinct scopes and screens', async ({ page }) 
   await expect(
     page.getByRole('heading', { name: 'ელენე მაისურაძე — მოკლე მიმოხილვა' }),
   ).toBeVisible();
+  const childTarget = await page
+    .getByRole('link', { name: 'დღის განრიგი', exact: true })
+    .getAttribute('href');
+  expect(childTarget).toContain('studentId=');
+  await page.getByRole('link', { name: 'დღის განრიგი', exact: true }).click();
+  await expect(page.getByLabel('შვილის განრიგი')).toHaveValue(
+    new URL(childTarget!, 'http://local').searchParams.get('studentId')!,
+  );
+  await expect(page.getByLabel('შვილის განრიგი').locator('option:checked')).toHaveText(
+    'ელენე მაისურაძე',
+  );
+  await page.getByRole('link', { name: 'ჩემი ოჯახი', exact: true }).click();
   await page.getByRole('button', { name: /ანდრია მაისურაძე/ }).click();
   await expect(
     page.getByRole('heading', { name: 'ანდრია მაისურაძე — მოკლე მიმოხილვა' }),

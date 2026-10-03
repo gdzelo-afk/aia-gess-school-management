@@ -16,7 +16,7 @@ This preserves the full product vision; phase 1 is not a promise to implement ev
 - **1A — Academic Structure + People / Onboarding:** **complete and verified** for the local/demo scope; evidence recorded in implementation-status. Editable academic calendar, temporal enrollment/electives/assignments, student/guardian/staff workflows and administrator-controlled account lifecycle.
 - **1B — Timetable: complete and verified, including the scheduling-control-room UX correction.** Manual versions/publication, roster-aware conflicts, split/combined groups, rooms/bells, availability, substitutions/requests and effective occurrences. See implementation-status for current evidence.
 - **1C — Attendance: complete and verified for the local/demo scope.** Exact occurrence/roster snapshots, explicit teacher roll call, immutable corrections, guardian explanations, scoped history and missing-roll-call control room. See implementation-status for final evidence.
-- **1D — Gradebook basics: implemented and verified on `stage-1d-gradebook`, awaiting manual acceptance.** Operational academic journal, explicit drafts/publication/history, provisional results, recovery, criteria, narratives/comments and scoped reports. Official finalization remains deferred.
+- **1D — Gradebook basics: accepted 3 October 2026 at `3293a50`, fast-forwarded to private `master` and tagged.** Operational academic journal, explicit drafts/publication/history, provisional results, recovery, criteria, narratives/comments and scoped reports. Official finalization remains deferred.
 - **Authentication hardening:** MFA/recovery codes, real delivery provider and production onboarding acceptance before launch. No partial MFA UI in Stage 1A.
 
 ## Open questions and reversible defaults
@@ -61,3 +61,7 @@ Deferred: full admissions, online payments, migration, production hardening, for
 - General messaging/replies, external notifications, generic custom/scheduled reports, EduPage import, and general file/DMS operations beyond private evaluation-criteria attachments.
 
 Revisit this ledger before proposing the next stage. No item above is implemented merely because Gradebook preserves a future extension point.
+
+### Accepted Stage 1D and controlled presentation pass
+
+Stage 1D `3293a50` is accepted on private `master`, protected by `stage-1d-complete-2026-10-03`. The subsequent `redesign/dashboard-login-option-a` branch refines only main Login/Dashboard/chrome using selected A reference concepts. It does not start Stage 1E and will remain separate for manual acceptance. Historical A/B/C archive routes/assets remain unchanged.

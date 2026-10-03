@@ -6,8 +6,22 @@ const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')
 async function login(page: Page, role: string) {
   await settle(page);
   await page.goto('/login');
-  await page.getByRole('button', { name: role, exact: true }).click();
-  await expect(page.locator('.overview-heading')).toBeVisible();
+  // Other journeys share the real authentication budget. Retry only after a 429 reset.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = page.waitForResponse((r) => r.url().endsWith('/api/auth/sign-in/email'));
+    await page.getByRole('button', { name: role, exact: true }).click();
+    const result = await response;
+    if (result.status() !== 429) {
+      expect(result.ok()).toBe(true);
+      await expect(page.locator('.overview-heading')).toBeVisible();
+      return;
+    }
+    const seconds = Number(
+      result.headers()['x-retry-after'] ?? result.headers()['retry-after'] ?? 60,
+    );
+    await page.waitForTimeout((seconds + 1) * 1000);
+  }
+  throw new Error('Sign-in remained throttled after its reset');
 }
 test.beforeEach(async ({ page }) => {
   await settle(page, 150);

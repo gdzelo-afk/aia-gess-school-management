@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowRight,
@@ -19,7 +19,14 @@ import { ProductMark, LensArtifact, useSchoolDate } from '../components/ProductI
 
 export function Login({ onLogin }: { onLogin: () => void }) {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(() => {
+    try {
+      return localStorage.getItem('aia-login-email') ?? '';
+    } catch {
+      return '';
+    }
+  });
+  const [remember, setRemember] = useState(Boolean(email));
   const [password, setPassword] = useState('');
   const [visible, setVisible] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -41,6 +48,13 @@ export function Login({ onLogin }: { onLogin: () => void }) {
     setError('');
     try {
       await signIn(mail.trim(), pass);
+      // Identifier convenience only. Session persistence remains controlled by auth.
+      try {
+        if (remember) localStorage.setItem('aia-login-email', mail.trim());
+        else localStorage.removeItem('aia-login-email');
+      } catch {
+        /* Storage may be unavailable. Login must still succeed. */
+      }
       navigate('/', { replace: true });
       onLogin();
     } catch (error) {
@@ -55,18 +69,10 @@ export function Login({ onLogin }: { onLogin: () => void }) {
   }
   return (
     <div className={`product-theme product-login ${paused ? 'motion-paused' : ''}`}>
-      <header className="entrance-header">
-        <ProductMark />
-        <span className="entrance-header-note">ადამიანები. ცოდნა. ყოველდღე.</span>
-        <button
-          className="product-icon"
-          aria-label="ფერის რეჟიმის შეცვლა"
-          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-        >
-          {theme === 'light' ? <Moon size={19} /> : <Sun size={19} />}
-        </button>
-      </header>
       <main className="entrance-composition">
+        <div className="entrance-identity">
+          <ProductMark />
+        </div>
         <section className="entrance-story" aria-labelledby="entrance-title">
           <div className="entrance-place">
             <span>თბილისი, საქართველო</span>
@@ -110,6 +116,15 @@ export function Login({ onLogin }: { onLogin: () => void }) {
           </footer>
         </section>
         <section className="entrance-form-panel" aria-labelledby="login-title">
+          <div className="entrance-utilities">
+            <button
+              className="product-icon"
+              aria-label="ფერის რეჟიმის შეცვლა"
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            >
+              {theme === 'light' ? <Moon size={19} /> : <Sun size={19} />}
+            </button>
+          </div>
           <div className="entrance-form-wrap">
             <div className="entrance-form-kicker">
               <span className="product-eyebrow">მოგესალმებით</span>
@@ -172,6 +187,27 @@ export function Login({ onLogin }: { onLogin: () => void }) {
                   </button>
                 </span>
               </label>
+              <div className="entrance-options">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={remember}
+                    disabled={busy}
+                    onChange={(e) => {
+                      setRemember(e.target.checked);
+                      if (!e.target.checked) {
+                        try {
+                          localStorage.removeItem('aia-login-email');
+                        } catch {
+                          /* Optional preference. */
+                        }
+                      }
+                    }}
+                  />
+                  ელფოსტის დამახსოვრება
+                </label>
+                <Link to="/recovery">პაროლის აღდგენა</Link>
+              </div>
               {error && (
                 <p id="login-error" role="alert" className="entrance-error">
                   {error}
@@ -189,9 +225,6 @@ export function Login({ onLogin }: { onLogin: () => void }) {
                 <LockKeyhole size={14} />
                 <span>ანგარიშზე წვდომისთვის მიმართეთ სკოლის ადმინისტრაციას.</span>
               </p>
-              <a className="op-hint" href="/recovery">
-                პაროლის აღდგენა
-              </a>
             </form>
             {config.data?.demo && (
               <section className="entrance-demo" aria-label="სადემონსტრაციო ანგარიშები">

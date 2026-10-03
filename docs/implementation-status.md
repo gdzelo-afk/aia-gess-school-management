@@ -2,9 +2,20 @@
 
 Foundation implemented 27 September; selected frontend continued 28 September 2026. This is a local development foundation, not a production EMS release.
 
-## Stage 1D — Gradebook complete for manual review (3 October 2026)
+## Controlled Login / Dashboard refinement (3 October 2026)
 
-Accepted Stage 1C `77a35f9` remains private remote `master` and the annotated `stage-1c-complete-2026-10-01` milestone. Stage 1B's tag is unchanged. The completed Stage 1D implementation remains on the separate private review branch `stage-1d-gradebook`; no merge, Stage 1D tag, manual acceptance or production-readiness claim is implied.
+- **Scope:** live Georgian date/time-aware Option A Mersad greeting, current viewer name, conventional cursor and scoped today-timetable action. Removed only the redundant header demo strip/oversized date card. Existing metrics, panels, distribution, next meeting, day rhythm and operational pulses retain their current data and semantics.
+- **Chrome:** shared, persistent desktop icon rail with all navigation destinations, active state and keyboard/hover tooltips; existing mobile drawer retained. Semester stays after navigation in expanded mode.
+- **Login:** direct two-pane composition, identity inside left pane, upper-right theme utility, original CSS lens/date/coordinates/editorial statement, existing real form/security notice. Compact remember-email/recovery row; email-only local preference, no credential/session changes. Mobile prioritizes sign-in before the small editorial panel.
+- **Boundaries:** no backend/contracts/migration/seed changes; `/design-lab` and all archive assets untouched. Minimal timetable frontend deep-link support carries selected child and today’s mobile day. No new dependencies/fonts or later module work.
+- **Engineering:** 157 tests across 11 files passed on PGlite and the same 157 on PostgreSQL (the accepted 151 plus six Tbilisi date/greeting boundary checks). Formatting, lint, strict TypeScript and frontend/server/migration build passed. Backend, contracts, migrations, dependencies, seed data and archive assets match the accepted milestone.
+- **Visual review:** Login and Dashboard inspected in light/dark at 1920×1080, 1440, 1024, 390×844 and short 390×667; actual Chrome 67% gave 2880 CSS pixels without overflow. Long Georgian first names, collapsed account controls, scrolling tooltips and reduced-height input/Submit access were checked. The selected lens, current body panels and operational data are retained.
+- **Closure checks:** all 27 distinct browser workflows have passing evidence across the broad run (24/27) and focused closure (13/13). This includes Stage 1A–1D writes on isolated fictional data. The real mobile-menu focus-return defect was fixed; Guardian navigation now uses its role-specific test label, and Gradebook tests respect existing authentication reset timing. Production authentication/throttling did not change. Compiled React reports production `bundleType=0`, Mersad loads once without redundant preload/revalidation, and no runtime or preload warnings were observed. Login, Dashboard, collapsed rail, mobile focus return and operational route mounting passed. All four canonical accounts passed read-only normal-demo checks; browser writes never used that database. The normal preview is left at `http://localhost:5173`.
+- **Review boundary:** this completed presentation pass remains on `redesign/dashboard-login-option-a` for manual review, separate from accepted `master`; Stage 1E has not started.
+
+## Stage 1D — Gradebook accepted (3 October 2026)
+
+The user accepted completion commit `3293a50`. `master` was fast-forwarded and pushed to that exact commit, with annotated private-remote tag `stage-1d-complete-2026-10-03`. Stage 1B/1C tags remain unchanged. The controlled Login/Dashboard redesign branches from this accepted milestone as `redesign/dashboard-login-option-a`; it is separate from `master` and does not begin Stage 1E. No production-readiness claim is implied.
 
 - **Operational product:** `/gradebook` provides one course/semester lens, a pupil-by-assessment desktop matrix, assessment inspector and assessment-first mobile sheet. Draft saving, explicit publication, reasoned grade/description corrections, history, recovery, versioned criteria, written formative feedback and scoped reports are operational. Server-derived permissions govern editing. Scope/route changes wait for the unsaved-edit decision; breakpoint changes preserve local work. No unsaved entries go to localStorage.
 - **Policy/domain:** migration `0009`, versioned policy and published roster snapshots, transactional revisions/idempotency, immutable correction history and exact rational provisional calculations. Numeric 1–10, formative and pass/fail remain distinct. Grade V formative Homework is valid while numeric Homework is not. Missing ordinary work is not zero; unresolved Summatives remain incomplete; approved recovery replaces rather than double-counts. Official semester/annual finalization and examination consequences remain deferred.
@@ -182,6 +193,6 @@ Exploration checks passed: lint/format/typecheck, 18 existing Vitest checks, pro
 
 ## Next implementation task
 
-**Stage 1D manual review**, after the final closure recorded at the top of this document. Do not begin another module automatically. Production delivery/MFA remain separate launch-hardening follow-ups.
+**Controlled Login/Dashboard redesign manual review**, after the accepted Stage 1D milestone and the refinement recorded at the top of this document. Do not begin another module automatically. Production delivery/MFA remain separate launch-hardening follow-ups.
 
 The historical shell does not imply completed grading, finance, library, messaging, payroll, admissions or migration. Attendance status is recorded in the Stage 1C section above.

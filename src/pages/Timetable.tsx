@@ -69,7 +69,14 @@ export function Timetable() {
       ),
     ),
     [tab, setTab] = useState('schedule'),
-    [child, setChild] = useState('');
+    [child, setChild] = useState(() =>
+      viewer.roles.includes('guardian')
+        ? (new URLSearchParams(location.search).get('studentId') ?? '')
+        : '',
+    );
+  const requestedDate = new URLSearchParams(location.search)
+    .get('date')
+    ?.match(/^\d{4}-\d{2}-\d{2}$/)?.[0];
   const [lens, setLens] = useState<Lens | null>(null),
     [search, setSearch] = useState(''),
     [scopeOpen, setScopeOpen] = useState(false),
@@ -487,6 +494,11 @@ export function Timetable() {
                   periods={periods}
                   from={from}
                   lens={activeLens}
+                  initialDay={
+                    requestedDate && monday(requestedDate) === from
+                      ? (new Date(`${requestedDate}T12:00:00Z`).getUTCDay() + 6) % 7
+                      : 0
+                  }
                   editable={false}
                   versionId=""
                   revision={0}

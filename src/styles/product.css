@@ -1,22 +1,4 @@
 @font-face {
-  font-family: 'AIA Tatishvili';
-  src: url('/fonts/product/gl-tatishvili-12-normal.ttf') format('truetype');
-  font-weight: 400;
-  font-display: swap;
-  ascent-override: 95%;
-  descent-override: 25%;
-  line-gap-override: 0%;
-}
-@font-face {
-  font-family: 'AIA Greeting Fallback';
-  size-adjust: 51.72285%;
-  src: url('/fonts/product/mersad.ttf') format('truetype');
-  font-weight: 400;
-  ascent-override: 183.671%;
-  descent-override: 48.3345%;
-  line-gap-override: 0%;
-}
-@font-face {
   font-family: 'AIA Mersad';
   src: url('/fonts/product/mersad.ttf') format('truetype');
   font-weight: 100 900;
@@ -56,6 +38,7 @@
   --news-two: var(--rail);
   --font-serif: 'AIA Mersad', sans-serif;
   --product-ui: 'AIA Mersad', sans-serif;
+  --product-display: 'AIA Mersad', sans-serif;
   --product-number: 'AIA NeoBau', 'AIA Mersad', sans-serif;
   --product-line: #e7ebf1;
   --product-overlay: #26354d40;

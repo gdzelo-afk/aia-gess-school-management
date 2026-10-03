@@ -1,6 +1,6 @@
 # AIA-GESS product and engineering context
 
-Status: Stage 1A–1C accepted; Stage 1D implemented and verified for manual review, 3 October 2026. Read this index, then `implementation-status.md` before changing code. The full product vision is larger than the implemented foundation.
+Status: Stage 1A–1D accepted; the controlled Login/Dashboard refinement is a separate review branch, 3 October 2026. Read this index, then `implementation-status.md` before changing code. The full product vision is larger than the implemented foundation.
 
 | Document                                          | Use it for                                                |
 | ------------------------------------------------- | --------------------------------------------------------- |

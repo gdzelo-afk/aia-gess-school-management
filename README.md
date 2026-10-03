@@ -36,11 +36,11 @@ Local demo password for these accounts: `AiaDemo-2026!`. All four passed browser
 - Reviewed SQL migrations, repeatable fictional seed, temporal identity/academic baseline, protected audit events, metadata/outbox foundations.
 - Staff/parent/student sample data, illustrative 1–10 grades and GEL invoice preview. Fictional fixed-date agenda: 28 September 2026. Attendance seed adds an explicitly fictional historical week (21–25 September) idempotently; today/future roll calls stay unfilled.
 
-Other module destinations show an explicit planned state. Stage 1D Gradebook is complete for the local/demo scope on its private review branch, awaiting manual acceptance. Finance, library, admissions, messaging and payroll writes remain unimplemented.
+Other module destinations show an explicit planned state. Stage 1D Gradebook is accepted for the local/demo scope at `3293a50`, on `master` and tagged `stage-1d-complete-2026-10-03`. Finance, library, admissions, messaging and payroll writes remain unimplemented.
 
 ## Selected product design
 
-The real [Login](http://localhost:5173/login) and [Dashboard](http://localhost:5173/) now use the selected, refined Vector A system: Mersad interface typography, NeoBau numerical display, GL Tatishvili greeting, original A translucent lens artifact, deliberate light/dark modes and keyboard command search. Read [the canonical design system](docs/design-system.md). The same shell, tokens and controls now extend across main routes, including the functional Students workspace and operational Academics and explicitly planned Messages surfaces. The design-lab and all A/B/C references remain intact.
+The real [Login](http://localhost:5173/login) and [Dashboard](http://localhost:5173/) now use the selected, refined Vector A system: Mersad interface typography, NeoBau numerical display, Option A Mersad display greeting, original A translucent lens artifact, deliberate light/dark modes and keyboard command search. The controlled Login/Dashboard refinement adds a live Georgian greeting/date, today-timetable action, collapsible desktop rail and direct login split; it is isolated on `redesign/dashboard-login-option-a` for review. Read [the canonical design system](docs/design-system.md). The same shell, tokens and controls now extend across main routes, including the functional Students workspace and operational Academics and explicitly planned Messages surfaces. The design-lab and all A/B/C references remain intact.
 
 The [design lab](http://localhost:5173/design-lab) and [typography comparison](http://localhost:5173/design-lab/type) remain archival references, not active alternatives.
 

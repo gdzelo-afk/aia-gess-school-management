@@ -2,34 +2,22 @@
   min-height: 100svh;
   background: var(--canvas);
 }
-.entrance-header {
-  height: 100px;
-  margin: 0 44px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  position: relative;
-  z-index: 2;
-}
-.entrance-header-note {
-  font-size: 12px;
-  color: var(--muted);
-  margin-left: auto;
-  margin-right: 24px;
-}
 .entrance-composition {
-  min-height: calc(100svh - 100px);
+  position: relative;
+  min-height: 100svh;
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(400px, 1fr);
-  max-width: 1800px;
-  margin: auto;
+  grid-template-columns: minmax(0, 3fr) minmax(400px, 2fr);
+}
+.entrance-identity {
+  position: absolute;
+  top: 38px;
+  left: clamp(32px, 4vw, 80px);
+  z-index: 3;
 }
 .entrance-story {
-  min-height: 780px;
+  min-height: 860px;
   position: relative;
-  padding: 46px 54px 28px 64px;
+  padding: 130px clamp(32px, 4vw, 80px) 28px;
   display: flex;
   flex-direction: column;
   isolation: isolate;
@@ -62,8 +50,8 @@
 }
 .entrance-date {
   position: absolute;
-  top: 40px;
-  right: 48px;
+  top: 120px;
+  right: 40px;
   z-index: 2;
   text-align: right;
 }
@@ -151,11 +139,11 @@
 }
 .entrance-form-panel {
   border-left: 1px solid var(--border);
-  padding: 60px 56px 28px;
+  position: relative;
+  padding: 124px clamp(32px, 4vw, 76px) 28px;
   display: flex;
   flex-direction: column;
   background: var(--surface);
-  margin-top: -1px;
 }
 .entrance-form-wrap {
   width: 100%;
@@ -289,13 +277,13 @@
   align-items: center;
   gap: 12px;
 }
-/* The crest is held inside a series of open shield contours, not enlarged as a poster. */
+/* Original A translucent lens; geometry remains separate from the archival lab. */
 .entrance-artifact {
   position: absolute;
   width: 510px;
   height: 480px;
   left: calc(50% - 190px);
-  top: 115px;
+  top: 170px;
   pointer-events: none;
   z-index: 0;
 }
@@ -377,182 +365,220 @@
     clip-path: inset(-10% -5%);
   }
 }
+
+.entrance-utilities {
+  position: absolute;
+  top: 32px;
+  right: 32px;
+}
+.entrance-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.entrance-options label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  cursor: pointer;
+}
+.entrance-options input {
+  accent-color: var(--accent);
+  width: 14px;
+  height: 14px;
+}
+.entrance-options a {
+  padding-block: 9px;
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+.entrance-options a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+.entrance-form-wrap form {
+  gap: 18px;
+}
+.entrance-submit {
+  margin-top: 0;
+}
 @media (min-width: 1600px) {
-  .entrance-story {
-    padding-left: 80px;
-  }
   .entrance-artifact {
-    top: 160px;
-    scale: 1.12;
+    top: max(190px, calc(55svh - 404px));
+    scale: 1.16;
   }
   .entrance-headline {
     padding-top: 360px;
+  }
+  .entrance-headline h1 {
+    font-size: 68px;
   }
   .entrance-form-wrap {
     max-width: 400px;
   }
 }
 @media (max-width: 1150px) {
-  .entrance-header {
-    margin: 0 32px;
-    height: 88px;
-  }
   .entrance-composition {
-    grid-template-columns: minmax(0, 1.1fr) minmax(360px, 1fr);
-    min-height: calc(100svh - 88px);
+    grid-template-columns: minmax(0, 1.2fr) minmax(390px, 1fr);
   }
   .entrance-story {
-    padding: 38px 32px 25px;
-    min-height: 760px;
+    padding-inline: 32px;
+    min-height: 850px;
   }
   .entrance-date {
-    top: 100px;
-    right: 32px;
+    top: 130px;
+    right: 30px;
   }
   .entrance-date time {
-    font-size: 56px;
+    font-size: 54px;
+  }
+  .entrance-date time i {
+    font-size: 30px;
   }
   .entrance-artifact {
-    left: calc(50% - 205px);
-    top: 220px;
-    scale: 0.83;
+    left: calc(50% - 235px);
+    top: 235px;
+    scale: 0.82;
     transform-origin: center top;
   }
   .entrance-headline {
-    padding-top: 390px;
+    padding-top: 360px;
   }
   .entrance-headline h1 {
     font-size: 43px;
   }
   .entrance-form-panel {
-    padding: 45px 32px 25px;
+    padding-inline: 30px;
   }
   .entrance-form-wrap h2 {
     font-size: 32px;
   }
   .entrance-place .product-number {
-    font-size: 14px;
-  }
-  .entrance-story-footer {
-    margin-top: 30px;
-  }
-}
-@media (max-width: 760px) {
-  .entrance-header {
-    height: 80px;
-    margin: 0 24px;
-  }
-  .entrance-header-note {
-    display: none;
-  }
-  .entrance-composition {
-    display: block;
-  }
-  .entrance-story {
-    min-height: 610px;
-    padding: 25px 26px 18px;
-  }
-  .entrance-place {
-    gap: 5px;
+    font-size: 13px;
+    gap: 8px;
   }
   .entrance-place > span:first-child {
     font-size: 11px;
   }
-  .entrance-place .product-number {
-    font-size: 12px;
-    gap: 8px;
-  }
-  .entrance-date {
-    right: 27px;
-    top: 25px;
-  }
-  .entrance-date time {
-    font-size: 45px;
-    gap: 8px;
-  }
-  .entrance-date time i {
-    font-size: 25px;
-  }
-  .entrance-date > span {
-    font-size: 10px;
-    margin-top: 4px;
-  }
-  .entrance-artifact {
-    top: 64px;
-    left: calc(50% - 205px);
-    scale: 0.67;
-    transform-origin: center top;
-  }
-  .entrance-headline {
-    padding-top: 230px;
-    margin-top: 0;
-    max-width: 100%;
-  }
-  .entrance-headline h1 {
-    font-size: 39px;
-    margin: 14px 0 15px;
-  }
-  .entrance-headline .product-eyebrow {
-    font-size: 11px;
-  }
-  .entrance-headline p {
-    font-size: 12px;
-    line-height: 1.8;
-  }
   .entrance-story-footer {
-    margin-top: auto;
-    padding-top: 24px;
+    margin-top: 30px;
+  }
+  .entrance-options {
+    font-size: 10px;
+    gap: 8px;
+  }
+}
+@media (max-width: 760px) {
+  .entrance-composition {
+    display: flex;
+    flex-direction: column;
+  }
+  .entrance-identity {
+    position: static;
+    padding: 24px;
+    min-height: 88px;
   }
   .entrance-form-panel {
-    border-left: 0;
-    border-top: 1px solid var(--border);
-    padding: 38px 26px 24px;
+    order: 1;
+    padding: 20px 24px 26px;
+    border: 0;
+    position: static;
+    background: var(--canvas);
+  }
+  .entrance-utilities {
+    top: 23px;
+    right: 20px;
   }
   .entrance-form-wrap {
     max-width: 420px;
   }
-  .entrance-form-wrap h2 {
-    font-size: 34px;
-  }
   .entrance-form-kicker {
-    margin-bottom: 16px;
+    margin-bottom: 12px;
+  }
+  .entrance-form-wrap h2 {
+    font-size: 32px;
   }
   .entrance-form-intro {
-    margin-bottom: 26px;
+    margin: 12px 0 25px;
+  }
+  .entrance-options {
+    font-size: 11px;
+  }
+  .entrance-options label,
+  .entrance-options a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .entrance-demo {
+    margin-top: 26px;
+    padding-top: 20px;
   }
   .entrance-demo-roles button {
     min-height: 44px;
   }
   .entrance-form-footer {
     max-width: 420px;
-    margin-top: 34px;
+    margin-top: 28px;
   }
-  .entrance-story-footer .product-icon {
-    width: 44px;
-    height: 44px;
-  }
-}
-
-/* Mobile foregrounds access; the larger entrance composition belongs to desktop. */
-@media (max-width: 760px) {
   .entrance-story {
+    order: 2;
     min-height: 430px;
+    padding: 25px 24px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .entrance-place {
+    gap: 5px;
+  }
+  .entrance-place .product-number {
+    font-size: 12px;
+  }
+  .entrance-date {
+    top: 22px;
+    right: 24px;
+  }
+  .entrance-date time {
+    font-size: 42px;
+    gap: 7px;
+  }
+  .entrance-date time i {
+    font-size: 24px;
+  }
+  .entrance-date > span {
+    font-size: 10px;
+    margin-top: 4px;
   }
   .entrance-artifact {
-    top: 95px;
-    left: calc(50% - 260px);
-    scale: 0.3;
+    top: 90px;
+    left: calc(50% - 220px);
+    scale: 0.36;
+    transform-origin: center top;
   }
   .entrance-headline {
-    padding-top: 166px;
+    padding-top: 176px;
+    margin-top: 0;
   }
   .entrance-headline h1 {
     font-size: 34px;
+    margin: 12px 0;
+  }
+  .entrance-headline .product-eyebrow {
+    font-size: 11px;
   }
   .entrance-headline p {
     display: none;
   }
   .entrance-story-footer {
-    padding-top: 12px;
+    margin-top: 12px;
+    font-size: 10px;
+  }
+  .entrance-story-footer .product-icon {
+    width: 44px;
+    height: 44px;
   }
 }

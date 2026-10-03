@@ -76,6 +76,7 @@ export function Modal({
   children,
   className = '',
   themeClass = 'product-theme',
+  onCloseAutoFocus,
 }: {
   open: boolean;
   onOpenChange: (value: boolean) => void;
@@ -84,12 +85,16 @@ export function Modal({
   children: ReactNode;
   className?: string;
   themeClass?: string;
+  onCloseAutoFocus?: (event: Event) => void;
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className={`dialog-overlay ${themeClass}`} />
-        <Dialog.Content className={`dialog-content ${themeClass} ${className}`}>
+        <Dialog.Content
+          className={`dialog-content ${themeClass} ${className}`}
+          onCloseAutoFocus={onCloseAutoFocus}
+        >
           <Dialog.Title className="dialog-title">{title}</Dialog.Title>
           <Dialog.Description className="dialog-description">{description}</Dialog.Description>
           <Dialog.Close asChild>

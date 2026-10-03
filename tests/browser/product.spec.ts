@@ -23,6 +23,7 @@ test('canonical login keeps validation, password controls and real authenticatio
   await page.getByRole('button', { name: 'პაროლის დამალვა', exact: true }).click();
   await page.getByRole('button', { name: 'სივრცეში შესვლა', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('შესვლა ვერ მოხერხდა');
+  await page.getByLabel('ელფოსტის დამახსოვრება', { exact: true }).check();
   await page.getByLabel('პაროლი', { exact: true }).fill('AiaDemo-2026!');
   const signedIn = page.waitForResponse(
     (r) => r.url().includes('/api/auth/sign-in/email') && r.ok(),
@@ -31,6 +32,22 @@ test('canonical login keeps validation, password controls and real authenticatio
   await signedIn;
   await expect(page.locator('.overview-signals')).toContainText('44');
   await expect(page).toHaveURL(/\/$/);
+  expect(await page.evaluate(() => localStorage.getItem('aia-login-email'))).toBe(
+    'director@demo.aia.local',
+  );
+  const session = await page.context().cookies();
+  await page.context().clearCookies();
+  await openLogin(page);
+  await expect(page.getByLabel('ელფოსტა', { exact: true })).toHaveValue('director@demo.aia.local');
+  await expect(page.getByLabel('პაროლი', { exact: true })).toHaveValue('');
+  await expect(page.getByRole('link', { name: 'პაროლის აღდგენა' })).toHaveAttribute(
+    'href',
+    '/recovery',
+  );
+  await page.getByLabel('ელფოსტის დამახსოვრება').uncheck();
+  expect(await page.evaluate(() => localStorage.getItem('aia-login-email'))).toBeNull();
+  await page.context().addCookies(session);
+  await page.goto('/');
   await page.reload();
   await expect(page.locator('.overview-heading')).toBeVisible();
 });
@@ -188,4 +205,59 @@ test('login distinguishes throttling from invalid credentials without weakening 
   await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
   await expect(page.getByRole('alert')).toContainText('მოიცადეთ ერთი წუთი');
   await expect(page.locator('.product-login')).toBeVisible();
+});
+
+test('dashboard live date, today route and persistent accessible icon rail', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.clock.install({ time: new Date('2026-10-02T07:59:30Z') });
+  await enter(page);
+  await expect(page.locator('.greeting')).toContainText('დილა მშვიდობისა, თამარ.');
+  await expect(page.locator('.overview-heading time')).toHaveText('პარასკევი, 2 ოქტომბერი');
+  await page.clock.fastForward(60_000);
+  await expect(page.locator('.greeting')).toContainText('შუადღე მშვიდობისა, თამარ.');
+  await expect(page.locator('.overview-context, .overview-date')).toHaveCount(0);
+  const nav = page.locator('.sidebar nav');
+  const count = await nav.getByRole('link').count();
+  const toggle = page.getByRole('button', { name: 'ნავიგაციის შეკეცვა' });
+  await toggle.click();
+  await expect(page.getByRole('button', { name: 'ნავიგაციის გაშლა' })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  );
+  expect(await nav.getByRole('link').count()).toBe(count);
+  const students = nav.getByRole('link', { name: 'მოსწავლეები', exact: true });
+  await page.setViewportSize({ width: 1440, height: 540 });
+  await nav.getByRole('link', { name: 'პარამეტრები', exact: true }).scrollIntoViewIfNeeded();
+  await nav.getByRole('link', { name: 'პარამეტრები', exact: true }).hover();
+  await expect(page.getByRole('tooltip')).toBeVisible();
+  const tip = await page.getByRole('tooltip').boundingBox();
+  expect(tip!.y + tip!.height).toBeLessThanOrEqual(540);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await students.scrollIntoViewIfNeeded();
+  await students.focus();
+  await expect(page.getByRole('tooltip')).toHaveText('მოსწავლეები');
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('tooltip')).toHaveCount(0);
+  await students.press('Enter');
+  await expect(students).toHaveAttribute('aria-current', 'page');
+  await page.reload();
+  await expect(page.locator('.product-shell')).toHaveClass(/sidebar-collapsed/);
+  await nav.getByRole('link', { name: 'მიმოხილვა', exact: true }).click();
+  await page.getByRole('link', { name: 'დღის განრიგი', exact: true }).click();
+  await expect(page).toHaveURL(/timetable\?date=2026-10-02/);
+  await expect(page.locator('.tt-matrix')).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 667 });
+  await expect(page.getByRole('button', { name: 'პარ', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
+  await page.getByRole('button', { name: 'მენიუს გახსნა' }).click();
+  await expect(
+    page.getByRole('dialog').getByRole('link', { name: 'მოსწავლეები', exact: true }),
+  ).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: 'მენიუს გახსნა' })).toBeFocused();
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.getByRole('button', { name: 'ნავიგაციის გაშლა' }).click();
+  await expect(page.locator('.sidebar-term')).toBeVisible();
 });

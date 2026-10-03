@@ -19,7 +19,9 @@ export function Matrix({
   onSelect,
   onAdd,
   onMove,
+  initialDay = 0,
 }: {
+  initialDay?: number;
   items: Tile[];
   periods: Bell[];
   from: string;
@@ -34,7 +36,7 @@ export function Matrix({
   onAdd: (weekday: number, periodId: string) => void;
   onMove: (m: Move) => void;
 }) {
-  const [day, setDay] = useState(0),
+  const [day, setDay] = useState(initialDay),
     [drag, setDrag] = useState(''),
     [hover, setHover] = useState<{ weekday: number; periodId: string } | null>(null),
     [state, setState] = useState('checking');
@@ -69,7 +71,9 @@ export function Matrix({
   }, [drag, hover, versionId, revision]);
   const days = [
     ...weekdayLabels,
-    ...(!editable && items.some((t) => t.weekday > 5) ? ['შაბათი', 'კვირა'] : []),
+    ...(!editable && (initialDay > 4 || items.some((t) => t.weekday > 5))
+      ? ['შაბათი', 'კვირა']
+      : []),
   ];
   const rows = [...periods].sort((a, b) => a.number - b.number);
   for (const tile of items)

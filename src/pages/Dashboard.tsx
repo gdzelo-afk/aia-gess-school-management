@@ -1,3 +1,4 @@
+import { DashboardHeading } from '../components/DashboardHeading';
 import { GradebookPulse } from '../components/GradebookPulse';
 import { AttendancePulse } from '../components/AttendancePulse';
 import { TimetableRhythm } from '../components/TimetableRhythm';
@@ -35,7 +36,8 @@ export function Dashboard() {
   const data = result.data;
   if (!data.demo)
     return (
-      <div className="product-dashboard product-ready">
+      <div className="product-dashboard">
+        <DashboardHeading viewer={viewer} />
         {viewer.capabilities.some((c) => c.startsWith('attendance:')) && <AttendancePulse />}
         {viewer.capabilities.some((c) => c.startsWith('gradebook:')) && <GradebookPulse />}
         {viewer.capabilities.some((c) => c.startsWith('timetable:')) && <TimetableRhythm />}
@@ -45,60 +47,10 @@ export function Dashboard() {
   const pupil = viewer.roles.includes('student');
   const teacher = viewer.capabilities.includes('students:assigned');
   const selected = data.students.find((s) => s.id === child) ?? data.students[0];
-  const [, month, day] = data.snapshotDate.split('-');
-  const name = viewer.name.split(' ')[0];
   const nextMeeting = data.agenda.find((item) => item.kind === 'meeting');
   return (
     <div className="product-dashboard">
-      <header className="overview-heading">
-        <div>
-          <span className="product-eyebrow">
-            {parent
-              ? 'ოჯახის სასკოლო სივრცე'
-              : pupil
-                ? 'შენი სასკოლო დღე'
-                : teacher
-                  ? 'მასწავლებლის სივრცე'
-                  : 'სკოლის ერთიანი ხედვა'}
-          </span>
-          <h1 className="greeting">
-            გამარჯობა,{' '}
-            <span className="greeting-tail">
-              {name}.<span className="presence-cursor" aria-hidden="true" />
-            </span>
-          </h1>
-          <p>
-            {parent
-              ? 'თქვენი შვილების დღე — ყველაფერი მნიშვნელოვანი, ახლოს.'
-              : pupil
-                ? 'დღის გეგმა და ახალი შესაძლებლობები.'
-                : teacher
-                  ? 'გაკვეთილები, მოსწავლეები და დღის შემდეგი ნაბიჯი.'
-                  : 'ადამიანები, დღის რიტმი და ყურადღების მთავარი აქცენტები.'}
-          </p>
-        </div>
-        <Link to="/calendar" className="overview-date">
-          <time dateTime={data.snapshotDate}>
-            <b>{day}</b>
-            <i>/</i>
-            <b>{month}</b>
-          </time>
-          <span>
-            {dateLabel(data.snapshotDate)}
-            <ArrowUpRight size={14} />
-          </span>
-        </Link>
-      </header>
-      <div className="overview-context">
-        <span>
-          <i /> სადემონსტრაციო ხედვა
-        </span>
-        <p>გამოგონილი ადამიანები და სასწავლო მაგალითები</p>
-        <span className="product-number">
-          {data.academicYear}
-          <span> / I სემესტრი</span>
-        </span>
-      </div>
+      <DashboardHeading viewer={viewer} childId={parent ? selected?.id : undefined} />
       {data.school ? (
         <section className="overview-signals" aria-label="სკოლის მაჩვენებლები">
           <Signal value={data.school.students} label="მოსწავლე" note="სადემონსტრაციო სიაში" />

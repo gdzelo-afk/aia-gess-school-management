@@ -1,21 +1,23 @@
 import { GradebookNotices } from './GradebookNotices';
 import { AttendanceNotices } from './AttendanceNotices';
-import { useEffect, useState } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Bell, Sun, Moon, PanelLeft, LogOut, CheckCheck } from 'lucide-react';
 import type { Viewer, FoundationOverview } from '../../shared/contracts';
 import { roleLabels } from '../../shared/contracts';
 import { api, signOut } from '../lib/api';
 import { usePreferences } from '../lib/preferences';
+import { SidebarLink } from './SidebarLink';
 import { SemesterContext } from './SemesterContext';
 import { TbilisiClock } from './TbilisiClock';
 import { navigation } from './navigation';
 import { Avatar, IconButton, Modal, Button, EmptyState, Badge } from './ui';
 import { CommandPalette, commandShortcut } from './CommandPalette';
 export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => void }) {
-  const { theme, setTheme } = usePreferences();
+  const { theme, setTheme, sidebarCollapsed, setSidebarCollapsed } = usePreferences();
   const [searchOpen, setSearchOpen] = useState(false);
+  const mobileTrigger = useRef<HTMLSpanElement>(null);
   const [mobile, setMobile] = useState(false);
   const [notifications, setNotifications] = useState(false);
   const [read, setRead] = useState(false);
@@ -41,7 +43,12 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
   }, []);
   const rail = (
     <>
-      <Link to="/" className="brand" onClick={() => setMobile(false)}>
+      <Link
+        to="/"
+        className="brand"
+        aria-label="AIA-GESS — მიმოხილვა"
+        onClick={() => setMobile(false)}
+      >
         <img src="/logo.png" alt="აია-ჯესსის ემბლემა" />
         <span>
           <strong>AIA-GESS</strong>
@@ -52,16 +59,11 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
         {nav.map((item, index) => (
           <div key={item.path}>
             {nav[index - 1]?.group !== item.group && <p className="nav-group">{item.group}</p>}
-            <NavLink
-              to={item.path}
-              end={item.path === '/'}
-              onClick={() => setMobile(false)}
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            >
-              <item.icon size={18} />
-              <span>{item.label}</span>
-              {item.path === '/' && <span className="nav-current" />}
-            </NavLink>
+            <SidebarLink
+              item={item}
+              collapsed={sidebarCollapsed && !mobile}
+              onNavigate={() => setMobile(false)}
+            />
           </div>
         ))}
       </nav>
@@ -101,15 +103,28 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
     </>
   );
   return (
-    <div className="app-layout product-theme product-shell">
+    <div
+      className={`app-layout product-theme product-shell ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}
+    >
       <a href="#main" className="skip-link">
         მთავარ შინაარსზე გადასვლა
       </a>
-      <aside className="sidebar">{rail}</aside>
+      <aside className="sidebar" id="main-sidebar">
+        {rail}
+      </aside>
       <div className="workspace">
         <header className="topbar">
           <div className="topbar-location">
-            <span className="mobile-only">
+            <IconButton
+              className="icon-button sidebar-toggle"
+              label={sidebarCollapsed ? 'ნავიგაციის გაშლა' : 'ნავიგაციის შეკეცვა'}
+              aria-expanded={!sidebarCollapsed}
+              aria-controls="main-sidebar"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            >
+              <PanelLeft size={19} />
+            </IconButton>
+            <span className="mobile-only" ref={mobileTrigger}>
               <IconButton label="მენიუს გახსნა" onClick={() => setMobile(true)}>
                 <PanelLeft size={20} />
               </IconButton>
@@ -119,7 +134,11 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
             <strong>{active?.label ?? 'გვერდი'}</strong>
           </div>
           <div className="topbar-actions">
-            <button className="search-trigger" onClick={() => setSearchOpen(true)}>
+            <button
+              className="search-trigger"
+              aria-label="მოძებნეთ სივრცეში"
+              onClick={() => setSearchOpen(true)}
+            >
               <Search size={16} />
               <span>მოძებნეთ სივრცეში</span>
               <kbd>{commandShortcut()}</kbd>
@@ -153,6 +172,10 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
         onOpenChange={setMobile}
         title="სასკოლო სივრცე"
         description="მთავარი ნავიგაცია"
+        onCloseAutoFocus={(event) => {
+          event.preventDefault();
+          mobileTrigger.current?.querySelector('button')?.focus();
+        }}
         className="mobile-nav-dialog product-mobile-rail"
         themeClass="product-theme"
       >

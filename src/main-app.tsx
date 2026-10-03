@@ -17,13 +17,6 @@ import { Preferences } from './lib/preferences';
 import { ToastProvider } from './components/ui';
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <link
-      rel="preload"
-      href="/fonts/product/gl-tatishvili-12-normal.ttf"
-      as="font"
-      type="font/ttf"
-      crossOrigin="anonymous"
-    />
     <QueryClientProvider client={queryClient}>
       <Preferences>
         <ToastProvider>
