@@ -138,7 +138,7 @@
   height: 32px;
 }
 .entrance-form-panel {
-  border-left: 1px solid var(--border);
+  border-left: 1px solid transparent;
   position: relative;
   padding: 124px clamp(32px, 4vw, 76px) 28px;
   display: flex;
