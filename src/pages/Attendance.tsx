@@ -6,6 +6,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Check,
+  Minus,
   Clock3,
   Search,
   ShieldCheck,
@@ -89,9 +90,9 @@ export function Attendance() {
   const openLesson = (id: string) => setParams({ lesson: id, date });
   if (occurrenceId)
     return (
-      <main className="attendance-workspace">
+      <section className="attendance-workspace" aria-label="დასწრება">
         <RollCall id={occurrenceId} onClose={() => setParams({ date })} />
-      </main>
+      </section>
     );
   const data = range.data;
   const children = data?.children ?? [];
@@ -145,7 +146,7 @@ export function Attendance() {
     if (value) setDate(value);
   };
   return (
-    <main className="attendance-workspace">
+    <section className="attendance-workspace" aria-label="დასწრება">
       <header className="att-page-header">
         <div>
           <span className="eyebrow">
@@ -503,7 +504,7 @@ export function Attendance() {
           }}
         />
       )}
-    </main>
+    </section>
   );
 }
 function LessonList({
@@ -536,7 +537,19 @@ function LessonList({
           <span className="att-lesson-state">
             {i.submitted ? (
               <>
-                <Check size={16} />
+                {!i.window && i.entries.length === 1 ? (
+                  i.entries[0]!.status === 'late' ? (
+                    <Clock3 size={16} />
+                  ) : i.entries[0]!.status === 'authorized' ? (
+                    <ShieldCheck size={16} />
+                  ) : i.entries[0]!.status === 'absent' ? (
+                    <Minus size={16} />
+                  ) : (
+                    <Check size={16} />
+                  )
+                ) : (
+                  <Check size={16} />
+                )}
                 {!i.window && i.entries.length === 1
                   ? attendanceLabels[i.entries[0]!.status]
                   : 'შევსებულია'}

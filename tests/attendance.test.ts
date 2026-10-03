@@ -37,7 +37,8 @@ const admin = viewer('director'),
   student = viewer('student', id(100), 'demo-student'),
   founder = viewer('founders_office');
 const at = (date: string, time = '09:10') => new Date(schoolInstant(date, time));
-const lesson = (date: string, lessonId = 1501) => `${id(1600)}:${id(lessonId)}:${date}`;
+const lesson = (date: string, lessonId = 1501) =>
+  `${id(date >= '2026-10-05' ? 22000 : 1600)}:${id(lessonId)}:${date}`;
 const act = (v: Viewer, c: unknown, now = at('2026-10-05')) =>
   a.changeAttendance(
     v,
@@ -167,7 +168,7 @@ it('requires deliberate correction reason and rejects stale/concurrent revisions
   expect(results.filter((r) => r.status === 'rejected')).toHaveLength(1);
   const saved = await a.attendanceLesson(teacher, x.occurrenceId, now);
   expect(saved.revision).toBe(2);
-  expect(saved.history).toHaveLength(2);
+  expect(saved.history.map((h) => h.revision)).toEqual([1, 2]);
   expect(saved.history[1]!.before!.entries.some((r) => r.status === 'absent')).toBe(true);
 });
 it('locks routine writes at lesson end plus 24h and permits reasoned administrative correction', async () => {

@@ -1,3 +1,4 @@
+import { GradebookNotices } from './GradebookNotices';
 import { AttendanceNotices } from './AttendanceNotices';
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
@@ -167,6 +168,7 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
         themeClass="product-theme"
       >
         <AttendanceNotices viewer={viewer} open={notifications} />
+        <GradebookNotices viewer={viewer} open={notifications} />
         <div className="notification-toolbar">
           <Badge>{read ? 0 : (overview.data?.announcements.length ?? 0)} წაუკითხავი</Badge>
           <Button variant="ghost" onClick={() => setRead(true)}>

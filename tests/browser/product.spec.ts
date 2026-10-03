@@ -29,7 +29,7 @@ test('canonical login keeps validation, password controls and real authenticatio
   );
   await page.getByRole('button', { name: 'სივრცეში შესვლა', exact: true }).click();
   await signedIn;
-  await expect(page.locator('.overview-signals')).toContainText('12');
+  await expect(page.locator('.overview-signals')).toContainText('44');
   await expect(page).toHaveURL(/\/$/);
   await page.reload();
   await expect(page.locator('.overview-heading')).toBeVisible();
@@ -44,8 +44,11 @@ test('command palette supports Meta/Ctrl K, keyboard traversal, scope, focus ret
   await trigger.click();
   const search = page.getByRole('combobox', { name: 'საძიებო სიტყვა' });
   await expect(search).toBeFocused();
+  const firstSelection = await page.getByRole('option', { selected: true }).getAttribute('id');
   await search.press('ArrowDown');
-  await expect(page.getByRole('option', { selected: true })).toContainText('ჩემი შვილები');
+  const nextSelection = await page.getByRole('option', { selected: true }).getAttribute('id');
+  expect(nextSelection).not.toBe(firstSelection);
+  await expect(search).toHaveAttribute('aria-activedescendant', nextSelection!);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(trigger).toBeFocused();

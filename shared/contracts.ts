@@ -49,7 +49,14 @@ export type Capability =
   | 'attendance:request'
   | 'attendance:children'
   | 'attendance:explain'
-  | 'attendance:self';
+  | 'attendance:self'
+  | 'gradebook:school'
+  | 'gradebook:correct'
+  | 'gradebook:policy'
+  | 'gradebook:own'
+  | 'gradebook:homeroom'
+  | 'gradebook:children'
+  | 'gradebook:self';
 const timetableManagement: Capability[] = [
   'timetable:school',
   'timetable:manage',
@@ -67,8 +74,16 @@ const attendanceTeacher: Capability[] = [
   'attendance:request',
 ];
 export const roleCapabilities: Record<Role, readonly Capability[]> = {
-  founders_office: [...timetableManagement, 'attendance:school', 'attendance:analytics'],
+  founders_office: [
+    ...timetableManagement,
+    'attendance:school',
+    'attendance:analytics',
+    'gradebook:school',
+  ],
   super_admin: [
+    'gradebook:school',
+    'gradebook:correct',
+    'gradebook:policy',
     ...timetableManagement,
     ...attendanceManagement,
     'school:overview',
@@ -82,6 +97,9 @@ export const roleCapabilities: Record<Role, readonly Capability[]> = {
     'access:roles',
   ],
   director: [
+    'gradebook:school',
+    'gradebook:correct',
+    'gradebook:policy',
     ...timetableManagement,
     ...attendanceManagement,
     'school:overview',
@@ -94,6 +112,9 @@ export const roleCapabilities: Record<Role, readonly Capability[]> = {
     'access:roles',
   ],
   principal: [
+    'gradebook:school',
+    'gradebook:correct',
+    'gradebook:policy',
     ...timetableManagement,
     ...attendanceManagement,
     'school:overview',
@@ -102,6 +123,9 @@ export const roleCapabilities: Record<Role, readonly Capability[]> = {
     'people:manage',
   ],
   vice_principal: [
+    'gradebook:school',
+    'gradebook:correct',
+    'gradebook:policy',
     ...timetableManagement,
     ...attendanceManagement,
     'school:overview',
@@ -110,20 +134,30 @@ export const roleCapabilities: Record<Role, readonly Capability[]> = {
     'people:manage',
   ],
   administrator: [
+    'gradebook:school',
+    'gradebook:correct',
     ...timetableManagement,
     ...attendanceManagement,
     'students:school',
     'people:manage',
   ],
-  teacher: [...attendanceTeacher, 'students:assigned', 'timetable:own', 'timetable:request'],
-  homeroom_teacher: [
+  teacher: [
+    'gradebook:own',
     ...attendanceTeacher,
     'students:assigned',
     'timetable:own',
     'timetable:request',
   ],
-  student: ['attendance:self', 'students:self', 'timetable:self'],
+  homeroom_teacher: [
+    'gradebook:homeroom',
+    ...attendanceTeacher,
+    'students:assigned',
+    'timetable:own',
+    'timetable:request',
+  ],
+  student: ['gradebook:self', 'attendance:self', 'students:self', 'timetable:self'],
   guardian: [
+    'gradebook:children',
     'attendance:children',
     'attendance:explain',
     'students:children',

@@ -41,7 +41,7 @@ const act = (v: Viewer, c: unknown) =>
 const week = (v = admin, from = '2026-10-05', extra = {}) =>
   services.timetableWeek(v, { from, days: 7, ...extra });
 let base: TimetableDocument;
-const draft = async (document = base, start = '2026-10-05', end = '2026-10-12') => {
+const draft = async (document = base, start = '2026-10-06', end = '2026-10-13') => {
   const d = await act(admin, {
     action: 'draft.create',
     yearId: id(10),
@@ -80,13 +80,19 @@ it('migrates and seeds without duplicating or replacing existing records', async
   await seedDemo();
   await database.migrate();
   expect(await db.select().from(s.timetableVersion)).toEqual(before);
-  expect((await db.select().from(s.student)).length).toBe(12);
+  expect((await db.select().from(s.student)).length).toBe(44);
 });
 it('resolves Monday–Friday, valid disjoint split groups and combined sections', async () => {
   const w = await week();
-  expect(w.items.length).toBe(13);
+  expect(w.items.filter((o) => base.lessons.some((l) => l.id === o.lessonId))).toHaveLength(13);
+  expect(w.items).toHaveLength(99);
   expect(w.conflicts).toEqual([]);
-  expect(w.items.filter((o) => o.targetDate === '2026-10-06' && o.number === 3)).toHaveLength(2);
+  expect(
+    w.items.filter(
+      (o) =>
+        o.targetDate === '2026-10-06' && o.number === 3 && [id(1411), id(1412)].includes(o.groupId),
+    ),
+  ).toHaveLength(2);
   expect(w.items.find((o) => o.groupId === id(1413))!.sectionIds).toHaveLength(2);
 });
 it('scopes students to own split/elective lessons and guardians to linked children', async () => {
@@ -188,9 +194,9 @@ it('unavailability causes explicit conflicts; invalid staff is never overridable
     action: 'availability.create',
     availability: {
       teacherId: id(2),
-      startsOn: '2026-10-05',
-      endsOn: '2026-10-07',
-      weekdays: [1],
+      startsOn: '2026-10-06',
+      endsOn: '2026-10-08',
+      weekdays: [2],
       periodNumbers: [1],
     },
     reason: 'სატესტო მიუწვდომლობა',
@@ -528,7 +534,7 @@ it('published exception and audit rows are append-only', async () => {
   ).toBe(1);
 });
 it('creates an explicit extra weekend lesson and preserves the original weekday', async () => {
-  const o = await services.timetableTemplate(admin, id(1600), id(1501), '2026-11-21');
+  const o = await services.timetableTemplate(admin, id(22000), id(1501), '2026-11-21');
   await act(admin, {
     action: 'exception.apply',
     changes: [{ ...change(o), exceptionalDay: true }],

@@ -257,6 +257,7 @@ export async function attendanceLesson(v: Viewer, id: string, now = new Date()) 
             .from(s.attendanceRevision)
             .leftJoin(s.person, eq(s.person.userId, s.attendanceRevision.actorId))
             .where(eq(s.attendanceRevision.sessionId, c.saved.id))
+            .orderBy(s.attendanceRevision.revision)
         : [];
     return {
       occurrence: snap.occurrence,

@@ -39,7 +39,12 @@ afterAll(async () => {
 });
 describe('foundational database and authentication', () => {
   it('applies migrations and idempotent fictional seeds', async () => {
-    expect((await db.select().from(student)).length).toBe(12);
+    expect((await db.select().from(student)).map((s) => s.id).sort()).toEqual(
+      [
+        ...Array.from({ length: 12 }, (_, i) => id(200 + i)),
+        ...Array.from({ length: 32 }, (_, i) => id(13000 + i)),
+      ].sort(),
+    );
     await database.migrate();
   });
 
@@ -114,8 +119,8 @@ describe('foundational database and authentication', () => {
 describe('server-side scopes', () => {
   it('restricts director, teacher, guardian and student to expected rows', async () => {
     for (const [role, total] of [
-      ['director', 12],
-      ['teacher', 3],
+      ['director', 44],
+      ['teacher', 35],
       ['parent', 2],
       ['student', 1],
     ] as const) {
@@ -123,6 +128,20 @@ describe('server-side scopes', () => {
       expect(response.statusCode).toBe(200);
       expect(response.json().total).toBe(total);
       expect(response.json().items.length).toBe(total);
+      if (role === 'teacher')
+        expect(
+          response
+            .json()
+            .items.map((s: { id: string }) => s.id)
+            .sort(),
+        ).toEqual(
+          [
+            id(200),
+            id(204),
+            id(208),
+            ...Array.from({ length: 32 }, (_, i) => id(13000 + i)),
+          ].sort(),
+        );
     }
   });
   it('never includes school aggregates in guardian overview', async () => {
@@ -271,7 +290,7 @@ describe('Stage 1A operational administration', () => {
     expect(imported.semesters[0]!.endsOn).toBe('2026-12-30');
     const setup = (await get('/api/academics')).json();
     expect(setup.events).toHaveLength(21);
-    expect(setup.subjects).toHaveLength(3);
+    expect(setup.subjects).toHaveLength(17);
     expect(() =>
       parseDemoCalendar({
         ...source,

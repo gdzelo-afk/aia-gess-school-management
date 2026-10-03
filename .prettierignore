@@ -9,3 +9,6 @@ migrations/meta
 
 # Private local reference documents; never publish or package.
 school-finanical-docs/
+
+# Private educational reference material (renamed local folder).
+school-finanical-and-other-docs/

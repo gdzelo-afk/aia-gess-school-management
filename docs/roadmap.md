@@ -16,25 +16,25 @@ This preserves the full product vision; phase 1 is not a promise to implement ev
 - **1A — Academic Structure + People / Onboarding:** **complete and verified** for the local/demo scope; evidence recorded in implementation-status. Editable academic calendar, temporal enrollment/electives/assignments, student/guardian/staff workflows and administrator-controlled account lifecycle.
 - **1B — Timetable: complete and verified, including the scheduling-control-room UX correction.** Manual versions/publication, roster-aware conflicts, split/combined groups, rooms/bells, availability, substitutions/requests and effective occurrences. See implementation-status for current evidence.
 - **1C — Attendance: complete and verified for the local/demo scope.** Exact occurrence/roster snapshots, explicit teacher roll call, immutable corrections, guardian explanations, scoped history and missing-roll-call control room. See implementation-status for final evidence.
-- **1D — Gradebook basics: next implementation stage (not started).** Publication/correction policy before official results.
+- **1D — Gradebook basics: implemented and verified on `stage-1d-gradebook`, awaiting manual acceptance.** Operational academic journal, explicit drafts/publication/history, provisional results, recovery, criteria, narratives/comments and scoped reports. Official finalization remains deferred.
 - **Authentication hardening:** MFA/recovery codes, real delivery provider and production onboarding acceptance before launch. No partial MFA UI in Stage 1A.
 
 ## Open questions and reversible defaults
 
-| School decision                                                                     | Current safe default                                                       | Needed before        |
-| ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------- |
-| Actual semester dates, lesson periods and holidays                                  | Fictional labeled calendar; dates configurable                             | Academic setup       |
-| Semester final-grade calculation/rounding and exam influence                        | No computed official final grade; 1–10 raw scores only                     | Report publication   |
-| Who approves corrections after publication                                          | Explicit approval architecture, no publication writes                      | Report cards         |
-| Guardian custody/access restrictions and financial payer rights                     | Equal normal guardian rights on new links; preserve effective restrictions | Real guardians       |
-| Required consent/legal bases, retention and DPO/DPIA obligations                    | Minimize data, no real records imported                                    | Production           |
-| Tuition contracts/installments, scholarships, late fees, refunds and payroll policy | GEL integer amounts; no automated fee policy                               | Finance              |
-| Which student ages use independent accounts                                         | Separate student layout, no PIN shortcut                                   | Account rollout      |
-| Official report/certificate signatories and e-signature validity                    | Versioned templates, provider deferred                                     | Issuance             |
-| Emergency communication audience/channels and escalation                            | No external broadcast delivery in foundation                               | Notifications        |
-| Exact EduPage export schema/history and reconciliation owners                       | No import implementation or invented mapping                               | Migration            |
-| Hosting budget, RPO/RTO and support ownership                                       | Portable Node/PostgreSQL; provisional budgets                              | Deployment           |
-| Final branding/legal name and Georgian copy                                         | Public AIA-GESS name/authorized logo, fictional people                     | Launch copy approval |
+| School decision                                                                     | Current safe default                                                                    | Needed before        |
+| ----------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------- |
+| Actual semester dates, lesson periods and holidays                                  | Fictional labeled calendar; dates configurable                                          | Academic setup       |
+| Semester final-grade calculation/rounding and exam influence                        | Exact/rounded provisional Gradebook results; no official finalization                   | Report publication   |
+| Who approves corrections after publication                                          | Reasoned authorized Gradebook corrections/history; official-finalization rules deferred | Report cards         |
+| Guardian custody/access restrictions and financial payer rights                     | Equal normal guardian rights on new links; preserve effective restrictions              | Real guardians       |
+| Required consent/legal bases, retention and DPO/DPIA obligations                    | Minimize data, no real records imported                                                 | Production           |
+| Tuition contracts/installments, scholarships, late fees, refunds and payroll policy | GEL integer amounts; no automated fee policy                                            | Finance              |
+| Which student ages use independent accounts                                         | Separate student layout, no PIN shortcut                                                | Account rollout      |
+| Official report/certificate signatories and e-signature validity                    | Versioned templates, provider deferred                                                  | Issuance             |
+| Emergency communication audience/channels and escalation                            | No external broadcast delivery in foundation                                            | Notifications        |
+| Exact EduPage export schema/history and reconciliation owners                       | No import implementation or invented mapping                                            | Migration            |
+| Hosting budget, RPO/RTO and support ownership                                       | Portable Node/PostgreSQL; provisional budgets                                           | Deployment           |
+| Final branding/legal name and Georgian copy                                         | Public AIA-GESS name/authorized logo, fictional people                                  | Launch copy approval |
 
 ## Risks / debt warnings
 
@@ -44,9 +44,20 @@ This preserves the full product vision; phase 1 is not a promise to implement ev
 - Local theme/density are device preferences; per-user persistence later must not leak between shared-device accounts.
 - Auth plugins are architectural extension points, not completed SSO/MFA/passkey implementations.
 - Stage 1A transfer/withdrawal uses effective intervals, transactional overlap guards and version checks. No automatic promotion or staff rehire model is implied.
-- Storage/outbox schemas are not a working upload/delivery system. No public endpoints until complete authorization and failure behavior exist.
+- Private Gradebook PDF criteria and scoped in-app notices are implemented. General storage/DMS and external delivery workers remain deferred.
 - Font/UI copy review by Georgian school users and formal accessibility remain necessary.
+- Before deployment, review reverse-proxy trust, shared school/NAT traffic and request/authentication rate-limit keying; local test pacing does not replace that production review.
 
 ## Explicit deferrals/exclusions
 
 Deferred: full admissions, online payments, migration, production hardening, formal audit, deep optimization, automatic scheduling, nonessential integrations, native mobile/PWA and advanced disaster recovery. Excluded: AI, ERP/general ledger, transportation, meals, dormitories, clinical/counseling records, asset/facility systems, WhatsApp/Telegram and generic multitenant SaaS infrastructure.
+
+## Deferred from Stage 1D / future dependencies
+
+- Official semester/annual finalization and publication; report cards, transcripts, promotion/graduation and report-card PDF issuance.
+- Semester, annual, autumn and externat examinations; the approximately 30% subject-absence examination consequence. Provisional Gradebook calculations must not invent exam marks or missing-summative penalty grades.
+- Full Assignment/Submission workflows; future evidence links to the canonical Gradebook assessment rather than a second grading system.
+- Full rubric engine; general SEN/IEP and active per-pupil accommodation overrides. Versioned policy/result context must permit later alternatives without adding diagnoses to Gradebook.
+- General messaging/replies, external notifications, generic custom/scheduled reports, EduPage import, and general file/DMS operations beyond private evaluation-criteria attachments.
+
+Revisit this ledger before proposing the next stage. No item above is implemented merely because Gradebook preserves a future extension point.

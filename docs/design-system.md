@@ -93,3 +93,7 @@ Use `components/timetable/Matrix`, `Panel`, `Forms` and the timetable stylesheet
 ### Attendance extension
 
 Attendance uses the same opaque operational surfaces, fine separators, Mersad UI and NeoBau numeric roles. Compact pupil rows use labeled status controls; time details disclose inline. The mobile roll-call summary/explicit submit remains sticky, with no horizontal roster scroll. Unresolved/unsaved/submitted states use text as well as restrained semantic color. Monthly history uses date buttons with accessible day-state labels and a separate completeness summary. Review dialogs remain bounded to the viewport. These are main-product patterns; the archived design-lab is unchanged.
+
+### Gradebook extension
+
+Use main-product `product-gradebook.css`, the course matrix and contextual assessment inspector. Keep narrow Georgian assessment headings wrapped within fixed-width columns, sticky pupil identity/time context and bounded internal scrolling. At 1150px and below, reuse the accessible product modal as a Gradebook sheet; do not leave the inspector inside the scrolling page. Phone result controls retain readable labels and touch targets, with a persistent draft/correction save bar. Neutral cells distinguish score, narrative, explicit non-score and publication states through words as well as restrained color. Reports show exact/provisional/incomplete meaning without pupil ranking. Never import or alter archive-vector styles.

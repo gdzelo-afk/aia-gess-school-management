@@ -1,3 +1,4 @@
+import { GradebookPulse } from '../components/GradebookPulse';
 import { AttendancePulse } from '../components/AttendancePulse';
 import { TimetableRhythm } from '../components/TimetableRhythm';
 import { useState } from 'react';
@@ -36,6 +37,7 @@ export function Dashboard() {
     return (
       <div className="product-dashboard product-ready">
         {viewer.capabilities.some((c) => c.startsWith('attendance:')) && <AttendancePulse />}
+        {viewer.capabilities.some((c) => c.startsWith('gradebook:')) && <GradebookPulse />}
         {viewer.capabilities.some((c) => c.startsWith('timetable:')) && <TimetableRhythm />}
       </div>
     );
@@ -224,6 +226,9 @@ export function Dashboard() {
       </div>
       {viewer.capabilities.some((c) => c.startsWith('timetable:')) && (
         <TimetableRhythm studentId={parent ? selected?.id : undefined} />
+      )}
+      {!parent && !pupil && viewer.capabilities.some((c) => c.startsWith('gradebook:')) && (
+        <GradebookPulse />
       )}
       {viewer.capabilities.some((c) => c.startsWith('attendance:')) && (
         <AttendancePulse studentId={parent ? selected?.id : undefined} />

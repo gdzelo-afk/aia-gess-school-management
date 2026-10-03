@@ -1,3 +1,4 @@
+import { browserOrigin } from '../../scripts/browser/environment';
 import { test, expect, type Page } from '@playwright/test';
 import { readdir, readFile } from 'node:fs/promises';
 
@@ -193,7 +194,7 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await activation.getByLabel('გაიმეორეთ პაროლი').fill('Stage1a-browser-password!');
   await activation.getByRole('button', { name: 'პაროლის შენახვა' }).click();
   await expect(activation.getByRole('alert')).toContainText('გამოყენებულია');
-  await activation.goto('http://localhost:5173/recovery');
+  await activation.goto(`${browserOrigin}/recovery`);
   const existing: string[] = await readdir('.local/delivery').catch(() => []);
   await activation.getByLabel('ანგარიშის ელფოსტა').fill(email);
   await activation.getByRole('button', { name: 'აღდგენის მოთხოვნა' }).click();
@@ -212,14 +213,14 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await activation.getByLabel('პაროლი', { exact: true }).fill('Stage1a-recovered-password!');
   await activation.getByRole('button', { name: 'სივრცეში შესვლა', exact: true }).click();
   await expect(activation.locator('.overview-heading')).toBeVisible();
-  await activation.goto('http://localhost:5173/accounts');
+  await activation.goto(`${browserOrigin}/accounts`);
   await expect(activation.getByRole('heading', { name: 'წვდომა შეზღუდულია' })).toBeVisible();
-  expect((await activation.request.get('http://localhost:5173/api/accounts')).status()).toBe(403);
+  expect((await activation.request.get(`${browserOrigin}/api/accounts`)).status()).toBe(403);
   expect(
     (
-      await activation.request.post('http://localhost:5173/api/academics/actions', {
+      await activation.request.post(`${browserOrigin}/api/academics/actions`, {
         data: { action: 'year.status' },
-        headers: { origin: 'http://localhost:5173' },
+        headers: { origin: browserOrigin },
       })
     ).status(),
   ).not.toBe(200);
@@ -229,7 +230,7 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
     .getByRole('button', { name: 'გამორთვა', exact: true })
     .click();
   await save(page);
-  expect((await activation.request.get('http://localhost:5173/api/me')).status()).toBe(401);
+  expect((await activation.request.get(`${browserOrigin}/api/me`)).status()).toBe(401);
   await guest.close();
   // Effective departure closes assignments; ending a guardian link preserves history.
   await page.goto('/staff');

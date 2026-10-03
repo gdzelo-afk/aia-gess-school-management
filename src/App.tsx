@@ -30,6 +30,7 @@ const Activation = lazy(() =>
   import('./pages/Activation').then((m) => ({ default: m.Activation })),
 );
 const Messages = lazy(() => import('./pages/Workspaces').then((m) => ({ default: m.Messages })));
+const Gradebook = lazy(() => import('./pages/Gradebook').then((m) => ({ default: m.Gradebook })));
 export function App() {
   const [authVersion, setAuthVersion] = useState(0);
   const me = useQuery({
@@ -74,6 +75,7 @@ export function App() {
                   <Route element={<Shell viewer={me.data} onLogout={refresh} />}>
                     <Route index element={<Dashboard />} />
                     <Route path="students" element={<Students />} />
+                    <Route path="gradebook" element={<Gradebook />} />
                     <Route path="attendance" element={<Attendance />} />
                     <Route path="timetable" element={<Timetable />} />
                     <Route path="calendar" element={<Academics calendarOnly />} />

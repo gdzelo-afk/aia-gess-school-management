@@ -633,3 +633,245 @@ export const attendanceReceipt = pgTable('attendance_receipt', {
   result: jsonb('result').$type<{ id: string; revision: number }>().notNull(),
   createdAt: instant('created_at').notNull(),
 });
+
+// Stage 1D: immutable configuration versions, private assessment drafts, explicit
+// publication snapshots and correction history. Official final grades are deferred.
+export const assessmentPolicyVersion = pgTable(
+  'assessment_policy_version',
+  {
+    id: id(),
+    offeringId: uuid('offering_id')
+      .notNull()
+      .references(() => courseOffering.id),
+    semesterId: uuid('semester_id')
+      .notNull()
+      .references(() => semester.id),
+    revision: integer('revision').notNull(),
+    policy: jsonb('policy').$type<import('../../shared/gradebook.js').AssessmentPolicy>().notNull(),
+    offeringMode: text('offering_mode').notNull(),
+    requiredSummatives: integer('required_summatives'),
+    requirementBasis: text('requirement_basis').notNull(),
+    actorId: text('actor_id')
+      .notNull()
+      .references(() => user.id),
+    reason: text('reason').notNull(),
+    createdAt: instant('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('assessment_policy_scope_revision').on(t.offeringId, t.semesterId, t.revision),
+    check('assessment_policy_revision_positive', sql`${t.revision}>0`),
+    check(
+      'assessment_policy_mode_valid',
+      sql`${t.offeringMode} in ('policy_default','formative_only','pass_fail')`,
+    ),
+    check(
+      'assessment_requirement_valid',
+      sql`${t.requiredSummatives} is null or ${t.requiredSummatives} between 0 and 100`,
+    ),
+    check('assessment_requirement_basis', sql`${t.requirementBasis} in ('configured','demo')`),
+  ],
+);
+export const assessmentCriteriaVersion = pgTable(
+  'assessment_criteria_version',
+  {
+    id: id(),
+    subjectId: uuid('subject_id')
+      .notNull()
+      .references(() => subject.id),
+    yearId: uuid('year_id')
+      .notNull()
+      .references(() => academicYear.id),
+    revision: integer('revision').notNull(),
+    text: text('text').notNull(),
+    fileId: uuid('file_id').references(() => fileMetadata.id),
+    actorId: text('actor_id')
+      .notNull()
+      .references(() => user.id),
+    reason: text('reason').notNull(),
+    createdAt: instant('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('assessment_criteria_scope_revision').on(t.subjectId, t.yearId, t.revision),
+    check('assessment_criteria_revision_positive', sql`${t.revision}>0`),
+  ],
+);
+export const gradebookAssessment = pgTable(
+  'gradebook_assessment',
+  {
+    id: id(),
+    yearId: uuid('year_id')
+      .notNull()
+      .references(() => academicYear.id),
+    semesterId: uuid('semester_id')
+      .notNull()
+      .references(() => semester.id),
+    subjectId: uuid('subject_id')
+      .notNull()
+      .references(() => subject.id),
+    teacherId: uuid('teacher_id')
+      .notNull()
+      .references(() => person.id),
+    scope: jsonb('scope').$type<import('../../shared/gradebook.js').GradebookScope>().notNull(),
+    offeringIds: uuid('offering_ids').array().notNull(),
+    date: date('date').notNull(),
+    title: text('title').notNull(),
+    description: text('description').notNull().default(''),
+    activity: text('activity').notNull().default(''),
+    category: text('category').$type<import('../../shared/gradebook.js').Category>().notNull(),
+    mode: text('mode').$type<import('../../shared/gradebook.js').GradingMode>().notNull(),
+    criteriaId: uuid('criteria_id').references(() => assessmentCriteriaVersion.id),
+    occurrenceId: text('occurrence_id'),
+    policy: jsonb('policy')
+      .$type<import('../../shared/gradebook.js').AcademicPolicySnapshot[]>()
+      .notNull(),
+    roster: jsonb('roster')
+      .$type<import('../../shared/gradebook.js').AcademicPupilSnapshot[]>()
+      .notNull(),
+    entries: jsonb('entries')
+      .$type<import('../../shared/gradebook.js').GradebookEntry[]>()
+      .notNull(),
+    rosterToken: text('roster_token').notNull(),
+    labels: jsonb('labels')
+      .$type<{ subject: string; teacher: string; semester: string; year: string }>()
+      .notNull(),
+    status: text('status').notNull().default('draft'),
+    revision: integer('revision').notNull().default(1),
+    publishedAt: instant('published_at'),
+    createdAt: instant('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    index('gradebook_assessment_lens').on(t.yearId, t.semesterId, t.subjectId, t.date),
+    index('gradebook_assessment_teacher').on(t.teacherId, t.status),
+    check('gradebook_assessment_status', sql`${t.status} in ('draft','published','void')`),
+    check(
+      'gradebook_assessment_category',
+      sql`${t.category} in ('classwork','homework','summative')`,
+    ),
+    check(
+      'gradebook_assessment_mode',
+      sql`${t.mode} in ('numeric_10','pass_fail','formative_only')`,
+    ),
+    check('gradebook_assessment_revision', sql`${t.revision}>0`),
+  ],
+);
+export const gradebookWriting = pgTable(
+  'gradebook_writing',
+  {
+    id: id(),
+    kind: text('kind').notNull(),
+    yearId: uuid('year_id')
+      .notNull()
+      .references(() => academicYear.id),
+    offeringId: uuid('offering_id').references(() => courseOffering.id),
+    studentId: uuid('student_id')
+      .notNull()
+      .references(() => student.id),
+    teacherId: uuid('teacher_id')
+      .notNull()
+      .references(() => person.id),
+    body: text('body').notNull(),
+    snapshot: jsonb('snapshot')
+      .$type<{
+        student: string;
+        number: string;
+        subject: string | null;
+        teacher: string;
+        year: string;
+      }>()
+      .notNull(),
+    status: text('status').notNull().default('draft'),
+    revision: integer('revision').notNull().default(1),
+    publishedAt: instant('published_at'),
+    createdAt: instant('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    index('gradebook_writing_student').on(t.studentId, t.yearId, t.status),
+    check(
+      'gradebook_writing_kind',
+      sql`${t.kind} in ('narrative','guardian_note','homeroom_note')`,
+    ),
+    check('gradebook_writing_status', sql`${t.status} in ('draft','published','void')`),
+    check('gradebook_writing_revision', sql`${t.revision}>0`),
+    check(
+      'gradebook_writing_scope',
+      sql`(${t.kind}='homeroom_note' and ${t.offeringId} is null) or (${t.kind}<>'homeroom_note' and ${t.offeringId} is not null)`,
+    ),
+    uniqueIndex('gradebook_narrative_scope')
+      .on(t.yearId, t.offeringId, t.studentId)
+      .where(sql`${t.kind}='narrative' and ${t.status}<>'void'`),
+  ],
+);
+export const gradebookRecoveryRequest = pgTable(
+  'gradebook_recovery_request',
+  {
+    id: id(),
+    assessmentId: uuid('assessment_id')
+      .notNull()
+      .references(() => gradebookAssessment.id),
+    studentId: uuid('student_id')
+      .notNull()
+      .references(() => student.id),
+    actorId: text('actor_id')
+      .notNull()
+      .references(() => user.id),
+    reason: text('reason').notNull(),
+    assessmentRevision: integer('assessment_revision').notNull(),
+    originalValue: jsonb('original_value')
+      .$type<import('../../shared/gradebook.js').ResultValue>()
+      .notNull(),
+    status: text('status').notNull().default('submitted'),
+    physicalFollowUp: boolean('physical_follow_up').notNull().default(false),
+    extendedUntil: date('extended_until'),
+    decision: text('decision'),
+    decidedBy: text('decided_by').references(() => user.id),
+    revision: integer('revision').notNull().default(1),
+    createdAt: instant('created_at').notNull().defaultNow(),
+    decidedAt: instant('decided_at'),
+  },
+  (t) => [
+    index('gradebook_recovery_queue').on(t.status, t.studentId),
+    uniqueIndex('gradebook_recovery_pending')
+      .on(t.assessmentId, t.studentId)
+      .where(sql`${t.status} in ('submitted','follow_up','review','approved')`),
+    check(
+      'gradebook_recovery_status',
+      sql`${t.status} in ('submitted','follow_up','review','approved','denied','completed','expired')`,
+    ),
+    check('gradebook_recovery_revision', sql`${t.revision}>0`),
+    check(
+      'gradebook_recovery_approval',
+      sql`${t.status}<>'approved' or (${t.physicalFollowUp} and ${t.decidedBy} is not null and ${t.decision} is not null)`,
+    ),
+  ],
+);
+export const gradebookRevision = pgTable(
+  'gradebook_revision',
+  {
+    id: id(),
+    kind: text('kind').notNull(),
+    objectId: uuid('object_id').notNull(),
+    revision: integer('revision').notNull(),
+    action: text('action').notNull(),
+    actorId: text('actor_id')
+      .notNull()
+      .references(() => user.id),
+    reason: text('reason'),
+    before: jsonb('before').$type<Record<string, unknown>>(),
+    after: jsonb('after').$type<Record<string, unknown>>().notNull(),
+    createdAt: instant('created_at').notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex('gradebook_revision_identity').on(t.kind, t.objectId, t.revision),
+    check('gradebook_revision_kind', sql`${t.kind} in ('assessment','writing','recovery')`),
+    check('gradebook_revision_positive', sql`${t.revision}>0`),
+  ],
+);
+export const gradebookCommandReceipt = pgTable('gradebook_command_receipt', {
+  id: uuid('id').primaryKey(),
+  actorId: text('actor_id')
+    .notNull()
+    .references(() => user.id),
+  fingerprint: text('fingerprint').notNull(),
+  result: jsonb('result').$type<{ id: string; revision: number }>().notNull(),
+  createdAt: instant('created_at').notNull().defaultNow(),
+});

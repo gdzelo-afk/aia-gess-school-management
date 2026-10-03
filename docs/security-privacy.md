@@ -80,3 +80,19 @@ Every draft edit/publication, availability mutation, request/decision, special-d
 Stage 1C reuses actual subject-lesson ownership and temporary substitute assignment; it does not grant substitute directory access. Leadership with `attendance:manage` can correct with immutable note/history. Founders Office has whole-school read/analytics only; mutation, explanation decisions and correction approvals are denied on the server. Students see self; guardians require current academic child rights for lists, details, explanations and notifications. Revocation applies immediately, including historical reads.
 
 Teacher response projections omit administrative decision notes and private guardian narratives. Family history excludes internal roll-call oversight and correction narratives. Teacher correction requests snapshot lesson/roster/original/proposed data; review is version checked and transactional. Opening/mark-all performs no write; unsaved roster state lives only in component memory. Notifications contain minimal child/day/kind context, are deduplicated independently for absence/late/early departure, and recheck guardian rights when read. They are in-app events only, not claims of external delivery. Early Departure records an observed attendance consequence and does not confer administrative release authority. Staff attendance, clinical records, external delivery and MFA remain deferred.
+
+### Deployment rate-limit gate
+
+Before a real deployment, verify reverse-proxy topology and trusted-proxy configuration,
+shared school/NAT traffic, and appropriate request/authentication rate-limit keys.
+The local limits remain unchanged; this is a deployment review dependency, not a
+confirmed local authorization defect. Browser mutation tests now own a separate
+origin and a fresh fictional database and cannot reuse the normal preview server.
+
+## Gradebook boundary (Stage 1D)
+
+Every journal, detail, report, count, writing/history, criteria download and notification read is scoped on the server. Subject teachers need current/effective course assignments; timetable substitute-only access confers no grading rights. Homeroom teachers read their own pupils across subjects and may write permitted general guardian comments, but cannot grade another teacher's course. Founders Office has school-wide published read/report access and aggregate private-draft counts only; it cannot grade, publish, correct, authorize recovery or change criteria. Academic policy/criteria administration is a separate capability from general historical correction.
+
+Students see self-only published academic results, never guardian-only comments. Guardians need current academic rights independently of financial rights. Revoked/unrelated family links fail on histories, reports, files and notices too. Private drafts and internal correction/recovery reasons are withheld from family projections. History permission is rechecked rather than trusting a prior session or a hidden button.
+
+Criteria uploads are PDF-only, bounded to 3 MB, validated for media/header/end structure and stored under generated names outside public assets. Download rechecks the referenced subject/version and current scope, uses attachment/no-store/nosniff/sandbox headers, and discloses no storage path. This is not a malware-scanning or general document-management service; production scanning/storage operations remain launch work. The browser-write harness uses unique disposable databases/private-file directories and refuses occupied test ports; it never borrows the manual preview.

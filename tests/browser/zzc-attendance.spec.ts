@@ -1,3 +1,4 @@
+import { browserOrigin } from '../../scripts/browser/environment';
 import { test, expect, type Page, type BrowserContext } from '@playwright/test';
 import { schoolDateAt } from '../../shared/attendance';
 const shiftDate = (date: string, n: number) =>
@@ -10,7 +11,7 @@ async function login(page: Page, role: string) {
 }
 async function action(context: BrowserContext, url: string, body: unknown) {
   const r = await context.request.post(url, {
-    headers: { origin: 'http://localhost:5173' },
+    headers: { origin: browserOrigin },
     data: body,
   });
   expect(r.status(), await r.text()).toBe(200);
@@ -259,7 +260,7 @@ test('attendance teacher roll call, family explanations, administrative correcti
     )
   ).json();
   const denied = await founder.request.post('/api/attendance/actions', {
-    headers: { origin: 'http://localhost:5173' },
+    headers: { origin: browserOrigin },
     data: {
       action: 'submit',
       commandId: crypto.randomUUID(),

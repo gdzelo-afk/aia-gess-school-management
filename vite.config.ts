@@ -6,5 +6,28 @@ export default defineConfig({
   // local NODE_ENV=development from downgrading production React artifacts.
   envDir: false,
   build: { outDir: 'dist/web' },
-  server: { port: 5173, strictPort: true, proxy: { '/api': 'http://127.0.0.1:3001' } },
+  server: {
+    port: Number(process.env.DEV_WEB_PORT ?? 5173),
+    strictPort: true,
+    watch: {
+      ignored: [
+        '**/.local/**',
+        '**/school-finanical-and-other-docs/**',
+        '**/school-finanical-docs/**',
+        '**/test-results/**',
+      ],
+    },
+    fs: {
+      deny: [
+        '.env',
+        '.env.*',
+        '*.{crt,pem}',
+        '**/.git/**',
+        '**/.local/**',
+        '**/school-finanical-and-other-docs/**',
+        '**/school-finanical-docs/**',
+      ],
+    },
+    proxy: { '/api': `http://127.0.0.1:${process.env.DEV_API_PORT ?? 3001}` },
+  },
 });

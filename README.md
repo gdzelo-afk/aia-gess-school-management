@@ -1,6 +1,6 @@
 # AIA-GESS · სასკოლო სივრცე
 
-A Georgian-only school workspace with Stage 1A academic structure/people, Stage 1B manual timetable and Stage 1C lesson-attendance workflows. React/Vite + Fastify + Drizzle/PostgreSQL + Better Auth. This is a polished local demonstration and engineering baseline, **not a production-ready school system**.
+A Georgian-only school workspace with Stage 1A academic structure/people, Stage 1B manual timetable, Stage 1C lesson attendance and Stage 1D academic Gradebook workflows. React/Vite + Fastify + Drizzle/PostgreSQL + Better Auth. This is a polished local demonstration and engineering baseline, **not a production-ready school system**.
 
 ## Run locally
 
@@ -23,19 +23,20 @@ Select one of four demo roles on the sign-in screen, or sign in with:
 | Parent   | `parent@demo.aia.local`   |
 | Student  | `student@demo.aia.local`  |
 
-Local demo password for these accounts: `AiaDemo-2026!`. All four passed browser sign-in and role/scope checks against the preserved normal local database on 1 October 2026. These credentials are deliberately public and fictional. Demo seeding is refused in production. Never use the demo database for real deployment. Repeated automated/manual sign-ins share a local request budget; HTTP 429 means wait one minute, not a wrong password. Do not run mutation browser tests on the manual-preview server.
+Local demo password for these accounts: `AiaDemo-2026!`. All four passed browser sign-in and role/scope checks against the preserved normal local database on 3 October 2026. These credentials are deliberately public and fictional. Demo seeding is refused in production. Never use the demo database for real deployment. Repeated automated/manual sign-ins share a local request budget; HTTP 429 means wait one minute, not a wrong password. Do not run mutation browser tests on the manual-preview server.
 
 ## What works
 
 - Georgian login and four distinct dashboard experiences; original light/dark design, self-hosted Georgian typography, responsive navigation.
-- Real password/session authentication, role grants and SQL-scoped student queries (director 12, teacher 3, guardian 2 children, student 1).
+- Real password/session authentication, role grants and SQL-scoped student queries (director 44, teacher 34, guardian 2 children, student 1 in the expanded fictional demo).
 - Scoped searchable student administration, effective enrollment/guardian history, academic year/semester/calendar configuration, subjects/offerings/elective rosters, staff/teaching assignments and account invitation/activation/recovery/disable.
 - `/timetable`: scheduling control room with one searchable section/group/teacher/room lens, aligned period matrix, contextual inspector, changes-before-publish review and operational conflict/request/availability/setup areas. Includes versioned private drafts/publication, configurable bell periods and numeric rooms, split/combined/elective groups, roster-based conflicts and reasoned overrides, dated substitutions, teacher availability and approval requests. Dashboard day rhythm reads the scoped published timetable; the illustrative next-meeting block remains an agenda concept.
 - `/attendance`: teacher lesson-first roll call with local-only Mark All Present and explicit atomic submission; timed late/early exceptions, reasoned corrections/history, locked teacher requests, guardian explanations, missing-roll-call oversight and scoped monthly history. Founders Office is read-only. Guardian event notices remain in-app only.
+- `/gradebook`: dense course journal, assessment-first mobile sheet, local draft editing and explicit publication, reasoned corrections/history, formative/1–10/pass-fail results, Summative recovery/extension decisions, guardian-only academic comments and annual narratives. Scoped reports expose exact and rounded **provisional**, never official, results. Private versioned PDF criteria and in-app notices preserve historical meaning.
 - Reviewed SQL migrations, repeatable fictional seed, temporal identity/academic baseline, protected audit events, metadata/outbox foundations.
 - Staff/parent/student sample data, illustrative 1–10 grades and GEL invoice preview. Fictional fixed-date agenda: 28 September 2026. Attendance seed adds an explicitly fictional historical week (21–25 September) idempotently; today/future roll calls stay unfilled.
 
-Other module destinations show an explicit planned state. No operational gradebook, finance, library, admissions, messaging or payroll writes are implemented.
+Other module destinations show an explicit planned state. Stage 1D Gradebook is complete for the local/demo scope on its private review branch, awaiting manual acceptance. Finance, library, admissions, messaging and payroll writes remain unimplemented.
 
 ## Selected product design
 
@@ -64,11 +65,11 @@ Start with [docs/README.md](docs/README.md) and [implementation status](docs/imp
 
 For a local built-app smoke test, stop dev then run `APP_ORIGIN=http://localhost:3001 npm start` and open that origin. This intentionally retains development/demo mode. Production mode requires HTTPS, PostgreSQL and demo disabled.
 
-Browser tests now perform real writes. Use an isolated fictional database as described in `docs/engineering.md`; do not run the suite against valuable local records. Browser tests use `/usr/bin/google-chrome` by default; set `CHROME_PATH` to your Chromium executable. CI installs Playwright Chromium and passes its path. Before browser checks, run `DATABASE_URL=pglite://.local/browser-test npx tsx scripts/prepare-attendance-browser.ts` against that same stopped, migrated/seeded isolated database; this provisions a fictional Founders Office account through normal credential records. Never run it against the normal preview database. Screenshots/traces are generated in ignored `test-results/`.
+Browser tests perform real writes against a fresh disposable database and private-file directory under `.local/browser-runs/run-*`. `npm run test:e2e` starts/migrates/seeds its own API :3101 and frontend :5273, provisions scoped fictional test identities, and refuses occupied ports. No manual seed command or running preview is needed. Normal :5173 and `.local/database` are not reused. The harness retains actual authentication/rate limits and paces requests. Chrome defaults to `/usr/bin/google-chrome`; set `CHROME_PATH` for another Chromium executable. Screenshots/traces remain ignored in `test-results/`. See `docs/engineering.md`.
 
 ## External PostgreSQL
 
-Use a dedicated empty database and set `DATABASE_URL=postgresql://...` in `.env`. Apply the same migrations; seed only in demo development. `TEST_DATABASE_URL=postgresql://... TEST_TIMETABLE_DATABASE_URL=postgresql://... TEST_ATTENDANCE_DATABASE_URL=postgresql://... npm test` runs integration tests against a **dedicated disposable test database**; do not point this at real data. Use three distinct disposable databases because the foundation, timetable and attendance test files run independently. CI creates all three.
+Use a dedicated empty database and set `DATABASE_URL=postgresql://...` in `.env`. Apply the same migrations; seed only in demo development. `TEST_DATABASE_URL=postgresql://... TEST_TIMETABLE_DATABASE_URL=postgresql://... TEST_ATTENDANCE_DATABASE_URL=postgresql://... TEST_GRADEBOOK_DATABASE_URL=postgresql://... TEST_GRADEBOOK_DEMO_DATABASE_URL=postgresql://... npm test` runs integration tests against a **dedicated disposable test database**; do not point this at real data. Use five distinct fresh disposable databases for foundation, timetable, attendance, Gradebook domain and Gradebook demo tests. CI creates all five.
 
 ## Deployment boundary
 

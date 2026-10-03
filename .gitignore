@@ -19,3 +19,6 @@ playwright/.auth/
 *.db
 *.har
 *.trace.zip
+
+# Private educational reference material (renamed local folder).
+school-finanical-and-other-docs/

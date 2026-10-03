@@ -1,10 +1,11 @@
 import { defineConfig } from '@playwright/test';
+import { browserOrigin } from './scripts/browser/environment';
 export default defineConfig({
   testDir: './tests/browser',
   fullyParallel: false,
   workers: 1,
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: browserOrigin,
     browserName: 'chromium',
     launchOptions: {
       executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome',
@@ -14,10 +15,10 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   webServer: {
-    command: 'npm run dev',
+    command: 'npx tsx scripts/browser/serve.ts',
     // Wait for Vite's proxy and the database-backed API, not just the HTML server.
-    url: 'http://localhost:5173/api/health',
-    reuseExistingServer: !process.env.CI,
-    timeout: 60000,
+    url: `${browserOrigin}/api/health`,
+    reuseExistingServer: false,
+    timeout: 120000,
   },
 });

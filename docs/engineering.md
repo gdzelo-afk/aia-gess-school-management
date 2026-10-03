@@ -62,6 +62,23 @@ PostgreSQL integration verification uses separate disposable databases for `TEST
 
 ### Attendance acceptance data
 
-Use a fresh disposable browser database for full write regression. With its server stopped, migrate and seed it, then run `DATABASE_URL=pglite://.local/browser-test npx tsx scripts/prepare-attendance-browser.ts`. The fixture script refuses normal non-CI database paths and production mode; it creates a fictional Founders Office identity with a normal Better Auth credential and scoped role. Run dev/E2E against that same explicit URL. Keep normal `.local/database` separate. No authentication or API rate limits are disabled: harnesses reuse real sessions and honor reset timing.
+The current Stage 1D browser harness below supersedes manual Stage 1C browser-database setup. Do not invoke the fixture script against the normal preview database.
 
-PGlite tests use in-memory databases. PostgreSQL verification needs three distinct empty disposable databases supplied through `TEST_DATABASE_URL`, `TEST_TIMETABLE_DATABASE_URL` and `TEST_ATTENDANCE_DATABASE_URL`. Migrations, explicit seed repetition and normal preview setup require a single PGlite process owner. Browser storage states/traces/screenshots remain ignored; never add them to a commit. Stage 1C is reviewed on its branch only; preserve the Stage 1B completion tag and private master milestone.
+PGlite tests use in-memory databases. PostgreSQL verification needs five distinct empty disposable databases: `TEST_DATABASE_URL`, `TEST_TIMETABLE_DATABASE_URL`, `TEST_ATTENDANCE_DATABASE_URL`, `TEST_GRADEBOOK_DATABASE_URL` and `TEST_GRADEBOOK_DEMO_DATABASE_URL`. Migrations, seed repetition and normal preview setup require a single PGlite process owner. Browser storage states/traces/screenshots remain ignored; never add them to a commit.
+
+## Accepted-stage branch protocol
+
+After explicit stakeholder acceptance, verify a clean tracked tree and the accepted remote commit, fast-forward (or merge without squashing) the accepted stage into `master`, push it, create and remotely verify an annotated completion tag, then branch the next stage from that milestone. Never rewrite published stage history. Implementation branches are pushed privately for review; do not merge/tag an unfinished or unaccepted stage automatically. Local private reference material, databases, uploads and browser artifacts must remain excluded from Git/build contexts.
+
+Stage 1C was accepted at `77a35f9`; `master` and `stage-1c-complete-2026-10-01` now point to it. Stage 1D work belongs on `stage-1d-gradebook`. The Stage 1B tag is unchanged.
+
+### Browser mutation isolation
+
+`npm run test:e2e` always starts its own runtime at `http://localhost:5273` (API 3101),
+with a freshly generated `.local/browser-runs/run-*/database`, migrations, demo seed
+and test-only persona setup. It overrides inherited database/origin/secret/mode
+settings and refuses occupied ports. Playwright never reuses an existing server.
+Normal preview at 5173/API 3001 can remain running. Test contexts must use the shared
+browser origin, including CSRF Origin headers; never hard-code the preview URL.
+Fictional failed-run databases stay ignored locally for diagnosis and are never reused.
+Authentication and throttling are the real application behavior.

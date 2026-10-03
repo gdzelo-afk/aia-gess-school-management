@@ -69,7 +69,7 @@ test('director shell, table, command search, theme, preferences and calendar', a
   await page.getByRole('link', { name: 'მოსწავლეები', exact: true }).click();
   await expect(page.getByRole('button', { name: 'შემდეგი გვერდი' })).toBeEnabled();
   await page.getByRole('button', { name: 'შემდეგი გვერდი' }).click();
-  await expect(page.getByText('7–12 / 12 ჩანაწერი')).toBeVisible();
+  await expect(page.getByText('7–12 / 44 ჩანაწერი')).toBeVisible();
   await page.getByRole('textbox', { name: 'მოსწავლის ძიება' }).fill('მაისურაძე');
   await expect(page.getByText('1–2 / 2 ჩანაწერი')).toBeVisible();
   await page.getByRole('textbox', { name: 'მოსწავლის ძიება' }).fill('არარსებული');
@@ -133,7 +133,7 @@ test('mobile drawer, dialog keyboard and responsive layout', async ({ page }) =>
   await page.screenshot({ path: 'test-results/mobile-menu.png' });
   await dialog.getByRole('link', { name: 'მოსწავლეები', exact: true }).click();
   await expect(dialog).not.toBeVisible();
-  await expect(page.getByText('1–3 / 3 ჩანაწერი')).toBeVisible();
+  await expect(page.getByText('1–6 / 34 ჩანაწერი')).toBeVisible();
   await page.getByRole('button', { name: 'შეტყობინებების გახსნა' }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await page.keyboard.press('Escape');

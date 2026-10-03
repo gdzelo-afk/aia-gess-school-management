@@ -78,9 +78,21 @@ function CommandContents({ viewer, close }: { viewer: Viewer; close: () => void 
     staleTime: 0,
     retry: false,
   });
-  const planned = new Set(['/academics', '/finance', '/reports', '/messages', '/community']);
+  const planned = new Set(['/finance', '/reports', '/messages', '/community']);
   const lower = query.toLocaleLowerCase();
   const choices: Choice[] = [
+    ...(viewer.capabilities.some((c) => c.startsWith('gradebook:'))
+      ? [
+          {
+            id: 'gradebook-recovery',
+            title: 'შემაჯამებლების აღდგენა',
+            subtitle: 'აკადემიური მოთხოვნები და დამატებითი ვადები',
+            group: 'ჟურნალი',
+            icon: Command,
+            path: '/gradebook?tab=recovery',
+          },
+        ]
+      : []),
     ...navigation(viewer).map((n) => ({
       id: n.path,
       title: n.label,

@@ -52,6 +52,9 @@ export function navigation(viewer: Viewer) {
     ...(viewer.capabilities.some((c) => c.startsWith('attendance:'))
       ? [{ path: '/attendance', label: 'დასწრება', icon: ClipboardCheck, group: 'სასკოლო სივრცე' }]
       : []),
+    ...(viewer.capabilities.some((c) => c.startsWith('gradebook:'))
+      ? [{ path: '/gradebook', label: 'ჟურნალი', icon: BookOpen, group: 'სასკოლო სივრცე' }]
+      : []),
     { path: '/calendar', label: 'კალენდარი', icon: CalendarDays, group: 'სასკოლო სივრცე' },
     { path: '/messages', label: 'შეტყობინებები', icon: MessageSquare, group: 'სასკოლო სივრცე' },
     ...(viewer.capabilities.includes('people:manage')

@@ -19,6 +19,25 @@ async function navigate(page: Page, path: string) {
   await page.goto(path);
 }
 
+async function signInDirector(page: Page) {
+  // A preceding file can legitimately consume the shared sign-in budget.
+  // Retry only a real 429, after its server-provided reset, through the same UI.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = page.waitForResponse((r) => r.url().endsWith('/api/auth/sign-in/email'));
+    await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
+    const result = await response;
+    if (result.status() !== 429) {
+      expect(result.ok()).toBe(true);
+      return;
+    }
+    const seconds = Number(
+      result.headers()['x-retry-after'] ?? result.headers()['retry-after'] ?? 60,
+    );
+    await page.waitForTimeout((seconds + 1) * 1000);
+  }
+  throw new Error('Sign-in remained throttled after its reset');
+}
+
 test('selected system covers functional students and honest academic/message workspaces', async ({
   page,
 }) => {
@@ -26,7 +45,7 @@ test('selected system covers functional students and honest academic/message wor
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await navigate(page, '/');
-  await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
+  await signInDirector(page);
   await expect(page.locator('.overview-heading')).toBeVisible();
   directorCookies = await page.context().cookies();
   await page.evaluate(() => document.fonts.ready);
@@ -78,7 +97,7 @@ test('selected system covers functional students and honest academic/message wor
     await page.getByRole('textbox', { name: 'მოსწავლის ძიება' }).fill('არარსებული');
     await expect(page.getByRole('heading', { name: 'ჩანაწერი ვერ მოიძებნა' })).toBeVisible();
     await page.getByRole('button', { name: 'ფილტრების გასუფთავება' }).click();
-    await expect(page.getByText('1–6 / 12 ჩანაწერი')).toBeVisible();
+    await expect(page.getByText('1–6 / 44 ჩანაწერი')).toBeVisible();
     await navigate(page, '/academics');
     await expect(
       page.getByRole('heading', { name: 'სასწავლო პროცესი', exact: true }),
@@ -129,7 +148,7 @@ test('people directory filters keep usable search width and compact mobile spaci
     await navigate(page, '/');
   } else {
     await navigate(page, '/login');
-    await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
+    await signInDirector(page);
   }
   await expect(page.locator('.overview-heading')).toBeVisible();
   for (const route of ['students', 'guardians', 'staff']) {

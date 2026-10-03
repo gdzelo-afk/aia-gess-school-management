@@ -1,3 +1,5 @@
+import { seedGradebook } from './gradebook-seed.js';
+import { seedSchoolExpansion } from './school-demo-expansion.js';
 import { seedAttendance } from './attendance-seed.js';
 import { seedTimetable } from './timetable-seed.js';
 import { eq } from 'drizzle-orm';
@@ -223,4 +225,6 @@ export async function seedDemo() {
   });
   await seedTimetable();
   if (config.NODE_ENV !== 'test') await seedAttendance();
+  await seedSchoolExpansion();
+  if (config.NODE_ENV !== 'test') await seedGradebook();
 }
