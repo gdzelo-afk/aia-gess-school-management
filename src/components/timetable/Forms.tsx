@@ -1,3 +1,5 @@
+import { DateInput } from '../DateInput';
+import { Select } from '../Select';
 import { Link } from 'react-router-dom';
 import { Panel } from './Panel';
 import { useState } from 'react';
@@ -114,14 +116,14 @@ export function BellEditor({
     >
       <label className="op-field">
         <span>არსებული პერიოდი</span>
-        <select aria-label="არსებული პერიოდი" value={id} onChange={(e) => setId(e.target.value)}>
+        <Select aria-label="არსებული პერიოდი" value={id} onChange={(e) => setId(e.target.value)}>
           <option value="">ახალი</option>
           {doc.periods.map((p) => (
             <option key={p.id} value={p.id}>
               {p.number} · {p.start}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <Field
         label="ნომერი"
@@ -199,7 +201,7 @@ export function GroupEditor({
     >
       <label className="op-field">
         <span>არსებული ჯგუფი</span>
-        <select
+        <Select
           value={id}
           onChange={(e) => {
             setId(e.target.value);
@@ -212,7 +214,7 @@ export function GroupEditor({
               {g.name}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
       <Field label="ჯგუფის სახელი" name="name" value={group?.name} />
       <div className="tt-group-sources">
@@ -243,7 +245,7 @@ export function GroupEditor({
               />{' '}
               მხოლოდ არჩეული ქვეჯგუფი
             </label>
-            <select
+            <Select
               aria-label={`ქვეჯგუფის მოსწავლეები ${setup.offerings.find((o) => o.id === oid)?.section}`}
               multiple
               name={`students-${oid}`}
@@ -254,7 +256,7 @@ export function GroupEditor({
                   {s.name} · {s.number}
                 </option>
               ))}
-            </select>
+            </Select>
             <small>
               Ctrl / Command-ით აირჩიეთ რამდენიმე. მხოლოდ შესაბამის კურსზე მოქმედი წევრები
               ითვლებიან.
@@ -501,7 +503,7 @@ export function ChangesForm({
             <div className="op-form-grid">
               <label className="op-field">
                 <span>გაკვეთილის თარიღი</span>
-                <input
+                <DateInput
                   type="date"
                   required
                   value={c.targetDate}
@@ -510,7 +512,7 @@ export function ChangesForm({
               </label>
               <label className="op-field">
                 <span>მასწავლებელი</span>
-                <select
+                <Select
                   aria-label={`მასწავლებელი ${i + 1}`}
                   value={c.teacherId}
                   onChange={(e) => change(i, { teacherId: e.target.value })}
@@ -520,23 +522,23 @@ export function ChangesForm({
                       {t.name}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               <label className="op-field">
                 <span>ოთახი</span>
-                <select value={c.roomId} onChange={(e) => change(i, { roomId: e.target.value })}>
+                <Select value={c.roomId} onChange={(e) => change(i, { roomId: e.target.value })}>
                   {setup.rooms.map((r) => (
                     <option key={r.id} value={r.id}>
                       {r.number}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
               {document && (
                 <>
                   <label className="op-field">
                     <span>ჯგუფი / კურსი</span>
-                    <select
+                    <Select
                       value={c.groupId}
                       onChange={(e) => change(i, { groupId: e.target.value })}
                     >
@@ -545,11 +547,11 @@ export function ChangesForm({
                           {g.name}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   </label>
                   <label className="op-field">
                     <span>პერიოდი</span>
-                    <select
+                    <Select
                       value={c.periodId}
                       onChange={(e) => {
                         const p = document.periods.find((p) => p.id === e.target.value)!;
@@ -563,7 +565,7 @@ export function ChangesForm({
                             {p.number} · {p.start}
                           </option>
                         ))}
-                    </select>
+                    </Select>
                   </label>
                 </>
               )}
@@ -629,20 +631,22 @@ export function ChangesForm({
             )}
           </>
         )}
-        {error && (
-          <p role="alert" className="field-error">
-            {error}
-            <Button
-              type="button"
-              onClick={async () => {
-                await queryClient.invalidateQueries({ queryKey: ['timetable'] });
-                onClose();
-              }}
-            >
-              მიმდინარე მონაცემების ჩატვირთვა
-            </Button>
-          </p>
-        )}
+        <div className="ux-feedback-slot">
+          {error && (
+            <p role="alert" className="field-error">
+              {error}
+              <Button
+                type="button"
+                onClick={async () => {
+                  await queryClient.invalidateQueries({ queryKey: ['timetable'] });
+                  onClose();
+                }}
+              >
+                მიმდინარე მონაცემების ჩატვირთვა
+              </Button>
+            </p>
+          )}
+        </div>
         <footer className="op-form-actions">
           <Button type="button" onClick={onClose}>
             გაუქმება
@@ -729,7 +733,7 @@ export function AvailabilityDialog({
           {manage && (
             <label className="op-field">
               <span>მასწავლებელი</span>
-              <select
+              <Select
                 aria-label="მასწავლებელი"
                 value={a.teacherId}
                 onChange={(e) => patch({ teacherId: e.target.value })}
@@ -739,13 +743,13 @@ export function AvailabilityDialog({
                     {t.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           )}
           {(['startsOn', 'endsOn'] as const).map((key) => (
             <label key={key} className="op-field">
               <span>{key === 'startsOn' ? 'დაწყება' : 'დასრულება (არ შედის)'}</span>
-              <input
+              <DateInput
                 type="date"
                 required
                 value={a[key]}
@@ -756,7 +760,7 @@ export function AvailabilityDialog({
           {manage && (
             <label className="op-field">
               <span>კვირის დღე</span>
-              <select
+              <Select
                 value={a.weekdays?.[0] ?? ''}
                 onChange={(e) =>
                   patch({ weekdays: e.target.value ? [Number(e.target.value)] : null })
@@ -768,7 +772,7 @@ export function AvailabilityDialog({
                     {d} · ყოველკვირეული
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           )}
           <fieldset className="tt-checkboxes">
@@ -843,7 +847,7 @@ export function AvailabilityDialog({
                       <div className="op-form-grid">
                         <label className="op-field">
                           <span>შემცვლელი</span>
-                          <select
+                          <Select
                             aria-label={`შემცვლელი ${o.start} ${o.targetDate}`}
                             value={proposals[o.id]!.teacherId}
                             onChange={(e) =>
@@ -858,11 +862,11 @@ export function AvailabilityDialog({
                                 {t.name}
                               </option>
                             ))}
-                          </select>
+                          </Select>
                         </label>
                         <label className="op-field">
                           <span>ახალი თარიღი</span>
-                          <input
+                          <DateInput
                             type="date"
                             value={proposals[o.id]!.targetDate}
                             onChange={(e) =>
@@ -900,11 +904,13 @@ export function AvailabilityDialog({
             )}
           </div>
         )}
-        {error && (
-          <p role="alert" className="field-error">
-            {error}
-          </p>
-        )}
+        <div className="ux-feedback-slot">
+          {error && (
+            <p role="alert" className="field-error">
+              {error}
+            </p>
+          )}
+        </div>
         <footer className="op-form-actions">
           <Button type="button" onClick={onClose}>
             გაუქმება
@@ -1100,7 +1106,7 @@ export function ExtraLesson({
     >
       <label className="op-field">
         <span>გამოქვეყნებული ვერსია</span>
-        <select
+        <Select
           aria-label="გამოქვეყნებული ვერსია"
           value={id}
           onChange={(e) => setId(e.target.value)}
@@ -1112,7 +1118,7 @@ export function ExtraLesson({
                 {v.name}
               </option>
             ))}
-        </select>
+        </Select>
       </label>
       <Field label="თარიღი" name="date" type="date" value={tbilisiDate()} />
       <Field label="საბაზო გაკვეთილი" name="lessonId">

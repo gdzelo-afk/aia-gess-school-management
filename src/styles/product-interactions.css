@@ -1,0 +1,623 @@
+/* Main product only. Archived lab has a separate entry/style graph. */
+.product-theme {
+  --motion-fast: 120ms;
+  --motion-surface: 160ms;
+  --motion-layout: 200ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+.product-theme :focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 75%, var(--ink));
+  outline-offset: 2px;
+}
+.product-theme button:focus:not(:focus-visible),
+.product-theme a:focus:not(:focus-visible) {
+  outline: none;
+}
+.product-theme :is(input, textarea):focus-visible {
+  outline-width: 1px;
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+.product-theme :is(button, a, input, textarea) {
+  -webkit-tap-highlight-color: transparent;
+}
+.product-theme button {
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    color var(--motion-fast);
+}
+.product-theme button:active:not(:disabled) {
+  filter: brightness(0.97);
+}
+.ux-select,
+.ux-date {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
+  vertical-align: middle;
+}
+.ux-select-trigger {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 12px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ux-select-trigger > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ux-select-trigger svg {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.ux-select-trigger[data-state='open'] {
+  border-color: var(--accent);
+  background: var(--surface-soft);
+}
+.ux-select-trigger:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.ux-select-trigger[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+.product-theme .ux-select-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+  bottom: 0;
+  border: 0;
+  min-width: 0;
+}
+.product-theme :is(.op-field, .gb-field, .field) > :is(.ux-select, .ux-date) {
+  display: flex;
+  width: 100%;
+}
+.ux-popover {
+  z-index: 150;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px #00000020;
+  transform-origin: var(--radix-popover-content-transform-origin);
+  animation: ux-popover-in var(--motion-fast) var(--motion-ease);
+}
+.ux-popover[data-state='closed'] {
+  animation: ux-popover-out 90ms ease-in;
+}
+.ux-select-menu {
+  min-width: min(var(--radix-popover-trigger-width), calc(100vw - 24px));
+  width: max-content;
+  max-width: min(430px, calc(100vw - 24px));
+  padding: 5px;
+}
+.ux-options {
+  max-height: min(300px, calc(var(--radix-popover-content-available-height) - 62px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  outline: none !important;
+}
+.ux-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 12px;
+  min-height: 40px;
+  font-size: 12px;
+  line-height: 1.6;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.ux-option svg {
+  flex-shrink: 0;
+}
+.ux-option[data-active='true'] {
+  background: var(--surface-soft);
+}
+.ux-option[aria-selected='true'] {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+.ux-option[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: default;
+}
+.ux-select-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 8px;
+  color: var(--muted);
+}
+.product-theme .ux-select-search input {
+  width: 100%;
+  min-width: 0;
+  padding: 7px 2px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-size: 12px;
+}
+.ux-option-empty {
+  margin: 0;
+  padding: 18px 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.ux-date {
+  align-items: center;
+}
+.product-theme .ux-date input {
+  width: 100%;
+  min-width: 0;
+  padding-right: 36px;
+  font-variant-numeric: tabular-nums;
+}
+.ux-date-trigger {
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  bottom: 2px;
+  width: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 4px;
+}
+.ux-calendar {
+  width: 286px;
+  max-width: calc(100vw - 24px);
+  padding: 10px;
+  max-height: var(--radix-popover-content-available-height);
+  overflow-y: auto;
+}
+.ux-calendar header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 7px;
+}
+.ux-calendar header strong {
+  font-size: 12px;
+  font-weight: 500;
+}
+.ux-calendar button {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  border-radius: 4px;
+  padding: 0;
+  cursor: pointer;
+}
+.ux-calendar header button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+}
+.ux-calendar table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+}
+.ux-calendar th {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted);
+  padding: 5px 0;
+}
+.ux-calendar td {
+  padding: 1px;
+  text-align: center;
+  border: 0;
+}
+.ux-calendar td button {
+  width: 100%;
+  min-height: 32px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.ux-calendar button:hover {
+  background: var(--surface-soft);
+}
+.ux-calendar [data-outside='true'] {
+  color: var(--muted);
+}
+.ux-calendar [aria-current='date'] {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.ux-calendar [aria-selected='true'] button {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.ux-calendar [aria-disabled='true'] {
+  opacity: 0.35;
+  cursor: default;
+}
+.ux-calendar footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+.ux-calendar footer button {
+  font-size: 11px;
+  color: var(--accent);
+  min-height: 32px;
+  padding: 5px;
+}
+.ux-feedback-slot {
+  min-height: 2.8em;
+  font-size: 12px;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  margin: 6px 0;
+}
+.ux-feedback-slot > p {
+  margin: 0;
+  color: var(--danger);
+  font-size: inherit;
+}
+.ux-feedback-slot:empty {
+  visibility: hidden;
+}
+.product-login .ux-feedback-slot {
+  min-height: 44px;
+  margin: 0;
+}
+.product-login .entrance-options {
+  margin-bottom: 0;
+}
+.product-login .entrance-error {
+  padding: 0;
+  border: 0;
+}
+.dialog-content.product-theme[data-state='open'] {
+  animation: ux-dialog-in var(--motion-surface) var(--motion-ease);
+}
+.dialog-content.product-theme[data-state='closed'] {
+  animation: ux-dialog-out 100ms ease-in;
+}
+.dialog-overlay.product-theme[data-state='open'] {
+  animation: ux-backdrop-in var(--motion-surface);
+}
+.dialog-overlay.product-theme[data-state='closed'] {
+  animation: ux-backdrop-out 100ms;
+}
+.ux-route-loading {
+  padding: 24px 0;
+  min-height: 45vh;
+}
+.product-theme .skeleton-group {
+  animation: ux-pending-in 200ms;
+}
+.product-theme :is(.tt-main, .gb-content, .att-content, .op-content) {
+  animation: ux-pending-in var(--motion-surface);
+}
+.product-theme :is(.tt-workspace-nav, .gb-navigation nav, .att-tabs, .op-tabs) button {
+  transition:
+    color var(--motion-fast),
+    background-color var(--motion-fast),
+    border-color var(--motion-fast);
+}
+.product-theme :is(.tt-workspace-nav, .gb-navigation nav, .att-tabs, .op-tabs) button:hover {
+  background: var(--surface-soft);
+}
+/* Keep operational row rules; remove duplicate perimeter lines and decorative chrome. */
+.product-shell .topbar-divider {
+  display: none;
+}
+.product-shell .nav-link.active {
+  border-color: transparent;
+}
+.product-theme .tt-matrix-scroll {
+  max-height: none;
+  overflow-x: auto;
+  overflow-y: visible;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+}
+.product-theme .tt-feedback,
+.product-theme .att-feedback {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 90;
+  max-width: min(420px, calc(100vw - 32px));
+  box-shadow: 0 8px 24px #00000020;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+@keyframes ux-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ux-popover-out {
+  to {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+@keyframes ux-dialog-in {
+  from {
+    opacity: 0;
+    translate: 0 4px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes ux-dialog-out {
+  to {
+    opacity: 0;
+    translate: 0 4px;
+  }
+}
+@keyframes ux-backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ux-backdrop-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes ux-pending-in {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (min-width: 901px) {
+  .product-shell .sidebar {
+    transition:
+      width var(--motion-layout) var(--motion-ease),
+      padding var(--motion-layout) var(--motion-ease);
+    overflow-x: hidden;
+  }
+  .product-shell .workspace {
+    transition:
+      margin-left var(--motion-layout) var(--motion-ease),
+      width var(--motion-layout) var(--motion-ease);
+  }
+  .product-shell .sidebar .nav-link {
+    min-height: 42px;
+    white-space: nowrap;
+    justify-content: flex-start;
+  }
+  .product-shell .sidebar .nav-link svg {
+    flex-shrink: 0;
+  }
+  .product-shell.sidebar-collapsed .sidebar {
+    padding-inline: 16px;
+  }
+  .product-shell.sidebar-collapsed .sidebar .nav-link {
+    padding-inline: 10px;
+  }
+  .product-shell .sidebar .nav-label {
+    transition: opacity 100ms;
+  }
+  .product-shell.sidebar-collapsed .sidebar .nav-label {
+    display: block;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+  }
+  .product-shell .sidebar .nav-group {
+    height: 41px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .product-shell.sidebar-collapsed .sidebar .nav-group {
+    height: 41px;
+    margin: 0;
+    border: 0;
+  }
+  .product-shell.sidebar-collapsed .sidebar .brand {
+    justify-content: flex-start;
+    padding-left: 4px;
+  }
+  .product-shell .sidebar .brand {
+    min-height: 45px;
+    transition: padding var(--motion-layout) var(--motion-ease);
+  }
+  .product-shell .sidebar .nav-group {
+    transition: opacity 100ms;
+  }
+  .product-shell.sidebar-collapsed .sidebar .nav-group {
+    opacity: 0;
+    font-size: 10px;
+  }
+  .product-shell .sidebar .brand img {
+    flex-shrink: 0;
+  }
+  .sidebar-tooltip {
+    animation: ux-pending-in 100ms 180ms both;
+  }
+}
+@media (max-width: 700px) {
+  .ux-option {
+    min-height: 44px;
+    font-size: 13px;
+  }
+  .ux-calendar {
+    width: 300px;
+  }
+  .ux-calendar td button {
+    min-height: 36px;
+  }
+  .ux-select-trigger {
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-theme,
+  .product-theme *,
+  .product-theme *::before,
+  .product-theme *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+.ux-refresh-region {
+  position: relative;
+  transition: opacity var(--motion-fast);
+}
+.ux-refresh-region[aria-busy='true'] {
+  opacity: 0.55;
+  cursor: progress;
+}
+.ux-workspace-view:not([hidden]),
+.product-theme .tt-operational {
+  animation: ux-pending-in var(--motion-surface);
+}
+.product-theme .ux-workspace-view[hidden] {
+  display: none;
+}
+.ux-person-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.ux-person-option strong {
+  font-weight: 500;
+}
+.ux-person-option small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.product-theme .tt-state-band {
+  border-bottom: 0;
+}
+.tt-version-picker .ux-select {
+  width: 330px;
+  max-width: 100%;
+}
+.tt-version-picker > label {
+  min-width: 0;
+}
+.gb-lens > .ux-select {
+  width: 100%;
+}
+.gb-lens .ux-select-trigger {
+  font-size: 15px;
+  font-weight: 500;
+  background: transparent;
+  border-color: transparent;
+}
+.gb-term-select .ux-select {
+  max-width: 160px;
+}
+.gb-term-select .ux-select-trigger {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+}
+.gb-result-control > .ux-select {
+  flex: 1;
+}
+.gb-result-control .ux-select-trigger {
+  font-size: 12px;
+  min-height: 38px;
+}
+.product-theme .att-feedback button {
+  margin-left: 16px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 20px;
+}
+.product-theme .tt-schedule-toolbar .ux-date {
+  width: 170px;
+}
+@media (max-width: 700px) {
+  .tt-version-picker .ux-select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .product-theme .gb-page-heading:has(.gb-readonly) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .product-theme .gb-readonly {
+    max-width: 100%;
+    font-size: 11px;
+  }
+  .product-theme .gb-readonly svg {
+    flex-shrink: 0;
+  }
+  .gb-lens .ux-select-trigger {
+    font-size: 13px;
+  }
+}
+
+.product-shell .directory-toolbar > .ux-select {
+  flex: 0 1 320px;
+  width: 320px;
+}
+.product-shell .directory-toolbar .filter-select > .ux-select {
+  width: 100%;
+}
+.product-shell .directory-toolbar .ux-select-trigger {
+  font-size: 13px;
+  min-height: 42px;
+  background: var(--rail);
+}
+@media (max-width: 700px) {
+  .product-shell .directory-toolbar > .ux-select {
+    flex: none;
+    width: 100%;
+  }
+}
+/* A full-height navigation drawer keeps its viewport edges fixed while entering. */
+.dialog-content.product-theme.mobile-nav-dialog[data-state='open'] {
+  animation: ux-backdrop-in var(--motion-surface);
+}
+.dialog-content.product-theme.mobile-nav-dialog[data-state='closed'] {
+  animation: ux-backdrop-out 100ms;
+}

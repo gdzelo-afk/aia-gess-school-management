@@ -11,6 +11,7 @@ import './styles/product-dashboard.css';
 import './styles/product-command.css';
 import './styles/product-workspaces.css';
 import './styles/product-operations.css';
+import './styles/product-interactions.css';
 import { App } from './App';
 import { queryClient } from './lib/api';
 import { Preferences } from './lib/preferences';

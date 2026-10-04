@@ -1,6 +1,7 @@
+import { useRouteScroll } from '../lib/use-route-scroll';
 import { GradebookNotices } from './GradebookNotices';
 import { AttendanceNotices } from './AttendanceNotices';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, Suspense } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Bell, Sun, Moon, PanelLeft, LogOut, CheckCheck } from 'lucide-react';
@@ -12,9 +13,10 @@ import { SidebarLink } from './SidebarLink';
 import { SemesterContext } from './SemesterContext';
 import { TbilisiClock } from './TbilisiClock';
 import { navigation } from './navigation';
-import { Avatar, IconButton, Modal, Button, EmptyState, Badge } from './ui';
+import { Avatar, IconButton, Modal, Button, EmptyState, Badge, Skeleton } from './ui';
 import { CommandPalette, commandShortcut } from './CommandPalette';
 export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => void }) {
+  useRouteScroll();
   const { theme, setTheme, sidebarCollapsed, setSidebarCollapsed } = usePreferences();
   const [searchOpen, setSearchOpen] = useState(false);
   const mobileTrigger = useRef<HTMLSpanElement>(null);
@@ -161,7 +163,15 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
           </div>
         </header>
         <main id="main" className="main-content">
-          <Outlet context={{ viewer }} />
+          <Suspense
+            fallback={
+              <div className="ux-route-loading">
+                <Skeleton rows={5} />
+              </div>
+            }
+          >
+            <Outlet context={{ viewer }} />
+          </Suspense>
         </main>
         <footer className="app-footer">
           <TbilisiClock />

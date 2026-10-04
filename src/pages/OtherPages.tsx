@@ -1,3 +1,4 @@
+import { DateInput } from '../components/DateInput';
 import { useState } from 'react';
 import { useLocation, useOutletContext, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -149,7 +150,7 @@ export function Calendar() {
           <h2>დღის განრიგი</h2>
           <label className="field inline-field">
             თარიღი
-            <input
+            <DateInput
               aria-label="თარიღი"
               type="date"
               value={day}

@@ -208,11 +208,13 @@ export function Login({ onLogin }: { onLogin: () => void }) {
                 </label>
                 <Link to="/recovery">პაროლის აღდგენა</Link>
               </div>
-              {error && (
-                <p id="login-error" role="alert" className="entrance-error">
-                  {error}
-                </p>
-              )}
+              <div className="ux-feedback-slot">
+                {error && (
+                  <p id="login-error" role="alert" className="entrance-error">
+                    {error}
+                  </p>
+                )}
+              </div>
               <button className="product-primary entrance-submit" disabled={busy}>
                 {busy ? 'შესვლა…' : 'სივრცეში შესვლა'}
                 {busy ? (

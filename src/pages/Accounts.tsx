@@ -18,6 +18,8 @@ export function Accounts() {
     [link, setLink] = useState('');
   const result = useQuery({
     queryKey: ['accounts', q, offset, viewer.id],
+    placeholderData: (previous, previousQuery) =>
+      previousQuery?.queryKey[3] === viewer.id ? previous : undefined,
     queryFn: () =>
       api<{ items: AccountRow[]; total: number; localDelivery: boolean }>(
         `/api/accounts?q=${encodeURIComponent(q)}&offset=${offset}`,
@@ -68,7 +70,11 @@ export function Accounts() {
         <ErrorState onRetry={() => void result.refetch()} />
       ) : (
         <>
-          <div className="op-record-list">
+          <div
+            className="op-record-list ux-refresh-region"
+            aria-busy={result.isPlaceholderData}
+            inert={result.isPlaceholderData}
+          >
             {result.data.items.map((a) => (
               <article key={a.id}>
                 <div className="op-person-identity">
@@ -102,13 +108,16 @@ export function Accounts() {
             ))}
           </div>
           <div className="pagination">
-            <span>{result.data.total} ანგარიში</span>
+            <span>{result.isPlaceholderData ? 'ახლდება…' : `${result.data.total} ანგარიში`}</span>
             <div>
-              <Button disabled={!offset} onClick={() => setOffset(offset - 25)}>
+              <Button
+                disabled={!offset || result.isPlaceholderData}
+                onClick={() => setOffset(offset - 25)}
+              >
                 წინა
               </Button>
               <Button
-                disabled={offset + 25 >= result.data.total}
+                disabled={result.isPlaceholderData || offset + 25 >= result.data.total}
                 onClick={() => setOffset(offset + 25)}
               >
                 შემდეგი

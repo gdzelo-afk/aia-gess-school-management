@@ -1,3 +1,4 @@
+import { Select } from '../components/Select';
 import { useState } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -42,6 +43,8 @@ export function Students() {
   const id = params.get('student');
   const result = useQuery({
     queryKey: ['students', viewer.id, q, section, sort, page, status],
+    placeholderData: (previous, previousQuery) =>
+      previousQuery?.queryKey[1] === viewer.id ? previous : undefined,
     queryFn: () =>
       api<StudentPage>(
         `/api/foundation/students?q=${encodeURIComponent(q)}&sort=${sort}&offset=${page * 6}&limit=6&status=${status}${section ? `&section=${encodeURIComponent(section)}` : ''}`,
@@ -99,7 +102,7 @@ export function Students() {
           </div>
           <label className="filter-select">
             <span className="sr-only">კლასის ფილტრი</span>
-            <select
+            <Select
               value={section}
               onChange={(e) => {
                 setSection(e.target.value);
@@ -110,11 +113,11 @@ export function Students() {
               {setup.data?.sections.map((s) => (
                 <option key={s.id}>{s.name}</option>
               ))}
-            </select>
+            </Select>
           </label>
           {canManage && (
             <label className="filter-select">
-              <select
+              <Select
                 aria-label="მოსწავლის სტატუსი"
                 value={status}
                 onChange={(e) => {
@@ -125,7 +128,7 @@ export function Students() {
                 <option value="active">აქტიური</option>
                 <option value="archived">არქივში</option>
                 <option value="all">ყველა</option>
-              </select>
+              </Select>
             </label>
           )}
         </div>
@@ -135,7 +138,14 @@ export function Students() {
           <ErrorState onRetry={() => void result.refetch()} />
         ) : result.data.items.length ? (
           <>
-            <div className="table-scroll" role="region" aria-label="მოსწავლეთა სია" tabIndex={0}>
+            <div
+              className="table-scroll ux-refresh-region"
+              aria-busy={result.isPlaceholderData}
+              inert={result.isPlaceholderData}
+              role="region"
+              aria-label="მოსწავლეთა სია"
+              tabIndex={0}
+            >
               <table>
                 <thead>
                   <tr>
@@ -194,13 +204,14 @@ export function Students() {
             </div>
             <div className="pagination">
               <span>
-                {page * 6 + 1}–{Math.min(page * 6 + 6, result.data.total)} / {result.data.total}{' '}
-                ჩანაწერი
+                {result.isPlaceholderData
+                  ? 'ახლდება…'
+                  : `${page * 6 + 1}–${Math.min(page * 6 + 6, result.data.total)} / ${result.data.total} ჩანაწერი`}
               </span>
               <div>
                 <Button
                   aria-label="წინა გვერდი"
-                  disabled={page === 0}
+                  disabled={page === 0 || result.isPlaceholderData}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   <ChevronLeft size={16} />
@@ -208,7 +219,7 @@ export function Students() {
                 <span>{page + 1}</span>
                 <Button
                   aria-label="შემდეგი გვერდი"
-                  disabled={(page + 1) * 6 >= result.data.total}
+                  disabled={result.isPlaceholderData || (page + 1) * 6 >= result.data.total}
                   onClick={() => setPage((p) => p + 1)}
                 >
                   <ChevronRight size={16} />

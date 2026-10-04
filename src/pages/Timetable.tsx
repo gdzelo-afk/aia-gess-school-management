@@ -1,3 +1,5 @@
+import { DateInput } from '../components/DateInput';
+import { Select } from '../components/Select';
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -224,7 +226,7 @@ export function Timetable() {
           <div className="tt-version-picker">
             <label>
               <span>განრიგის ვერსია</span>
-              <select
+              <Select
                 aria-label="განრიგის ვერსია"
                 value={versionId}
                 onChange={(e) => switchVersion(e.target.value)}
@@ -235,7 +237,7 @@ export function Timetable() {
                     {v.status === 'draft' ? 'სამუშაო' : 'გამოქვეყნებული'} · {v.name} · {v.startsOn}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
             <Button onClick={() => setDialog('draft')}>
               <Plus size={14} />
@@ -245,7 +247,7 @@ export function Timetable() {
         ) : data.children.length > 1 ? (
           <label className="tt-child">
             <span>შვილი</span>
-            <select
+            <Select
               aria-label="შვილის განრიგი"
               value={child}
               onChange={(e) => setChild(e.target.value)}
@@ -256,7 +258,7 @@ export function Timetable() {
                   {c.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         ) : null}
       </header>
@@ -341,185 +343,183 @@ export function Timetable() {
       )}
       <div className="tt-layout">
         <div className="tt-main">
-          {tab === 'schedule' && (
-            <>
-              <div className="tt-schedule-toolbar">
-                <div className="tt-lens-heading">
-                  {manage ? (
-                    <button
-                      onClick={() => {
-                        setSearch('');
-                        setScopeOpen(true);
-                      }}
-                    >
-                      <span>{lensLabels[activeLens.kind]}</span>
-                      <strong>{activeLens.name}</strong>
-                      <ChevronDown size={16} />
-                    </button>
-                  ) : (
-                    <strong>
-                      {child ? data.children.find((c) => c.id === child)?.name : activeLens.name}
-                    </strong>
-                  )}
-                </div>
-                <div className="tt-week-control">
-                  <IconButton label="წინა კვირა" onClick={() => setFrom(shift(from, -7))}>
-                    <ArrowLeft size={15} />
-                  </IconButton>
-                  <input
-                    aria-label="განრიგის კვირა"
-                    type="date"
-                    value={from}
-                    onChange={(e) => e.target.value && setFrom(monday(e.target.value))}
-                  />
-                  <IconButton label="შემდეგი კვირა" onClick={() => setFrom(shift(from, 7))}>
-                    <ArrowRight size={15} />
-                  </IconButton>
+          <div hidden={tab !== 'schedule'} className="ux-workspace-view">
+            <div className="tt-schedule-toolbar">
+              <div className="tt-lens-heading">
+                {manage ? (
                   <button
                     onClick={() => {
-                      setFrom(monday(tbilisiDate()));
-                      if (versionId && !editable) switchVersion('');
+                      setSearch('');
+                      setScopeOpen(true);
                     }}
                   >
-                    დღეს
+                    <span>{lensLabels[activeLens.kind]}</span>
+                    <strong>{activeLens.name}</strong>
+                    <ChevronDown size={16} />
+                  </button>
+                ) : (
+                  <strong>
+                    {child ? data.children.find((c) => c.id === child)?.name : activeLens.name}
+                  </strong>
+                )}
+              </div>
+              <div className="tt-week-control">
+                <IconButton label="წინა კვირა" onClick={() => setFrom(shift(from, -7))}>
+                  <ArrowLeft size={15} />
+                </IconButton>
+                <DateInput
+                  aria-label="განრიგის კვირა"
+                  type="date"
+                  value={from}
+                  onChange={(e) => e.target.value && setFrom(monday(e.target.value))}
+                />
+                <IconButton label="შემდეგი კვირა" onClick={() => setFrom(shift(from, 7))}>
+                  <ArrowRight size={15} />
+                </IconButton>
+                <button
+                  onClick={() => {
+                    setFrom(monday(tbilisiDate()));
+                    if (versionId && !editable) switchVersion('');
+                  }}
+                >
+                  დღეს
+                </button>
+              </div>
+              <Button aria-expanded={filtersOpen} onClick={() => setFiltersOpen(!filtersOpen)}>
+                <SlidersHorizontal size={15} />
+                ფილტრები{subject || filterState ? ' · მოქმედი' : ''}
+              </Button>
+            </div>
+            {filtersOpen && (
+              <div className="tt-filter-panel">
+                <label>
+                  <span>საგანი</span>
+                  <Select
+                    aria-label="საგნის ფილტრი"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                  >
+                    <option value="">ყველა საგანი</option>
+                    {[...new Set(all.map((t) => t.subject))].map((s) => (
+                      <option key={s}>{s}</option>
+                    ))}
+                  </Select>
+                </label>
+                <label>
+                  <span>მდგომარეობა</span>
+                  <Select
+                    aria-label="მდგომარეობის ფილტრი"
+                    value={filterState}
+                    onChange={(e) => setFilterState(e.target.value)}
+                  >
+                    <option value="">ყველა გაკვეთილი</option>
+                    <option value="changed">ცვლილებები</option>
+                    <option value="cancelled">გაუქმებული</option>
+                    {manage && <option value="conflict">კონფლიქტიანი</option>}
+                  </Select>
+                </label>
+                {(subject || filterState) && (
+                  <Button
+                    onClick={() => {
+                      setSubject('');
+                      setFilterState('');
+                    }}
+                  >
+                    ფილტრების გასუფთავება
+                  </Button>
+                )}
+              </div>
+            )}
+            {manage && activeLens.kind === 'school' ? (
+              <section className="tt-oversight">
+                <div className="tt-oversight-numbers">
+                  <div>
+                    <b className="product-number">{all.length}</b>
+                    <span>{versionId ? 'განთავსებული გაკვეთილი' : 'კვირის გაკვეთილი'}</span>
+                  </div>
+                  <button onClick={() => setTab('conflicts')}>
+                    <b className="product-number">{conflicts.length}</b>
+                    <span>საჭიროებს განხილვას</span>
+                  </button>
+                  <button onClick={() => setTab('requests')}>
+                    <b className="product-number">{pending}</b>
+                    <span>მოთხოვნა რიგში</span>
                   </button>
                 </div>
-                <Button aria-expanded={filtersOpen} onClick={() => setFiltersOpen(!filtersOpen)}>
-                  <SlidersHorizontal size={15} />
-                  ფილტრები{subject || filterState ? ' · მოქმედი' : ''}
-                </Button>
-              </div>
-              {filtersOpen && (
-                <div className="tt-filter-panel">
-                  <label>
-                    <span>საგანი</span>
-                    <select
-                      aria-label="საგნის ფილტრი"
-                      value={subject}
-                      onChange={(e) => setSubject(e.target.value)}
-                    >
-                      <option value="">ყველა საგანი</option>
-                      {[...new Set(all.map((t) => t.subject))].map((s) => (
-                        <option key={s}>{s}</option>
-                      ))}
-                    </select>
-                  </label>
-                  <label>
-                    <span>მდგომარეობა</span>
-                    <select
-                      aria-label="მდგომარეობის ფილტრი"
-                      value={filterState}
-                      onChange={(e) => setFilterState(e.target.value)}
-                    >
-                      <option value="">ყველა გაკვეთილი</option>
-                      <option value="changed">ცვლილებები</option>
-                      <option value="cancelled">გაუქმებული</option>
-                      {manage && <option value="conflict">კონფლიქტიანი</option>}
-                    </select>
-                  </label>
-                  {(subject || filterState) && (
-                    <Button
-                      onClick={() => {
-                        setSubject('');
-                        setFilterState('');
-                      }}
-                    >
-                      ფილტრების გასუფთავება
-                    </Button>
-                  )}
+                <h2>გახსენით კონკრეტული განრიგი</h2>
+                <p>კლასის, მასწავლებლის ან ოთახის ჭრილში პერიოდის დატვირთვა მკაფიოდ ჩანს.</p>
+                <div className="tt-scope-directory">
+                  {options
+                    .filter((o) => o.kind === 'section' || o.kind === 'teacher')
+                    .map((o) => (
+                      <button key={o.kind + o.id} onClick={() => setLens(o)}>
+                        <small>{lensLabels[o.kind]}</small>
+                        <strong>{o.name}</strong>
+                        <span>
+                          {all.filter((t) => inLens(t, o)).length} გაკვეთილი{' '}
+                          <ArrowRight size={13} />
+                        </span>
+                      </button>
+                    ))}
                 </div>
-              )}
-              {manage && activeLens.kind === 'school' ? (
-                <section className="tt-oversight">
-                  <div className="tt-oversight-numbers">
-                    <div>
-                      <b className="product-number">{all.length}</b>
-                      <span>{versionId ? 'განთავსებული გაკვეთილი' : 'კვირის გაკვეთილი'}</span>
-                    </div>
-                    <button onClick={() => setTab('conflicts')}>
-                      <b className="product-number">{conflicts.length}</b>
-                      <span>საჭიროებს განხილვას</span>
-                    </button>
-                    <button onClick={() => setTab('requests')}>
-                      <b className="product-number">{pending}</b>
-                      <span>მოთხოვნა რიგში</span>
-                    </button>
-                  </div>
-                  <h2>გახსენით კონკრეტული განრიგი</h2>
-                  <p>კლასის, მასწავლებლის ან ოთახის ჭრილში პერიოდის დატვირთვა მკაფიოდ ჩანს.</p>
-                  <div className="tt-scope-directory">
-                    {options
-                      .filter((o) => o.kind === 'section' || o.kind === 'teacher')
-                      .map((o) => (
-                        <button key={o.kind + o.id} onClick={() => setLens(o)}>
-                          <small>{lensLabels[o.kind]}</small>
-                          <strong>{o.name}</strong>
-                          <span>
-                            {all.filter((t) => inLens(t, o)).length} გაკვეთილი{' '}
-                            <ArrowRight size={13} />
-                          </span>
-                        </button>
-                      ))}
-                  </div>
-                </section>
-              ) : versionId ? (
-                draft.isPending ? (
-                  <Skeleton />
-                ) : draft.isError ? (
-                  <ErrorState onRetry={() => void draft.refetch()} />
-                ) : (
-                  <Matrix
-                    items={filtered}
-                    periods={periods}
-                    from={from}
-                    lens={activeLens}
-                    editable={editable}
-                    versionId={versionId}
-                    revision={draft.data!.revision}
-                    conflicts={conflicts}
-                    changed={changed}
-                    selected={selected?.id}
-                    onSelect={openLesson}
-                    onAdd={(weekday, periodId) => setEditing({ weekday, periodId })}
-                    onMove={setMove}
-                  />
-                )
-              ) : week.isPending ? (
+              </section>
+            ) : versionId ? (
+              draft.isPending ? (
                 <Skeleton />
-              ) : week.isError ? (
-                <ErrorState onRetry={() => void week.refetch()} />
+              ) : draft.isError ? (
+                <ErrorState onRetry={() => void draft.refetch()} />
               ) : (
                 <Matrix
                   items={filtered}
                   periods={periods}
                   from={from}
                   lens={activeLens}
-                  initialDay={
-                    requestedDate && monday(requestedDate) === from
-                      ? (new Date(`${requestedDate}T12:00:00Z`).getUTCDay() + 6) % 7
-                      : 0
-                  }
-                  editable={false}
-                  versionId=""
-                  revision={0}
+                  editable={editable}
+                  versionId={versionId}
+                  revision={draft.data!.revision}
                   conflicts={conflicts}
                   changed={changed}
                   selected={selected?.id}
                   onSelect={openLesson}
-                  onAdd={() => {}}
-                  onMove={() => {}}
+                  onAdd={(weekday, periodId) => setEditing({ weekday, periodId })}
+                  onMove={setMove}
                 />
-              )}
-              <footer className="tt-matrix-foot">
-                <span>
-                  {editable
-                    ? 'გადაათრიეთ გაკვეთილი ან გახსენით დეტალები · ყველა გადატანა მოწმდება სერვერზე'
-                    : 'თბილისის დრო · თარიღისთვის მოქმედი განრიგი'}
-                </span>
-                <span>{filtered.length} გაკვეთილი</span>
-              </footer>
-            </>
-          )}
+              )
+            ) : week.isPending ? (
+              <Skeleton />
+            ) : week.isError ? (
+              <ErrorState onRetry={() => void week.refetch()} />
+            ) : (
+              <Matrix
+                items={filtered}
+                periods={periods}
+                from={from}
+                lens={activeLens}
+                initialDay={
+                  requestedDate && monday(requestedDate) === from
+                    ? (new Date(`${requestedDate}T12:00:00Z`).getUTCDay() + 6) % 7
+                    : 0
+                }
+                editable={false}
+                versionId=""
+                revision={0}
+                conflicts={conflicts}
+                changed={changed}
+                selected={selected?.id}
+                onSelect={openLesson}
+                onAdd={() => {}}
+                onMove={() => {}}
+              />
+            )}
+            <footer className="tt-matrix-foot">
+              <span>
+                {editable
+                  ? 'გადაათრიეთ გაკვეთილი ან გახსენით დეტალები · ყველა გადატანა მოწმდება სერვერზე'
+                  : 'თბილისის დრო · თარიღისთვის მოქმედი განრიგი'}
+              </span>
+              <span>{filtered.length} გაკვეთილი</span>
+            </footer>
+          </div>
           {tab === 'conflicts' && manage && (
             <section className="tt-operational">
               <header>
@@ -528,7 +528,7 @@ export function Timetable() {
                   <h2>კონფლიქტების განხილვა</h2>
                   <p>ჯერ შეასწორეთ გაკვეთილი; გამონაკლისის დაშვებას სჭირდება ცალკე მიზეზი.</p>
                 </div>
-                <select
+                <Select
                   aria-label="კონფლიქტის ტიპი"
                   value={conflictKind}
                   onChange={(e) => setConflictKind(e.target.value)}
@@ -545,7 +545,7 @@ export function Timetable() {
                       {l}
                     </option>
                   ))}
-                </select>
+                </Select>
               </header>
               {conflicts.length ? (
                 conflicts
@@ -704,7 +704,7 @@ export function Timetable() {
               {manage && (
                 <label className="tt-availability-teacher">
                   <span>მასწავლებელი</span>
-                  <select
+                  <Select
                     aria-label="ხელმისაწვდომობის მასწავლებელი"
                     value={availabilityTeacher || data.teachers[0]?.id || ''}
                     onChange={(e) => setAvailabilityTeacher(e.target.value)}
@@ -714,7 +714,7 @@ export function Timetable() {
                         {t.name}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </label>
               )}
               {availability.isError ? (
@@ -850,7 +850,7 @@ export function Timetable() {
                 <div className="tt-setup-heading">
                   <h3>ვერსიები და მოქმედების პერიოდი</h3>
                   <div>
-                    <select
+                    <Select
                       aria-label="სასწავლო წელი"
                       value={data.yearId ?? ''}
                       onChange={(e) => {
@@ -863,7 +863,7 @@ export function Timetable() {
                           {y.name}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                     <Button onClick={() => setDialog('draft')}>სამუშაო ვერსია</Button>
                   </div>
                 </div>

@@ -91,11 +91,13 @@ export function Activation({ recovery = false }: { recovery?: boolean }) {
                 </label>
               </>
             )}
-            {error && (
-              <p className="field-error" role="alert">
-                {error}
-              </p>
-            )}
+            <div className="ux-feedback-slot">
+              {error && (
+                <p className="field-error" role="alert">
+                  {error}
+                </p>
+              )}
+            </div>
             <Button
               variant="primary"
               disabled={busy || (!recovery && !token) || (recovery && !config.data?.localDelivery)}

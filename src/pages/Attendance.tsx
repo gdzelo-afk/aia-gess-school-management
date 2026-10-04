@@ -1,3 +1,5 @@
+import { DateInput } from '../components/DateInput';
+import { Select } from '../components/Select';
 import { useState } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -210,7 +212,7 @@ export function Attendance() {
           <label className="sr-only" htmlFor="attendance-date">
             დასწრების თარიღი
           </label>
-          <input
+          <DateInput
             id="attendance-date"
             type="date"
             value={date}
@@ -241,6 +243,9 @@ export function Attendance() {
       {feedback && (
         <p role="status" className="att-feedback">
           {feedback}
+          <button type="button" aria-label="შეტყობინების დახურვა" onClick={() => setFeedback('')}>
+            ×
+          </button>
         </p>
       )}
       {range.isPending ? (
@@ -311,7 +316,7 @@ export function Attendance() {
                     {school && (
                       <details>
                         <summary>მასწავლებელი</summary>
-                        <select
+                        <Select
                           aria-label="მასწავლებლის ფილტრი"
                           value={filter}
                           onChange={(e) => setFilter(e.target.value)}
@@ -322,7 +327,7 @@ export function Attendance() {
                               {name}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                       </details>
                     )}
                   </div>
@@ -619,7 +624,7 @@ function HistoryView({
       <div className="att-history-tools">
         <label>
           თვე
-          <select value={date.slice(0, 7)} onChange={(e) => setDate(e.target.value + '-01')}>
+          <Select value={date.slice(0, 7)} onChange={(e) => setDate(e.target.value + '-01')}>
             {Array.from({ length: 36 }, (_, i) => {
               const year = Number(date.slice(0, 4)) - 1 + Math.floor(i / 12);
               const value = `${year}-${String((i % 12) + 1).padStart(2, '0')}`;
@@ -629,19 +634,19 @@ function HistoryView({
                 </option>
               );
             })}
-          </select>
+          </Select>
         </label>
         {school && (
           <label>
             მოსწავლე
-            <select value={child} onChange={(e) => setChild(e.target.value)}>
+            <Select value={child} onChange={(e) => setChild(e.target.value)}>
               <option value="">ყველა მოსწავლე</option>
               {students.map((s) => (
                 <option key={s.studentId} value={s.studentId}>
                   {s.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         )}
       </div>
@@ -812,22 +817,27 @@ function ExplanationForm({
       >
         <label>
           მოსწავლე
-          <select value={child} onChange={(e) => setChild(e.target.value)} required>
+          <Select value={child} onChange={(e) => setChild(e.target.value)} required>
             {childrenList.map((c) => (
               <option key={c.studentId} value={c.studentId}>
                 {c.name}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <div className="att-form-pair">
           <label>
             პირველი დღე
-            <input type="date" value={start} onChange={(e) => setStart(e.target.value)} required />
+            <DateInput
+              type="date"
+              value={start}
+              onChange={(e) => setStart(e.target.value)}
+              required
+            />
           </label>
           <label>
             ბოლო დღე · ჩათვლით
-            <input
+            <DateInput
               type="date"
               value={end}
               min={start}
@@ -850,11 +860,13 @@ function ExplanationForm({
           განმარტებას მხოლოდ უფლებამოსილი ადმინისტრაცია განიხილავს. სამედიცინო დოკუმენტები და
           დიაგნოზი საჭირო არ არის.
         </p>
-        {error && (
-          <p role="alert" className="field-error">
-            {error}
-          </p>
-        )}
+        <div className="ux-feedback-slot">
+          {error && (
+            <p role="alert" className="field-error">
+              {error}
+            </p>
+          )}
+        </div>
         <footer>
           <Button type="button" onClick={onClose}>
             გაუქმება
@@ -973,7 +985,7 @@ function Review({
                   <div className="att-adjust-entry">
                     <label>
                       ახალი მდგომარეობა
-                      <select
+                      <Select
                         value={e.status}
                         onChange={(ev) => {
                           const status = ev.target.value as AttendanceEntry['status'];
@@ -1001,7 +1013,7 @@ function Review({
                             {label}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     </label>
                     {e.status === 'late' && (
                       <label>
@@ -1075,11 +1087,13 @@ function Review({
               ? 'დადასტურება მხოლოდ ფაქტობრივ გაცდენას აქცევს საპატიოდ; დასწრება არ გამოიგონება.'
               : 'დადასტურება შეინახავს შემოთავაზებულ ცვლილებებს და მათ ისტორიას.'}
           </p>
-          {error && (
-            <p role="alert" className="field-error">
-              {error}
-            </p>
-          )}
+          <div className="ux-feedback-slot">
+            {error && (
+              <p role="alert" className="field-error">
+                {error}
+              </p>
+            )}
+          </div>
           <footer>
             <Button disabled={busy || reason.trim().length < 5} onClick={() => void decide(false)}>
               უარყოფა

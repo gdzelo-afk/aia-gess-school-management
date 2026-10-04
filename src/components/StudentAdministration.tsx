@@ -1,3 +1,4 @@
+import { Select } from './Select';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { AcademicSetup, StudentAdministration as StudentRecord } from '../../shared/stage1a';
@@ -220,7 +221,7 @@ function EnrollmentSection({ allowWithdrawal = false }: { allowWithdrawal?: bool
     <>
       <label className="op-field">
         <span>სასწავლო წელი</span>
-        <select value={setup.data.selectedYearId ?? ''} onChange={(e) => setYearId(e.target.value)}>
+        <Select value={setup.data.selectedYearId ?? ''} onChange={(e) => setYearId(e.target.value)}>
           {setup.data.years
             .filter((y) => y.status !== 'archived')
             .map((y) => (
@@ -228,7 +229,7 @@ function EnrollmentSection({ allowWithdrawal = false }: { allowWithdrawal?: bool
                 {y.name}
               </option>
             ))}
-        </select>
+        </Select>
       </label>
       <Field
         key={setup.data.selectedYearId}

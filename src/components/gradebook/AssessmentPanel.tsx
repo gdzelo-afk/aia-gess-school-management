@@ -1,3 +1,4 @@
+import { Select } from '../Select';
 import { useEffect, useState, useSyncExternalStore, type KeyboardEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Check, Pencil, History as HistoryIcon, Save, Send, X } from 'lucide-react';
@@ -456,7 +457,7 @@ function ResultControl({
   };
   return (
     <div className="gb-result-control">
-      <select
+      <Select
         aria-label={`${label} · შეფასების ტიპი`}
         value={type}
         onChange={(e) => change(e.target.value)}
@@ -471,7 +472,7 @@ function ResultControl({
               {text}
             </option>
           ))}
-      </select>
+      </Select>
       {(value.kind === 'numeric' ||
         (mode === 'numeric_10' && value.kind === 'state' && value.state === 'unassessed')) && (
         <input
@@ -494,14 +495,14 @@ function ResultControl({
         />
       )}
       {value.kind === 'pass_fail' && (
-        <select
+        <Select
           aria-label={`${label} · ჩათვლა`}
           value={String(value.passed)}
           onChange={(e) => onChange({ kind: 'pass_fail', passed: e.target.value === 'true' })}
         >
           <option value="true">ჩათვლა</option>
           <option value="false">არჩათვლა</option>
-        </select>
+        </Select>
       )}
       {value.kind === 'formative' && (
         <textarea
@@ -612,7 +613,7 @@ function RecoveryRequest({ assessmentId, onSaved }: { assessmentId: string; onSa
             ჩვეულებრივი აღდგენის ვადის შემდეგ ადმინისტრაცია განიხილავს მოთხოვნას.
           </p>
           <Button type="submit">მოთხოვნის გაგზავნა</Button>
-          {error && <p role="alert">{error}</p>}
+          <div className="ux-feedback-slot">{error && <p role="alert">{error}</p>}</div>
         </form>
       )}
     </div>
@@ -681,13 +682,13 @@ function AssessmentDescription({
     >
       <label className="gb-field">
         მოქმედება
-        <select
+        <Select
           value={action}
           onChange={(e) => onDraft({ ...draft, action: e.target.value as typeof action })}
         >
           <option value="assessment.describe">აღწერის დაზუსტება</option>
           <option value="assessment.void">შეფასების გაუქმება</option>
-        </select>
+        </Select>
       </label>
       {action === 'assessment.describe' ? (
         <>
@@ -737,11 +738,13 @@ function AssessmentDescription({
           maxLength={1000}
         />
       </label>
-      {error && (
-        <p role="alert" className="gb-error">
-          {error}
-        </p>
-      )}
+      <div className="ux-feedback-slot">
+        {error && (
+          <p role="alert" className="gb-error">
+            {error}
+          </p>
+        )}
+      </div>
       <Button type="submit" disabled={busy || reason.trim().length < 5}>
         დასაბუთებული ცვლილების შენახვა
       </Button>

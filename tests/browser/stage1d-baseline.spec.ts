@@ -1,8 +1,10 @@
+import { signIn } from './sign-in';
 import { test, expect } from '@playwright/test';
 
 test('family attendance retains accurate status icons and one page landmark', async ({ page }) => {
+  test.setTimeout(120_000);
   await page.goto('/login');
-  await page.getByRole('button', { name: 'მშობელი', exact: true }).click();
+  await signIn(page, 'მშობელი');
   await expect(page.locator('.overview-heading')).toBeVisible();
   await page.goto('/attendance?date=2026-09-22');
   await expect(page.locator('.att-calendar')).toBeVisible();

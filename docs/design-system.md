@@ -14,6 +14,16 @@ Students retains scoped search, filtering, sorting, pagination and detail/financ
 
 Selected tokens stay under `.product-theme`; main chrome stays under `.product-shell`. Portaled dialogs/toasts receive the selected theme. Extend this system by function, not independent page art direction. **Preserve `/design-lab`, its navigation, all A/B/C sub-routes, typography surface and assets.** Its separate entry graph never imports product styles. A normal document link from the main design page opens the archive without mixing React/CSS graphs.
 
+## Shared interaction rules (UX cohesion review, 4 October 2026)
+
+- `Shell` owns the lazy-route pending boundary; navigation/chrome stay mounted. New route paths start at the header; query-only changes preserve working position. Timetable schedule content stays mounted across operational tabs. Do not animate away a remount or reset an editor for a viewport/sidebar change.
+- `Select` replaces production native menus, using a compact listbox and search for longer lists. `PersonPicker` searches the existing scoped API. Popovers use Radix positioning, Escape and focus handling; keyboard focus is visible, pointer focus has no extra halo. Hidden native controls retain form values/validation; controlled scope guards remain authoritative.
+- `DateInput` owns a compact Georgian calendar because OS date popups cannot guarantee localization. It retains ISO date-only form values, bounds, manual entry, spillover days and keyboard month/day navigation. Weekdays are `კვი.`, `ორშ.`, `სამშ.`, `ოთხ.`, `ხუთ.`, `პარ.`, `შაბ.`; footer actions are `გასუფთავება` and `დღეს`. It is a field control, not a replacement for the Calendar workspace.
+- Safe directory filtering may retain visibly pending, inert previous rows and disable pagination. Never carry previous child, course, lesson or academic records into a different context. Attendance/Gradebook await authoritative context data; local unsaved edits and existing guards remain intact.
+- Predictable validation uses a small stable inline slot; longer persistent errors may expand. Transient operational notices use dismissible overlays. Do not absolutely position all errors or reserve large blank panels.
+- Timetable periods scroll with the **page**, with no inner vertical height cap. Horizontal matrix containment remains. Other dense lists retain their useful scrolling.
+- Main-only `product-interactions.css` coordinates 120–200ms controls/popovers/rail motion and existing dialog primitives, respecting reduced motion. Portals use the product theme. Keep useful data-row rules; omit duplicate perimeter rules and decorative separators. Archived lab styling remains independent.
+
 ## Design logic
 
 A is the dominant spatial system: calm neutral chrome, controlled cobalt accent, restrained layering, readable opaque work surfaces, a priority panel and contextual count distribution. The date, geographic detail and cursor are reinterpreted in A's proportions and materials; no B console styling or C display-heading system is imported.
