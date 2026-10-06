@@ -20,6 +20,7 @@ import { config } from './config.js';
 import { resolveViewer } from './modules/access.js';
 import { listStudents, findStudent, overview, canSeeChildFinance } from './modules/foundation.js';
 import { recordAudit } from './infrastructure/audit.js';
+import { hasPreviewAccess } from './preview-access.js';
 import type { Viewer } from '../shared/contracts.js';
 declare module 'fastify' {
   interface FastifyRequest {
@@ -62,6 +63,33 @@ export async function buildApp(logging = true) {
   });
   app.addHook('onRequest', async (req, reply) => {
     if (req.url.startsWith('/api')) reply.header('Cache-Control', 'no-store');
+    const requestPath = new URL(req.url, config.APP_ORIGIN).pathname;
+    let decodedPath = requestPath;
+    try {
+      decodedPath = decodeURIComponent(requestPath);
+    } catch {
+      // A malformed path simply remains unmatched below.
+    }
+    if (config.PREVIEW_MODE && requestPath !== '/api/health') {
+      if (
+        !hasPreviewAccess(
+          req.headers.authorization,
+          config.PREVIEW_ACCESS_USERNAME!,
+          config.PREVIEW_ACCESS_PASSWORD!,
+        )
+      ) {
+        reply.header('WWW-Authenticate', 'Basic realm="AIA-GESS preview", charset="UTF-8"');
+        reply.header('Cache-Control', 'no-store');
+        return reply
+          .code(401)
+          .type('text/plain; charset=utf-8')
+          .send('გთხოვთ, შეიყვანოთ წინასწარი ნახვის კოდი.');
+      }
+    }
+    if (config.PREVIEW_MODE && /^\/design-lab(?:\/|$)/.test(decodedPath))
+      return reply
+        .code(404)
+        .send({ error: { code: 'NOT_FOUND', message: 'გვერდი ვერ მოიძებნა.' } });
     if (
       !['GET', 'HEAD', 'OPTIONS'].includes(req.method) &&
       req.headers.origin !== config.APP_ORIGIN
@@ -108,6 +136,7 @@ export async function buildApp(logging = true) {
   app.get('/api/config', async () => ({
     demo: config.DEMO_MODE,
     localDelivery: localDeliveryAvailable,
+    designLab: !config.PREVIEW_MODE,
   }));
   app.post(
     '/api/onboarding/activate',

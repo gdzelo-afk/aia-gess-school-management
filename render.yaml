@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: aia-gess-review
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile.preview
+    dockerCommand: sh scripts/start-render-preview.sh
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_ENV
+        value: 'production'
+      - key: DEMO_MODE
+        value: 'false'
+      - key: PREVIEW_MODE
+        value: 'true'
+      - key: PREVIEW_ACCESS_USERNAME
+        value: 'reviewer'
+      - key: PREVIEW_ACCESS_PASSWORD
+        generateValue: true
+      - key: BETTER_AUTH_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aia-gess-review-db
+          property: connectionString
+
+databases:
+  - name: aia-gess-review-db
+    databaseName: aia_gess_review
+    user: aia_gess_review
+    plan: free
+    region: frankfurt
+    postgresMajorVersion: '17'
+    ipAllowList: []

@@ -11,6 +11,12 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((x) => x === 'true'),
+  PREVIEW_MODE: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((x) => x === 'true'),
+  PREVIEW_ACCESS_USERNAME: z.string().min(1).optional(),
+  PREVIEW_ACCESS_PASSWORD: z.string().min(24).optional(),
 });
 export function parseConfig(input: NodeJS.ProcessEnv) {
   const result = envSchema.parse(input);
@@ -22,6 +28,8 @@ export function parseConfig(input: NodeJS.ProcessEnv) {
       throw new Error('Production requires PostgreSQL.');
     if (!result.APP_ORIGIN.startsWith('https://')) throw new Error('Production requires HTTPS.');
   }
+  if (result.PREVIEW_MODE && (!result.PREVIEW_ACCESS_USERNAME || !result.PREVIEW_ACCESS_PASSWORD))
+    throw new Error('Preview mode requires a username and a passcode of at least 24 characters.');
   return result;
 }
 export const config = parseConfig(process.env);

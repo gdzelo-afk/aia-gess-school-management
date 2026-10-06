@@ -1,4 +1,4 @@
-import { useId, useState, useRef, useEffect } from 'react';
+import { useId, useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { NavLink } from 'react-router-dom';
 import type { navigation } from './navigation';
@@ -15,15 +15,43 @@ export function SidebarLink({
 }) {
   const id = useId();
   const [top, setTop] = useState<number | null>(null);
+  const tooltip = useRef<HTMLSpanElement>(null);
+  const [position, setPosition] = useState({ top: 8, left: 72 });
+  useLayoutEffect(() => {
+    if (top === null || !collapsed || !tooltip.current) return;
+    const place = () => {
+      const box = tooltip.current!.getBoundingClientRect();
+      setPosition({
+        top: Math.max(8, Math.min(top, window.innerHeight - box.height - 8)),
+        left: Math.max(8, Math.min(72, window.innerWidth - box.width - 8)),
+      });
+    };
+    place();
+    const observer = new ResizeObserver(place);
+    observer.observe(tooltip.current);
+    return () => observer.disconnect();
+  }, [top, collapsed, item.label]);
+  useLayoutEffect(() => {
+    setTop(null);
+  }, [collapsed]);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   useEffect(() => {
-    const dismiss = () => setTop(null);
+    const dismiss = (event?: Event) => {
+      if (event?.target instanceof Node && tooltip.current?.contains(event.target)) return;
+      clearTimeout(timer.current);
+      setTop(null);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') dismiss();
+    };
+    window.addEventListener('keydown', escape);
     window.addEventListener('scroll', dismiss, true);
     window.addEventListener('resize', dismiss);
     return () => {
       clearTimeout(timer.current);
       window.removeEventListener('scroll', dismiss, true);
       window.removeEventListener('resize', dismiss);
+      window.removeEventListener('keydown', escape);
     };
   }, []);
   function close() {
@@ -79,7 +107,8 @@ export function SidebarLink({
             id={id}
             role="tooltip"
             className="product-theme sidebar-tooltip"
-            style={{ top }}
+            ref={tooltip}
+            style={position}
             onMouseEnter={() => clearTimeout(timer.current)}
             onMouseLeave={close}
           >

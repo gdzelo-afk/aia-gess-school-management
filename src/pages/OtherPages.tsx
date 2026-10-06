@@ -229,6 +229,10 @@ export function PlannedPage() {
   );
 }
 export function DesignGallery() {
+  const runtimeConfig = useQuery({
+    queryKey: ['config'],
+    queryFn: () => api<{ designLab: boolean }>('/api/config'),
+  });
   const [dialog, setDialog] = useState(false);
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -241,9 +245,11 @@ export function DesignGallery() {
         title="დიზაინის სისტემა"
         description="თანმიმდევრული კომპონენტები, მკაფიო მდგომარეობები და ქართული ტიპოგრაფია."
       />
-      <a className="product-secondary lab-archive-link" href="/design-lab">
-        ვიზუალური ლაბორატორია · A / B / C არქივი <ArrowRight size={16} />
-      </a>
+      {runtimeConfig.data?.designLab && (
+        <a className="product-secondary lab-archive-link" href="/design-lab">
+          ვიზუალური ლაბორატორია · A / B / C არქივი <ArrowRight size={16} />
+        </a>
+      )}
       <div className="gallery-grid">
         <Card>
           <SectionHeading title="მოქმედებები და სტატუსები" />
