@@ -67,11 +67,22 @@ export function Attendance() {
     : 1;
   const enabled = viewer.capabilities.some((c) => c.startsWith('attendance:'));
   const range = useQuery({
-    queryKey: ['attendance', 'range', from, days, child],
-    queryFn: () =>
-      api<RangeView>(
+    queryKey: ['attendance', 'range', viewer.id, child, month ? 'history' : 'day', from, days],
+    queryFn: async () => ({
+      ...(await api<RangeView>(
         `/api/attendance/range?from=${from}&days=${days}${child ? '&studentId=' + child : ''}`,
-      ),
+      )),
+      historyDate: date,
+    }),
+    // Retain only a date-range transition within the SAME viewer/child history.
+    // No old roster may be shown under a new child, day-workspace or lesson.
+    placeholderData: (previous, query) =>
+      month &&
+      query?.queryKey[2] === viewer.id &&
+      query.queryKey[3] === child &&
+      query.queryKey[4] === 'history'
+        ? previous
+        : undefined,
     enabled,
     refetchInterval: 60000,
   });
@@ -97,6 +108,7 @@ export function Attendance() {
       </section>
     );
   const data = range.data;
+  const historyDate = range.isPlaceholderData ? (data?.historyDate ?? date) : date;
   const children = data?.children ?? [];
   const selectedChild = child || children[0]?.studentId;
   // Family month views always present one child at a time, including the initial load.
@@ -383,17 +395,23 @@ export function Attendance() {
               </>
             )}
             {tab === 'history' && (
-              <HistoryView
-                data={data}
-                items={scopedItems}
-                daily={daily}
-                date={date}
-                setDate={setDate}
-                openLesson={openLesson}
-                school={school}
-                child={child}
-                setChild={setChild}
-              />
+              <div className="att-history-surface" aria-busy={range.isFetching}>
+                <p className="att-history-pending" role="status">
+                  {range.isPlaceholderData ? 'არჩეული პერიოდი იტვირთება…' : ''}
+                </p>
+                <HistoryView
+                  data={data}
+                  items={scopedItems}
+                  daily={daily}
+                  date={historyDate}
+                  setDate={setDate}
+                  openLesson={openLesson}
+                  school={school}
+                  child={child}
+                  setChild={setChild}
+                  pending={range.isPlaceholderData}
+                />
+              </div>
             )}
             {(tab === 'explanations' || tab === 'requests') && (
               <>
@@ -595,6 +613,7 @@ function HistoryView({
   school,
   child,
   setChild,
+  pending,
 }: {
   data: RangeView;
   items: RangeView['items'];
@@ -605,6 +624,7 @@ function HistoryView({
   school: boolean;
   child: string;
   setChild: (s: string) => void;
+  pending: boolean;
 }) {
   const students = [...new Map(data.daily.map((d) => [d.student.studentId, d.student])).values()];
   const conducted = items.filter(
@@ -620,7 +640,7 @@ function HistoryView({
     count = new Date(Number(date.slice(0, 4)), Number(date.slice(5, 7)), 0).getDate(),
     offset = (new Date(monthStart + 'T12:00:00Z').getUTCDay() + 6) % 7;
   return (
-    <>
+    <div className="att-history-data" inert={pending}>
       <div className="att-history-tools">
         <label>
           თვე
@@ -763,7 +783,7 @@ function HistoryView({
         items={items.filter((i) => i.occurrence.targetDate === date)}
         onOpen={openLesson}
       />
-    </>
+    </div>
   );
 }
 function ExplanationForm({

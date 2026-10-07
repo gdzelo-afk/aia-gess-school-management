@@ -117,3 +117,9 @@ The shared desktop sidebar can collapse to a 72px icon rail. All real destinatio
 Login is a direct ~60/40 split at large desktop widths, with a single fine divider and no full-width header or central gutter. Identity belongs to the left pane, theme utility to the upper right. Current coordinates/date/lens/message and form/security notice remain. The compact options row contains **ელფოსტის დამახსოვრება** and the sole recovery link. The checkbox stores only the email identifier after successful sign-in; unchecking removes it. It never stores passwords or changes session duration. Demo shortcuts remain gated by the existing demo configuration. Mobile puts identity and login first, followed by the reduced editorial lens/date composition. No lab labels, disclaimer or comparison actions enter the product.
 
 This refinement adds no UI dependency and changes no backend, authentication rules, contracts, migrations or demo data. The separate lab source/asset graph is untouched.
+
+### Precise interaction feedback and safe date transitions
+
+Main operational text tabs retain their underline language on hover/keyboard focus. Gradebook score selection uses restrained text/inset indicators and fine column boundaries, avoiding filled rectangular slabs. Full selectable rows/cards and date/listbox options remain intentional exceptions. All keyboard feedback remains visible in light/dark themes.
+
+Attendance History may retain its last authoritative month only for the same viewer/pupil context. The displayed content keeps its own period label, announces pending and disables stale drill-down until replacement; pupil/lesson/academic-scope changes require fresh data. Login's anonymous session revalidation must not unmount a form. Typed passwords live only in React memory and never survive document refresh through storage.

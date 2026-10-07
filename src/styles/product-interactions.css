@@ -327,7 +327,17 @@
     border-color var(--motion-fast);
 }
 .product-theme :is(.tt-workspace-nav, .gb-navigation nav, .att-tabs, .op-tabs) button:hover {
-  background: var(--surface-soft);
+  background: transparent;
+  color: var(--accent);
+}
+.product-theme
+  :is(.tt-workspace-nav, .gb-navigation nav, .att-tabs, .op-tabs)
+  button:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+  border-bottom-color: var(--accent);
 }
 /* Keep operational row rules; remove duplicate perimeter lines and decorative chrome. */
 .product-shell .topbar-divider {
@@ -421,26 +431,37 @@
   }
   .product-shell .sidebar .nav-link {
     min-height: 42px;
-    white-space: nowrap;
+    white-space: normal;
     justify-content: flex-start;
+    overflow: hidden;
+    position: relative;
   }
   .product-shell .sidebar .nav-link svg {
     flex-shrink: 0;
   }
   .product-shell.sidebar-collapsed .sidebar {
-    padding-inline: 16px;
+    padding-left: 16px;
+    padding-right: 0;
   }
   .product-shell.sidebar-collapsed .sidebar .nav-link {
-    padding-inline: 10px;
+    /* Leave room for classic desktop scrollbars without shrinking the icon target. */
+    width: 39px;
+    padding: 9px 10px;
   }
   .product-shell .sidebar .nav-label {
+    /* Keep the expanded text measure during rail motion, so rows never reflow. */
+    flex: 0 0 124px;
+    width: 124px;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
     transition: opacity 100ms;
   }
   .product-shell.sidebar-collapsed .sidebar .nav-label {
     display: block;
     opacity: 0;
-    width: 0;
-    overflow: hidden;
+    visibility: hidden;
   }
   .product-shell .sidebar .nav-group {
     height: 41px;
@@ -620,4 +641,48 @@
 }
 .dialog-content.product-theme.mobile-nav-dialog[data-state='closed'] {
   animation: ux-backdrop-out 100ms;
+}
+
+/* Navigation text is bounded independently from icons and active indicators. */
+.product-theme .nav-current {
+  position: absolute;
+  right: 3px;
+}
+.product-mobile-rail .nav-link {
+  min-width: 0;
+  position: relative;
+}
+.product-mobile-rail .nav-label {
+  min-width: 0;
+  flex: 1;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.product-mobile-rail .nav-link > svg {
+  flex-shrink: 0;
+}
+.sidebar-tooltip {
+  width: max-content;
+  max-width: min(280px, calc(100vw - 16px));
+  max-height: calc(100dvh - 16px);
+  overflow-y: auto;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+@media (min-width: 901px) and (max-width: 1200px) {
+  .product-shell:not(.sidebar-collapsed) .sidebar {
+    padding-inline: 16px;
+  }
+  .product-shell .sidebar .nav-label {
+    flex-basis: 108px;
+    width: 108px;
+  }
+}
+
+@media (min-width: 901px) {
+  .product-shell .sidebar::after {
+    content: '';
+    flex: 0 0 var(--rail-scroll-reserve, 0px);
+  }
 }

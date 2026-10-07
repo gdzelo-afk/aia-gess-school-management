@@ -397,7 +397,20 @@ test('Grade V formative homework, homeroom-only subject view and family report c
   await page.getByRole('button', { name: 'გასვლა', exact: true }).click();
   await page.getByLabel('ელფოსტა', { exact: true }).fill('homeroom@gradebook.demo.local');
   await page.getByLabel('პაროლი', { exact: true }).fill('AiaDemo-2026!');
-  await page.getByRole('button', { name: 'სივრცეში შესვლა', exact: true }).click();
+  // The custom homeroom account uses the same real sign-in budget as demo buttons.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = page.waitForResponse((r) => r.url().endsWith('/api/auth/sign-in/email'));
+    await page.getByRole('button', { name: 'სივრცეში შესვლა', exact: true }).click();
+    const result = await response;
+    if (result.status() !== 429) {
+      expect(result.ok(), await result.text()).toBe(true);
+      break;
+    }
+    const seconds = Number(
+      result.headers()['x-retry-after'] ?? result.headers()['retry-after'] ?? 60,
+    );
+    await page.waitForTimeout((seconds + 1) * 1000);
+  }
   await expect(page.locator('.overview-heading')).toBeVisible();
   await page.goto(`/gradebook?course=${id(611)}`);
   await expect(page.getByRole('combobox', { name: /საგნის კურსი/ })).toHaveAttribute(
