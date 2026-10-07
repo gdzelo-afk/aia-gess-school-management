@@ -16,6 +16,7 @@ export function SidebarLink({
   const id = useId();
   const [top, setTop] = useState<number | null>(null);
   const tooltip = useRef<HTMLSpanElement>(null);
+  const link = useRef<HTMLAnchorElement>(null);
   const [position, setPosition] = useState({ top: 8, left: 72 });
   useLayoutEffect(() => {
     if (top === null || !collapsed || !tooltip.current) return;
@@ -39,7 +40,15 @@ export function SidebarLink({
     const dismiss = (event?: Event) => {
       if (event?.target instanceof Node && tooltip.current?.contains(event.target)) return;
       clearTimeout(timer.current);
-      setTop(null);
+      // Focus can scroll the rail into view after onFocus. Keep the keyboard
+      // label attached to that focused item rather than dismissing it on scroll.
+      if (
+        (event?.type === 'scroll' || event?.type === 'resize') &&
+        document.activeElement === link.current
+      ) {
+        const box = link.current!.getBoundingClientRect();
+        setTop(box.bottom > 0 && box.top < innerHeight ? Math.max(8, box.top) : null);
+      } else setTop(null);
     };
     const escape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') dismiss();
@@ -59,11 +68,13 @@ export function SidebarLink({
     setTop(null);
   }
   function leave() {
+    if (document.activeElement === link.current) return;
     timer.current = setTimeout(close, 120);
   }
   return (
     <>
       <NavLink
+        ref={link}
         to={item.path}
         end={item.path === '/'}
         aria-label={item.label}
@@ -78,14 +89,15 @@ export function SidebarLink({
           );
         }}
         onMouseLeave={leave}
-        onFocus={(e) =>
+        onFocus={(e) => {
+          clearTimeout(timer.current);
           setTop(
             Math.max(
               8,
               Math.min(e.currentTarget.getBoundingClientRect().top, window.innerHeight - 60),
             ),
-          )
-        }
+          );
+        }}
         onBlur={close}
         onKeyDown={(e) => {
           if (e.key === 'Escape') close();

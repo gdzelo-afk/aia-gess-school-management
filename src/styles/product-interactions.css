@@ -327,7 +327,17 @@
     border-color var(--motion-fast);
 }
 .product-theme :is(.tt-workspace-nav, .gb-navigation nav, .att-tabs, .op-tabs) button:hover {
-  background: var(--surface-soft);
+  background: transparent;
+  color: var(--accent);
+}
+.product-theme
+  :is(.tt-workspace-nav, .gb-navigation nav, .att-tabs, .op-tabs)
+  button:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+  border-bottom-color: var(--accent);
 }
 /* Keep operational row rules; remove duplicate perimeter lines and decorative chrome. */
 .product-shell .topbar-divider {

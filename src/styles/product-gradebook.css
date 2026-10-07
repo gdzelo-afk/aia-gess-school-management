@@ -242,14 +242,29 @@
   border-left: 2px solid var(--warning);
 }
 .gb-table .is-selected {
-  background: var(--accent-soft);
+  background: transparent;
+  box-shadow:
+    inset 1px 0 var(--border),
+    inset -1px 0 var(--border);
+}
+.gb-table th.is-selected {
+  box-shadow: inset 0 -2px var(--accent);
 }
 .gb-table button:hover {
-  background: var(--surface-soft);
+  background: transparent;
+  color: var(--accent);
+}
+.gb-table td button:hover,
+.gb-table td.is-selected button {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 6px;
+  text-decoration-thickness: 1px;
 }
 .gb-table button:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: -3px;
+  outline: none;
+  box-shadow: inset 0 -2px var(--accent);
+  color: var(--accent);
 }
 .gb-index {
   font-family: var(--product-number);

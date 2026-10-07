@@ -40,11 +40,25 @@ test('attendance teacher roll call, family explanations, administrative correcti
   await login(page, 'დირექტორი');
   const admin = page.context();
   const today = schoolDateAt(new Date());
-  const template = await (
-    await page.request.get(
-      `/api/timetable/template?versionId=${id(1600)}&lessonId=${id(1501)}&date=${today}`,
-    )
-  ).json();
+  // The expanded demo has a newer publication from October 5. Resolve the
+  // actual active version; historical checks below intentionally retain the old one.
+  const setupResponse = await page.request.get('/api/timetable/setup');
+  expect(setupResponse.ok()).toBe(true);
+  const setup = await setupResponse.json();
+  const version = setup.versions.find(
+    (v: { status: string; startsOn: string; endsOn: string }) =>
+      v.status === 'published' && v.startsOn <= today && today < v.endsOn,
+  );
+  expect(version).toBeTruthy();
+  const versionId = version.id;
+  // On a non-weekday template creates an explicit exceptional occurrence.
+  const weekday = new Date(`${today}T12:00:00Z`).getUTCDay() || 7;
+  const lessonId = id(1500 + (weekday <= 5 ? weekday : 1));
+  const templateResponse = await page.request.get(
+    `/api/timetable/template?versionId=${versionId}&lessonId=${lessonId}&date=${today}`,
+  );
+  expect(templateResponse.ok(), await templateResponse.text()).toBe(true);
+  const template = await templateResponse.json();
   const time = (delta: number) =>
     new Intl.DateTimeFormat('en-GB', {
       timeZone: 'Asia/Tbilisi',
@@ -81,7 +95,7 @@ test('attendance teacher roll call, family explanations, administrative correcti
   await expect(teacher.getByRole('button', { name: 'ყველა ესწრება', exact: true })).toHaveCount(0);
   const refreshed = await (
     await page.request.get(
-      `/api/timetable/template?versionId=${id(1600)}&lessonId=${id(1501)}&date=${today}`,
+      `/api/timetable/template?versionId=${versionId}&lessonId=${lessonId}&date=${today}`,
     )
   ).json();
   await action(admin, '/api/timetable/actions', {
