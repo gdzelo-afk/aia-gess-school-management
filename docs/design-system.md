@@ -123,3 +123,11 @@ This refinement adds no UI dependency and changes no backend, authentication rul
 Main operational text tabs retain their underline language on hover/keyboard focus. Gradebook score selection uses restrained text/inset indicators and fine column boundaries, avoiding filled rectangular slabs. Full selectable rows/cards and date/listbox options remain intentional exceptions. All keyboard feedback remains visible in light/dark themes.
 
 Attendance History may retain its last authoritative month only for the same viewer/pupil context. The displayed content keeps its own period label, announces pending and disables stale drill-down until replacement; pupil/lesson/academic-scope changes require fresh data. Login's anonymous session revalidation must not unmount a form. Typed passwords live only in React memory and never survive document refresh through storage.
+
+### Keyboard and resilient working-state continuity
+
+Main-product Modal returns focus to its connected usable opener unless a caller deliberately overrides it. A Select reveals the selected/highlighted option using only its own list scroll; Tab/Shift+Tab closes the portalled list and continues the form. Search input uses combobox semantics with a valid active descendant. These behaviors must retain native form validation and server-derived scope/unsaved-change guards.
+
+WorkspaceNav uses manual arrow/Home/End focus traversal and keeps the focused/selected item visible within its own horizontal viewport. Activation remains explicit, so a guarded Gradebook transition is never bypassed. Pathname navigation focuses the named main region; query-only academic/history changes keep local interaction focus.
+
+A transient background session-check failure preserves resolved working state and offers a dismissible Georgian retry notice below modal surfaces, without content reflow. Initial session errors and real expiration retain their own bootstrap/authentication behavior. Directory typing is coalesced locally over 180ms, with old rows visibly pending/inert from the first change; cancellation and retention are not global query defaults. Academic, lesson and family-context changes still require authoritative scope data.

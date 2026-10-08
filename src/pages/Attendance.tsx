@@ -1,3 +1,4 @@
+import { WorkspaceNav } from '../components/WorkspaceNav';
 import { DateInput } from '../components/DateInput';
 import { Select } from '../components/Select';
 import { useState } from 'react';
@@ -196,10 +197,16 @@ export function Attendance() {
         </div>
       </header>
       <div className="att-navigation">
-        <div className="att-tabs" role="tablist" aria-label="დასწრების სამუშაო სივრცე">
+        <WorkspaceNav
+          active={tab}
+          className="att-tabs"
+          role="tablist"
+          aria-label="დასწრების სამუშაო სივრცე"
+        >
           {tabs.map(([key, label]) => (
             <button
               role="tab"
+              tabIndex={tab === key ? 0 : -1}
               aria-selected={tab === key}
               key={key}
               onClick={() => {
@@ -216,7 +223,7 @@ export function Attendance() {
               )}
             </button>
           ))}
-        </div>
+        </WorkspaceNav>
         <div className="att-date-control">
           <IconButton label="წინა დღე" onClick={() => setDate(shiftDate(date, -1))}>
             <ArrowLeft size={16} />

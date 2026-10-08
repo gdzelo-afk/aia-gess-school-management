@@ -180,7 +180,12 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
             </button>
           </div>
         </header>
-        <main id="main" className="main-content">
+        <main
+          id="main"
+          className="main-content"
+          tabIndex={-1}
+          aria-label={active?.label ?? 'სასკოლო სივრცე'}
+        >
           <Suspense
             fallback={
               <div className="ux-route-loading">
