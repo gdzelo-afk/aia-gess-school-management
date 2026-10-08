@@ -87,13 +87,30 @@ export function Modal({
   themeClass?: string;
   onCloseAutoFocus?: (event: Event) => void;
 }) {
+  const opener = useRef<HTMLElement | null>(null);
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className={`dialog-overlay ${themeClass}`} />
         <Dialog.Content
           className={`dialog-content ${themeClass} ${className}`}
-          onCloseAutoFocus={onCloseAutoFocus}
+          onOpenAutoFocus={() => {
+            opener.current =
+              document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          }}
+          onCloseAutoFocus={(event) => {
+            onCloseAutoFocus?.(event);
+            if (
+              !event.defaultPrevented &&
+              opener.current?.isConnected &&
+              !opener.current.closest('[inert], [hidden]') &&
+              !opener.current.matches(':disabled') &&
+              opener.current.getClientRects().length
+            ) {
+              event.preventDefault();
+              opener.current.focus({ preventScroll: true });
+            }
+          }}
         >
           <Dialog.Title className="dialog-title">{title}</Dialog.Title>
           <Dialog.Description className="dialog-description">{description}</Dialog.Description>

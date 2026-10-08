@@ -1,3 +1,4 @@
+import { WorkspaceNav } from '../components/WorkspaceNav';
 import { DateInput } from '../components/DateInput';
 import { Select } from '../components/Select';
 import { useState } from 'react';
@@ -101,7 +102,7 @@ export function AcademicManagement({ calendarOnly = false }: { calendarOnly?: bo
           </Select>
         </label>
       </header>
-      <nav className="op-tabs" aria-label="სასწავლო სტრუქტურა">
+      <WorkspaceNav active={tab} className="op-tabs" aria-label="სასწავლო სტრუქტურა">
         {tabs.map(([key, label]) => (
           <button
             key={key}
@@ -111,7 +112,7 @@ export function AcademicManagement({ calendarOnly = false }: { calendarOnly?: bo
             {label}
           </button>
         ))}
-      </nav>
+      </WorkspaceNav>
       <div className="op-section-heading">
         <div>
           <h2>{tabs.find((t) => t[0] === tab)?.[1]}</h2>

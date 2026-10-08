@@ -1,3 +1,4 @@
+import { useSearchQuery } from '../lib/use-search-query';
 import { Select } from '../components/Select';
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
@@ -26,18 +27,21 @@ export function PeopleManagement({ staff = false }: { staff?: boolean }) {
     [editing, setEditing] = useState<PersonRow | 'new' | null>(null),
     [history, setHistory] = useState<PersonRow | null>(null),
     [archive, setArchive] = useState<PersonRow | null>(null);
-  const result = useQuery({
-    queryKey: ['people', staff, q, offset, status, viewer.id],
+  const search = useSearchQuery(q);
+  const result = useQuery<PeoplePage>({
+    queryKey: ['people', staff, search, offset, status, viewer.id],
     placeholderData: (previous, previousQuery) =>
       previousQuery?.queryKey[1] === staff && previousQuery?.queryKey[5] === viewer.id
         ? previous
         : undefined,
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       api<PeoplePage>(
-        `/api/people?kind=${staff ? 'staff' : 'guardian'}&q=${encodeURIComponent(q)}&offset=${offset}&status=${status}`,
+        `/api/people?kind=${staff ? 'staff' : 'guardian'}&q=${encodeURIComponent(search)}&offset=${offset}&status=${status}`,
+        { signal },
       ),
-    enabled: allowed,
+    enabled: allowed && q === search,
   });
+  const refreshing = q !== search || result.isPlaceholderData;
   if (!allowed)
     return (
       <EmptyState
@@ -99,8 +103,8 @@ export function PeopleManagement({ staff = false }: { staff?: boolean }) {
         <>
           <div
             className="op-record-list ux-refresh-region"
-            aria-busy={result.isPlaceholderData}
-            inert={result.isPlaceholderData}
+            aria-busy={refreshing}
+            inert={refreshing}
           >
             {result.data.items.map((p) => (
               <article key={p.id}>
@@ -147,16 +151,13 @@ export function PeopleManagement({ staff = false }: { staff?: boolean }) {
             />
           )}
           <div className="pagination">
-            <span>{result.isPlaceholderData ? 'ახლდება…' : `${result.data.total} ჩანაწერი`}</span>
+            <span role="status">{refreshing ? 'ახლდება…' : `${result.data.total} ჩანაწერი`}</span>
             <div>
-              <Button
-                disabled={!offset || result.isPlaceholderData}
-                onClick={() => setOffset(offset - 25)}
-              >
+              <Button disabled={!offset || refreshing} onClick={() => setOffset(offset - 25)}>
                 წინა
               </Button>
               <Button
-                disabled={result.isPlaceholderData || offset + 25 >= result.data.total}
+                disabled={refreshing || offset + 25 >= result.data.total}
                 onClick={() => setOffset(offset + 25)}
               >
                 შემდეგი
@@ -290,7 +291,7 @@ function History({
   staff: boolean;
   onClose: () => void;
 }) {
-  const result = useQuery({
+  const result = useQuery<PersonHistory>({
     queryKey: ['person-history', person.id, staff],
     queryFn: () =>
       api<PersonHistory>(`/api/people/${person.id}/history?kind=${staff ? 'staff' : 'guardian'}`),

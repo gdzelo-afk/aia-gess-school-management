@@ -1,3 +1,4 @@
+import { WorkspaceNav } from '../components/WorkspaceNav';
 import { DateInput } from '../components/DateInput';
 import { Select } from '../components/Select';
 import { useState, type KeyboardEvent } from 'react';
@@ -163,7 +164,7 @@ export function Gradebook() {
         )}
       </header>
       <div className="gb-navigation">
-        <nav aria-label="ჟურნალის სამუშაო არეები">
+        <WorkspaceNav active={tab} aria-label="ჟურნალის სამუშაო არეები">
           {[
             ...(school ? [['overview', 'მიმოხილვა']] : []),
             ['journal', family ? 'შეფასებები' : 'ჟურნალი'],
@@ -182,7 +183,7 @@ export function Gradebook() {
               {label}
             </button>
           ))}
-        </nav>
+        </WorkspaceNav>
         <div className="gb-term-select">
           <label>
             <span className="sr-only">სასწავლო წელი</span>

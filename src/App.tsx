@@ -5,6 +5,7 @@ import type { Viewer } from '../shared/contracts';
 import { api, ApiError } from './lib/api';
 import { Shell } from './components/Shell';
 import { Skeleton, ErrorState } from './components/ui';
+import { SessionNotice } from './components/SessionNotice';
 import { Login } from './pages/Login';
 const Attendance = lazy(() =>
   import('./pages/Attendance').then((m) => ({ default: m.Attendance })),
@@ -56,7 +57,7 @@ export function App() {
         <Skeleton rows={3} />
       </div>
     );
-  if (me.isError && !(me.error instanceof ApiError && me.error.status === 401))
+  if (me.isError && me.data === undefined)
     return (
       <div className="initial-loading product-theme product-initial-loading">
         <ErrorState onRetry={() => void me.refetch()} />
@@ -64,6 +65,13 @@ export function App() {
     );
   return (
     <BrowserRouter>
+      {me.isError && me.data !== undefined && (
+        <SessionNotice
+          key={me.errorUpdatedAt}
+          pending={me.isFetching}
+          retry={() => void me.refetch()}
+        />
+      )}
       <Suspense
         fallback={
           <div className="initial-loading product-theme product-initial-loading">

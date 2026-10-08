@@ -6,8 +6,10 @@ export function useRouteScroll() {
   const navigation = useNavigationType();
   const previous = useRef(pathname);
   useLayoutEffect(() => {
-    if (previous.current !== pathname && navigation !== 'POP')
-      window.scrollTo({ top: 0, behavior: 'instant' });
+    if (previous.current !== pathname) {
+      document.getElementById('main')?.focus({ preventScroll: true });
+      if (navigation !== 'POP') window.scrollTo({ top: 0, behavior: 'instant' });
+    }
     previous.current = pathname;
   }, [pathname, navigation]);
 }

@@ -61,6 +61,7 @@ export function Select({
     control = useRef<HTMLSelectElement>(null),
     list = useRef<HTMLDivElement>(null),
     input = useRef<HTMLInputElement>(null),
+    tabExit = useRef(false),
     typeahead = useRef({ text: '', time: 0 });
   const firstValue = options[0]?.value;
   useEffect(() => {
@@ -87,15 +88,25 @@ export function Select({
   }
   function highlight(next: string) {
     setActive(next);
-    requestAnimationFrame(() =>
-      document
-        .getElementById(`${id}-${options.findIndex((o) => o.value === next)}`)
-        ?.scrollIntoView({ block: 'nearest' }),
-    );
+    requestAnimationFrame(() => reveal(next));
+  }
+  function reveal(next: string) {
+    const option = document.getElementById(`${id}-${options.findIndex((o) => o.value === next)}`);
+    const viewport = list.current;
+    if (!option || !viewport) return;
+    const row = option.getBoundingClientRect(),
+      bounds = viewport.getBoundingClientRect();
+    if (row.top < bounds.top) viewport.scrollTop -= bounds.top - row.top;
+    else if (row.bottom > bounds.bottom) viewport.scrollTop += row.bottom - bounds.bottom;
   }
   function keys(e: KeyboardEvent) {
     const index = enabled.findIndex((o) => o.value === active);
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    if (e.key === 'Tab') {
+      // Let native Tab traversal continue from the field, not its portalled menu.
+      tabExit.current = true;
+      trigger.current?.focus();
+      setOpen(false);
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
       highlight(
         enabled[Math.max(0, Math.min(enabled.length - 1, index + (e.key === 'ArrowDown' ? 1 : -1)))]
@@ -130,6 +141,7 @@ export function Select({
         onOpenChange={(next) => {
           setOpen(next);
           if (next) {
+            tabExit.current = false;
             setSearch('');
             setActive(selected?.value ?? enabled[0]?.value ?? '');
             setLabel(
@@ -151,6 +163,7 @@ export function Select({
             name={undefined}
             value={current}
             className="ux-select-trigger"
+            title={selected?.label}
             role="combobox"
             aria-haspopup="listbox"
             aria-controls={`${id}-list`}
@@ -185,6 +198,10 @@ export function Select({
             onOpenAutoFocus={(e) => {
               e.preventDefault();
               (hasSearch ? input.current : list.current)?.focus();
+              requestAnimationFrame(() => reveal(active));
+            }}
+            onCloseAutoFocus={(e) => {
+              if (tabExit.current) e.preventDefault();
             }}
             onKeyDown={keys}
           >
@@ -193,6 +210,10 @@ export function Select({
                 <Search size={15} aria-hidden="true" />
                 <input
                   ref={input}
+                  role="combobox"
+                  aria-expanded={open}
+                  aria-autocomplete="list"
+                  aria-haspopup="listbox"
                   aria-label={`${label} — ძიება`}
                   placeholder="მოძებნეთ…"
                   value={search}
@@ -210,7 +231,9 @@ export function Select({
                   }}
                   aria-controls={`${id}-list`}
                   aria-activedescendant={
-                    active ? `${id}-${options.findIndex((o) => o.value === active)}` : undefined
+                    enabled.some((o) => o.value === active)
+                      ? `${id}-${options.findIndex((o) => o.value === active)}`
+                      : undefined
                   }
                 />
               </div>
@@ -221,7 +244,11 @@ export function Select({
               role="listbox"
               aria-label={label}
               tabIndex={hasSearch ? -1 : 0}
-              aria-activedescendant={`${id}-${options.findIndex((o) => o.value === active)}`}
+              aria-activedescendant={
+                enabled.some((o) => o.value === active)
+                  ? `${id}-${options.findIndex((o) => o.value === active)}`
+                  : undefined
+              }
               className="ux-options"
             >
               {filtered.map((o) => (

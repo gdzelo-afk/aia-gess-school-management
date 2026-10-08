@@ -4,6 +4,8 @@
 
 A persistent school rail, concise context bar, and content workspace. Main content maximum width ~1560px. Current academic period remains visible. Navigation groups are role-derived, while the API independently enforces authorization. Browser routes are bookmarkable. Active page has one h1. Search is a dialog opened by Ctrl/Cmd+K, not a second navigation rail.
 
+Keyboard pathname navigation lands in the named main workspace. Shared operational navigation supports manual arrow/Home/End traversal without activating guarded scope changes; Enter or click performs the deliberate transition. Portalled selectors keep the current choice in view and let Tab continue the form. Dialogs return focus to their opener. Temporary session revalidation errors preserve typed/local work and offer retry; true expiration removes authenticated access. Directory search announces pending and disables obsolete rows while typing/loading.
+
 | Audience   | Landing experience                                                           | Primary navigation                                                     | Deliberately absent                         |
 | ---------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------- |
 | Leadership | School pulse, incomplete work, operational exceptions, day agenda            | Overview, students, academics, schedule, finance if granted, reporting | Unrestricted sensitive notes                |

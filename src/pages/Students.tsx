@@ -1,3 +1,4 @@
+import { useSearchQuery } from '../lib/use-search-query';
 import { Select } from '../components/Select';
 import { useState } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
@@ -41,15 +42,19 @@ export function Students() {
   const [sort, setSort] = useState<'asc' | 'desc'>('asc');
   const [page, setPage] = useState(0);
   const id = params.get('student');
-  const result = useQuery({
-    queryKey: ['students', viewer.id, q, section, sort, page, status],
+  const search = useSearchQuery(q);
+  const result = useQuery<StudentPage>({
+    queryKey: ['students', viewer.id, search, section, sort, page, status],
     placeholderData: (previous, previousQuery) =>
       previousQuery?.queryKey[1] === viewer.id ? previous : undefined,
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       api<StudentPage>(
-        `/api/foundation/students?q=${encodeURIComponent(q)}&sort=${sort}&offset=${page * 6}&limit=6&status=${status}${section ? `&section=${encodeURIComponent(section)}` : ''}`,
+        `/api/foundation/students?q=${encodeURIComponent(search)}&sort=${sort}&offset=${page * 6}&limit=6&status=${status}${section ? `&section=${encodeURIComponent(section)}` : ''}`,
+        { signal },
       ),
+    enabled: q === search,
   });
+  const refreshing = q !== search || result.isPlaceholderData;
   const detail = useQuery({
     queryKey: ['student', id, viewer.id],
     queryFn: () => api<StudentRow>(`/api/foundation/students/${id}`),
@@ -140,8 +145,8 @@ export function Students() {
           <>
             <div
               className="table-scroll ux-refresh-region"
-              aria-busy={result.isPlaceholderData}
-              inert={result.isPlaceholderData}
+              aria-busy={refreshing}
+              inert={refreshing}
               role="region"
               aria-label="მოსწავლეთა სია"
               tabIndex={0}
@@ -203,15 +208,15 @@ export function Students() {
               </table>
             </div>
             <div className="pagination">
-              <span>
-                {result.isPlaceholderData
+              <span role="status">
+                {refreshing
                   ? 'ახლდება…'
                   : `${page * 6 + 1}–${Math.min(page * 6 + 6, result.data.total)} / ${result.data.total} ჩანაწერი`}
               </span>
               <div>
                 <Button
                   aria-label="წინა გვერდი"
-                  disabled={page === 0 || result.isPlaceholderData}
+                  disabled={page === 0 || refreshing}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   <ChevronLeft size={16} />
@@ -219,7 +224,7 @@ export function Students() {
                 <span>{page + 1}</span>
                 <Button
                   aria-label="შემდეგი გვერდი"
-                  disabled={result.isPlaceholderData || (page + 1) * 6 >= result.data.total}
+                  disabled={refreshing || (page + 1) * 6 >= result.data.total}
                   onClick={() => setPage((p) => p + 1)}
                 >
                   <ChevronRight size={16} />

@@ -1,3 +1,4 @@
+import { WorkspaceNav } from '../components/WorkspaceNav';
 import { DateInput } from '../components/DateInput';
 import { Select } from '../components/Select';
 import { useState } from 'react';
@@ -306,7 +307,11 @@ export function Timetable() {
         )}
       </div>
       {(manage || canRequest) && (
-        <nav className="tt-workspace-nav" aria-label="განრიგის სამუშაო სივრცე">
+        <WorkspaceNav
+          active={tab}
+          className="tt-workspace-nav"
+          aria-label="განრიგის სამუშაო სივრცე"
+        >
           {[
             ['schedule', 'განრიგი'],
             ...(manage ? [['conflicts', `კონფლიქტები · ${conflicts.length}`]] : []),
@@ -325,7 +330,7 @@ export function Timetable() {
               {label}
             </button>
           ))}
-        </nav>
+        </WorkspaceNav>
       )}
       {error && (
         <div className="tt-alert" role="alert">
