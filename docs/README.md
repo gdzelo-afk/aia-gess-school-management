@@ -1,6 +1,6 @@
 # AIA-GESS product and engineering context
 
-Status: Stage 1A–1D and the controlled Login/Dashboard refinement are accepted on master (`e81f2f3`); the approved interaction-cohesion source is preserved, and the UX excellence refinement is on `redesign/ux-excellence-pass` awaiting manual acceptance, 8 October 2026. Read this index, then `implementation-status.md` before changing code. The full product vision is larger than the implemented foundation.
+Status: Stage 1A–1D and the controlled Login/Dashboard refinement are accepted on master (`e81f2f3`); the approved interaction-cohesion source is preserved, and the UX excellence refinement plus targeted audit corrections are on `codex/ux-audit-phase2` (from `redesign/ux-excellence-pass`) awaiting manual acceptance, 8 October 2026. Read this index, then `implementation-status.md` before changing code. The full product vision is larger than the implemented foundation.
 
 | Document                                          | Use it for                                                |
 | ------------------------------------------------- | --------------------------------------------------------- |

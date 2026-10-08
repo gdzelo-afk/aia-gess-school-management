@@ -232,6 +232,7 @@ export function Attendance() {
             დასწრების თარიღი
           </label>
           <DateInput
+            variant="compact"
             id="attendance-date"
             type="date"
             value={date}

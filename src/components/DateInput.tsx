@@ -23,9 +23,10 @@ export function DateInput({
   defaultValue,
   onChange,
   className = '',
+  variant = 'field',
 
   ...props
-}: InputHTMLAttributes<HTMLInputElement>) {
+}: InputHTMLAttributes<HTMLInputElement> & { variant?: 'field' | 'compact' }) {
   const id = useId(),
     input = useRef<HTMLInputElement>(null),
     trigger = useRef<HTMLButtonElement>(null);
@@ -92,7 +93,7 @@ export function DateInput({
     }
   }
   return (
-    <span className={`ux-date ${className}`}>
+    <span className={`ux-date ${variant === 'compact' ? 'ux-date--compact' : ''} ${className}`}>
       <input
         {...props}
         type="text"
