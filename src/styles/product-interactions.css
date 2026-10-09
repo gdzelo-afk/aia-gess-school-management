@@ -13,10 +13,38 @@
 .product-theme a:focus:not(:focus-visible) {
   outline: none;
 }
-.product-theme :is(input, textarea):focus-visible {
-  outline-width: 1px;
-  outline-offset: 1px;
+.product-theme
+  :is(
+    input:not([type='checkbox'], [type='radio'], [type='hidden'], [type='range'], [type='color']),
+    textarea
+  ):focus {
   border-color: var(--accent);
+}
+/* A contiguous inner band is visible to keyboard users without adding a
+   second, separated frame. Custom radios/matrices keep their own indicators. */
+.product-theme
+  :is(
+    input:not([type='checkbox'], [type='radio'], [type='hidden'], [type='range'], [type='color']),
+    textarea,
+    .ux-select-trigger
+  ):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+:root[data-focus-method='pointer']
+  .product-theme
+  :is(
+    input:not([type='checkbox'], [type='radio'], [type='hidden'], [type='range'], [type='color']),
+    textarea,
+    .ux-select-trigger
+  ):focus-visible {
+  outline: none;
+}
+.product-theme :is(input, textarea, .ux-select-trigger):is([aria-invalid='true'], :user-invalid),
+.product-theme
+  :is(input, textarea, .ux-select-trigger):is([aria-invalid='true'], :user-invalid):focus {
+  border-color: var(--danger);
+  outline-color: var(--danger);
 }
 .product-theme :is(button, a, input, textarea) {
   -webkit-tap-highlight-color: transparent;
@@ -186,6 +214,40 @@
   background: transparent;
   color: var(--muted);
   border-radius: 4px;
+}
+/* Mersad digits have ~4px of unused descent at these UI sizes. Balance half
+   of that in the line's padding, shared by compact ISO controls, not strings. */
+.ux-date--compact {
+  width: 170px;
+  --compact-number-optical-offset: 2px;
+}
+.product-theme .ux-date--compact input {
+  height: 42px;
+  min-height: 42px;
+  font-size: var(--compact-date-size, 14px);
+  line-height: 20px;
+  padding: calc(8px + var(--compact-number-optical-offset)) 36px
+    calc(8px - var(--compact-number-optical-offset)) 4px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.product-theme :is(.ux-date--compact, .ux-select-search, .tt-scope-search) input:focus {
+  outline: none;
+  box-shadow: inset 0 -1px var(--accent);
+}
+:root[data-focus-method='keyboard']
+  .product-theme
+  :is(.ux-date--compact, .ux-select-search, .tt-scope-search)
+  input:focus-visible {
+  outline: none;
+  box-shadow: inset 0 -2px var(--focus);
+}
+.att-date-control .ux-date--compact {
+  width: 142px;
+}
+.tt-week-control .ux-date--compact {
+  --compact-date-size: 12px;
 }
 .ux-calendar {
   width: 286px;

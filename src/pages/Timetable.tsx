@@ -373,6 +373,7 @@ export function Timetable() {
                   <ArrowLeft size={15} />
                 </IconButton>
                 <DateInput
+                  variant="compact"
                   aria-label="განრიგის კვირა"
                   type="date"
                   value={from}
