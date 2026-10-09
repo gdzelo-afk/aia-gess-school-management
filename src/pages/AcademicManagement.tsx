@@ -1,3 +1,6 @@
+import { WorkspaceNav } from '../components/WorkspaceNav';
+import { DateInput } from '../components/DateInput';
+import { Select } from '../components/Select';
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -86,7 +89,7 @@ export function AcademicManagement({ calendarOnly = false }: { calendarOnly?: bo
         </div>
         <label className="op-year-select">
           <span>სასწავლო წელი</span>
-          <select
+          <Select
             aria-label="სასწავლო წლის არჩევა"
             value={data.selectedYearId ?? ''}
             onChange={(e) => setYearId(e.target.value)}
@@ -96,10 +99,10 @@ export function AcademicManagement({ calendarOnly = false }: { calendarOnly?: bo
                 {y.name} · {statusLabels[y.status]}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
       </header>
-      <nav className="op-tabs" aria-label="სასწავლო სტრუქტურა">
+      <WorkspaceNav active={tab} className="op-tabs" aria-label="სასწავლო სტრუქტურა">
         {tabs.map(([key, label]) => (
           <button
             key={key}
@@ -109,7 +112,7 @@ export function AcademicManagement({ calendarOnly = false }: { calendarOnly?: bo
             {label}
           </button>
         ))}
-      </nav>
+      </WorkspaceNav>
       <div className="op-section-heading">
         <div>
           <h2>{tabs.find((t) => t[0] === tab)?.[1]}</h2>
@@ -636,7 +639,7 @@ function Roster({
     >
       <label className="op-field">
         <span>მოქმედი თარიღი</span>
-        <input
+        <DateInput
           type="date"
           value={on}
           onChange={(e) => {

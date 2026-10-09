@@ -1322,3 +1322,11 @@
 .att-proposal li:has(.att-adjust-entry) {
   flex-wrap: wrap;
 }
+
+/* Keep the same child's authoritative month visible during range navigation. */
+.att-history-pending {
+  min-height: 20px;
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+}

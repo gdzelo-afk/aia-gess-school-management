@@ -1,6 +1,7 @@
+import { useRouteScroll } from '../lib/use-route-scroll';
 import { GradebookNotices } from './GradebookNotices';
 import { AttendanceNotices } from './AttendanceNotices';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useLayoutEffect, useState, useRef, Suspense } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Bell, Sun, Moon, PanelLeft, LogOut, CheckCheck } from 'lucide-react';
@@ -12,11 +13,27 @@ import { SidebarLink } from './SidebarLink';
 import { SemesterContext } from './SemesterContext';
 import { TbilisiClock } from './TbilisiClock';
 import { navigation } from './navigation';
-import { Avatar, IconButton, Modal, Button, EmptyState, Badge } from './ui';
+import { Avatar, IconButton, Modal, Button, EmptyState, Badge, Skeleton } from './ui';
 import { CommandPalette, commandShortcut } from './CommandPalette';
 export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => void }) {
+  useRouteScroll();
   const { theme, setTheme, sidebarCollapsed, setSidebarCollapsed } = usePreferences();
   const [searchOpen, setSearchOpen] = useState(false);
+  const sidebar = useRef<HTMLElement>(null);
+  const pendingRailScroll = useRef<number | null>(null);
+  useLayoutEffect(() => {
+    const rail = sidebar.current;
+    const top = pendingRailScroll.current;
+    if (!rail || top === null) return;
+    rail.style.setProperty('--rail-scroll-reserve', '0px');
+    // Removing semester/profile content must not clamp a scrolled rail before paint.
+    if (sidebarCollapsed) {
+      const reserve = Math.max(0, top - (rail.scrollHeight - rail.clientHeight));
+      rail.style.setProperty('--rail-scroll-reserve', `${reserve}px`);
+    }
+    rail.scrollTop = top;
+    pendingRailScroll.current = null;
+  }, [sidebarCollapsed]);
   const mobileTrigger = useRef<HTMLSpanElement>(null);
   const [mobile, setMobile] = useState(false);
   const [notifications, setNotifications] = useState(false);
@@ -109,7 +126,7 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
       <a href="#main" className="skip-link">
         მთავარ შინაარსზე გადასვლა
       </a>
-      <aside className="sidebar" id="main-sidebar">
+      <aside className="sidebar" id="main-sidebar" ref={sidebar}>
         {rail}
       </aside>
       <div className="workspace">
@@ -120,7 +137,10 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
               label={sidebarCollapsed ? 'ნავიგაციის გაშლა' : 'ნავიგაციის შეკეცვა'}
               aria-expanded={!sidebarCollapsed}
               aria-controls="main-sidebar"
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              onClick={() => {
+                pendingRailScroll.current = sidebar.current?.scrollTop ?? 0;
+                setSidebarCollapsed(!sidebarCollapsed);
+              }}
             >
               <PanelLeft size={19} />
             </IconButton>
@@ -160,8 +180,21 @@ export function Shell({ viewer, onLogout }: { viewer: Viewer; onLogout: () => vo
             </button>
           </div>
         </header>
-        <main id="main" className="main-content">
-          <Outlet context={{ viewer }} />
+        <main
+          id="main"
+          className="main-content"
+          tabIndex={-1}
+          aria-label={active?.label ?? 'სასკოლო სივრცე'}
+        >
+          <Suspense
+            fallback={
+              <div className="ux-route-loading">
+                <Skeleton rows={5} />
+              </div>
+            }
+          >
+            <Outlet context={{ viewer }} />
+          </Suspense>
         </main>
         <footer className="app-footer">
           <TbilisiClock />

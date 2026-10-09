@@ -1,3 +1,4 @@
+import { choose } from './choose';
 import { browserOrigin } from '../../scripts/browser/environment';
 import { test, expect, type Page } from '@playwright/test';
 import { readdir, readFile } from 'node:fs/promises';
@@ -24,9 +25,8 @@ async function save(page: Page) {
 async function pick(page: Page, label: string, name: string) {
   const dialog = topDialog(page);
   await dialog.getByLabel(label, { exact: true }).fill(name);
-  await dialog
-    .locator('.op-picker-results')
-    .getByRole('button', { name: new RegExp(name) })
+  await page
+    .getByRole('option', { name: new RegExp(name) })
     .first()
     .click();
 }
@@ -68,7 +68,7 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   ])
     await topDialog(page).getByLabel(label!, { exact: true }).fill(value!);
   const year = await save(page);
-  await page.getByLabel('სასწავლო წლის არჩევა').selectOption(year.id);
+  await choose(page.getByLabel('სასწავლო წლის არჩევა'), year.id);
   await expect(page.locator('.op-year-overview')).toContainText('2033-09-15');
   await page.getByRole('button', { name: 'წლის რედაქტირება' }).click();
   await save(page);
@@ -84,7 +84,7 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await save(page);
   await expect(page.locator('.op-record-list')).toContainText(`დემო ეტაპი ${suffix}`);
   // Continue on the current year: new subject, elective and effective membership.
-  await page.getByLabel('სასწავლო წლის არჩევა').selectOption({ label: '2026–2027 · მიმდინარე' });
+  await choose(page.getByLabel('სასწავლო წლის არჩევა'), { label: '2026–2027 · მიმდინარე' });
   await tab(page, 'საგნები');
   await page.getByRole('button', { name: 'დამატება', exact: true }).click();
   await topDialog(page).getByLabel('საგნის დასახელება').fill(`დემო კვლევა ${suffix}`);
@@ -92,11 +92,11 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await save(page);
   await tab(page, 'კურსები');
   await page.getByRole('button', { name: 'დამატება', exact: true }).click();
-  await topDialog(page).getByLabel('კლასი', { exact: true }).selectOption({ label: 'VII ა' });
-  await topDialog(page)
-    .getByLabel('საგანი', { exact: true })
-    .selectOption({ label: `დემო კვლევა ${suffix}` });
-  await topDialog(page).getByLabel('შემადგენლობის წესი').selectOption('true');
+  await choose(topDialog(page).getByLabel('კლასი', { exact: true }), { label: 'VII ა' });
+  await choose(topDialog(page).getByLabel('საგანი', { exact: true }), {
+    label: `დემო კვლევა ${suffix}`,
+  });
+  await choose(topDialog(page).getByLabel('შემადგენლობის წესი'), 'true');
   await save(page);
   await page.goto('/staff');
   await page.getByRole('button', { name: 'დამატება', exact: true }).click();
@@ -108,9 +108,9 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await tab(page, 'დანიშვნები');
   await page.getByRole('button', { name: 'დამატება', exact: true }).click();
   await pick(page, 'მასწავლებლის მოძებნა', staffName);
-  await topDialog(page)
-    .getByLabel('პასუხისმგებლობა')
-    .selectOption({ label: `VII ა · დემო კვლევა ${suffix}` });
+  await choose(topDialog(page).getByLabel('პასუხისმგებლობა'), {
+    label: `VII ა · დემო კვლევა ${suffix}`,
+  });
   await save(page);
   await expect(page.locator('.op-record-list')).toContainText(staffName);
   const guardianNames = [`დემო მეურვე პირველი ${suffix}`, `დემო მეურვე მეორე ${suffix}`];
@@ -124,7 +124,7 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await page.getByRole('button', { name: 'მოსწავლის დამატება', exact: true }).click();
   await topDialog(page).getByLabel('სახელი და გვარი').fill(studentName);
   await topDialog(page).getByLabel('მოსწავლის ნომერი').fill(`QA-${suffix}`);
-  await topDialog(page).getByLabel('მიმღები კლასი').selectOption({ label: 'VII ა' });
+  await choose(topDialog(page).getByLabel('მიმღები კლასი'), { label: 'VII ა' });
   await topDialog(page).getByLabel('ჩარიცხვის თარიღი').fill('2026-09-15');
   await save(page);
   await page.getByLabel('მოსწავლის ძიება').fill(studentName);
@@ -158,7 +158,7 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await page.getByLabel('მოსწავლის ძიება').fill(studentName);
   await page.locator('.person-cell').first().click();
   await page.getByRole('button', { name: 'ჩარიცხვის შეცვლა' }).click();
-  await topDialog(page).getByLabel('მიმღები კლასი').selectOption({ label: 'VII ბ' });
+  await choose(topDialog(page).getByLabel('მიმღები კლასი'), { label: 'VII ბ' });
   await topDialog(page).getByLabel('ცვლილების მიზეზი').fill('სადემონსტრაციო გადაყვანა');
   await save(page);
   await expect(page.locator('.op-history').first()).toContainText('VII ა');
@@ -226,7 +226,8 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   ).not.toBe(200);
   await page.getByLabel('ანგარიშის ძიება').fill(email);
   await page
-    .locator('.op-record-list')
+    .locator('.op-record-list article')
+    .filter({ hasText: email })
     .getByRole('button', { name: 'გამორთვა', exact: true })
     .click();
   await save(page);
@@ -236,7 +237,8 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await page.goto('/staff');
   await page.getByLabel('პიროვნების ძიება').fill(staffName);
   await page
-    .locator('.op-record-list')
+    .locator('.op-record-list article')
+    .filter({ hasText: staffName })
     .getByRole('button', { name: 'პროფილი', exact: true })
     .click();
   const localToday = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tbilisi' }).format(
@@ -244,7 +246,7 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   );
   await topDialog(page).getByLabel('სამუშაოს დასრულება (არ შედის)').fill(localToday);
   await save(page);
-  await page.getByLabel('სტატუსის ფილტრი').selectOption('departed');
+  await choose(page.getByLabel('სტატუსის ფილტრი'), 'departed');
   await expect(page.locator('.op-record-list')).toContainText('სამუშაო პერიოდი დასრულებულია');
   await page
     .locator('.op-record-list')
@@ -263,13 +265,13 @@ test('Stage 1A academic, people, enrollment and account workflows persist throug
   await page.getByRole('button', { name: 'მოსწავლის დამატება', exact: true }).click();
   await topDialog(page).getByLabel('სახელი და გვარი').fill(`გასვლის მაგალითი ${suffix}`);
   await topDialog(page).getByLabel('მოსწავლის ნომერი').fill(`EXIT-${suffix}`);
-  await topDialog(page).getByLabel('მიმღები კლასი').selectOption({ label: 'VII ა' });
+  await choose(topDialog(page).getByLabel('მიმღები კლასი'), { label: 'VII ა' });
   await topDialog(page).getByLabel('ჩარიცხვის თარიღი').fill('2026-09-15');
   await save(page);
   await page.getByLabel('მოსწავლის ძიება').fill(`გასვლის მაგალითი ${suffix}`);
   await page.locator('.person-cell').first().click();
   await page.getByRole('button', { name: 'ჩარიცხვის შეცვლა' }).click();
-  await topDialog(page).getByLabel('მიმღები კლასი').selectOption('');
+  await choose(topDialog(page).getByLabel('მიმღები კლასი'), '');
   await topDialog(page).getByLabel('ცვლილების მიზეზი').fill('დემო გასვლა');
   await save(page);
   await page.getByRole('button', { name: 'არქივირება', exact: true }).click();

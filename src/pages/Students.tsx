@@ -1,3 +1,5 @@
+import { useSearchQuery } from '../lib/use-search-query';
+import { Select } from '../components/Select';
 import { useState } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -40,13 +42,19 @@ export function Students() {
   const [sort, setSort] = useState<'asc' | 'desc'>('asc');
   const [page, setPage] = useState(0);
   const id = params.get('student');
-  const result = useQuery({
-    queryKey: ['students', viewer.id, q, section, sort, page, status],
-    queryFn: () =>
+  const search = useSearchQuery(q);
+  const result = useQuery<StudentPage>({
+    queryKey: ['students', viewer.id, search, section, sort, page, status],
+    placeholderData: (previous, previousQuery) =>
+      previousQuery?.queryKey[1] === viewer.id ? previous : undefined,
+    queryFn: ({ signal }) =>
       api<StudentPage>(
-        `/api/foundation/students?q=${encodeURIComponent(q)}&sort=${sort}&offset=${page * 6}&limit=6&status=${status}${section ? `&section=${encodeURIComponent(section)}` : ''}`,
+        `/api/foundation/students?q=${encodeURIComponent(search)}&sort=${sort}&offset=${page * 6}&limit=6&status=${status}${section ? `&section=${encodeURIComponent(section)}` : ''}`,
+        { signal },
       ),
+    enabled: q === search,
   });
+  const refreshing = q !== search || result.isPlaceholderData;
   const detail = useQuery({
     queryKey: ['student', id, viewer.id],
     queryFn: () => api<StudentRow>(`/api/foundation/students/${id}`),
@@ -99,7 +107,7 @@ export function Students() {
           </div>
           <label className="filter-select">
             <span className="sr-only">კლასის ფილტრი</span>
-            <select
+            <Select
               value={section}
               onChange={(e) => {
                 setSection(e.target.value);
@@ -110,11 +118,11 @@ export function Students() {
               {setup.data?.sections.map((s) => (
                 <option key={s.id}>{s.name}</option>
               ))}
-            </select>
+            </Select>
           </label>
           {canManage && (
             <label className="filter-select">
-              <select
+              <Select
                 aria-label="მოსწავლის სტატუსი"
                 value={status}
                 onChange={(e) => {
@@ -125,7 +133,7 @@ export function Students() {
                 <option value="active">აქტიური</option>
                 <option value="archived">არქივში</option>
                 <option value="all">ყველა</option>
-              </select>
+              </Select>
             </label>
           )}
         </div>
@@ -135,7 +143,14 @@ export function Students() {
           <ErrorState onRetry={() => void result.refetch()} />
         ) : result.data.items.length ? (
           <>
-            <div className="table-scroll" role="region" aria-label="მოსწავლეთა სია" tabIndex={0}>
+            <div
+              className="table-scroll ux-refresh-region"
+              aria-busy={refreshing}
+              inert={refreshing}
+              role="region"
+              aria-label="მოსწავლეთა სია"
+              tabIndex={0}
+            >
               <table>
                 <thead>
                   <tr>
@@ -193,14 +208,15 @@ export function Students() {
               </table>
             </div>
             <div className="pagination">
-              <span>
-                {page * 6 + 1}–{Math.min(page * 6 + 6, result.data.total)} / {result.data.total}{' '}
-                ჩანაწერი
+              <span role="status">
+                {refreshing
+                  ? 'ახლდება…'
+                  : `${page * 6 + 1}–${Math.min(page * 6 + 6, result.data.total)} / ${result.data.total} ჩანაწერი`}
               </span>
               <div>
                 <Button
                   aria-label="წინა გვერდი"
-                  disabled={page === 0}
+                  disabled={page === 0 || refreshing}
                   onClick={() => setPage((p) => p - 1)}
                 >
                   <ChevronLeft size={16} />
@@ -208,7 +224,7 @@ export function Students() {
                 <span>{page + 1}</span>
                 <Button
                   aria-label="შემდეგი გვერდი"
-                  disabled={(page + 1) * 6 >= result.data.total}
+                  disabled={refreshing || (page + 1) * 6 >= result.data.total}
                   onClick={() => setPage((p) => p + 1)}
                 >
                   <ChevronRight size={16} />

@@ -1,7 +1,10 @@
-import { useState, useEffect, type ReactNode } from 'react';
+import * as Popover from '@radix-ui/react-popover';
+import { DateInput } from './DateInput';
+import { Select } from './Select';
+import { useState, useEffect, useId, useRef, type ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api, queryClient } from '../lib/api';
-import { Button, Modal, ErrorState } from './ui';
+import { Button, Modal } from './ui';
 export const today = () =>
   new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Tbilisi',
@@ -38,9 +41,11 @@ export function Field({
     <label className="op-field">
       <span>{label}</span>
       {children ? (
-        <select aria-label={label} name={name} defaultValue={value ?? ''} required={required}>
+        <Select aria-label={label} name={name} defaultValue={value ?? ''} required={required}>
           {children}
-        </select>
+        </Select>
+      ) : type === 'date' ? (
+        <DateInput name={name} defaultValue={value ?? ''} required={required} />
       ) : (
         <input
           name={name}
@@ -110,7 +115,7 @@ export function OperationDialog({
                   {
                     label:
                       control instanceof HTMLSelectElement
-                        ? (control.labels?.[0]?.querySelector('span')?.textContent ?? '')
+                        ? (control.closest('label')?.querySelector('span')?.textContent ?? '')
                         : label,
                     value,
                   },
@@ -149,11 +154,13 @@ export function OperationDialog({
             <p>ცვლილება შეინახება სასკოლო ჩანაწერებში და აუდიტის ისტორიაში.</p>
           </div>
         )}
-        {error && (
-          <p className="field-error" role="alert">
-            {error}
-          </p>
-        )}
+        <div className="ux-feedback-slot">
+          {error && (
+            <p className="field-error" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
         <footer className="op-form-actions">
           <Button
             type="button"
@@ -183,10 +190,14 @@ export function PersonPicker({
 }) {
   const [q, setQ] = useState(''),
     [search, setSearch] = useState(''),
-    [selected, setSelected] = useState<{ id: string; name: string; version?: number } | null>(null);
+    [selected, setSelected] = useState<{ id: string; name: string; version?: number } | null>(null),
+    [open, setOpen] = useState(false),
+    [active, setActive] = useState(0);
+  const id = useId(),
+    input = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    const t = setTimeout(() => setSearch(q), 180);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setSearch(q), 180);
+    return () => clearTimeout(timer);
   }, [q]);
   const result = useQuery({
     queryKey: ['person-options', kind, search],
@@ -196,45 +207,120 @@ export function PersonPicker({
       ),
     enabled: search.trim().length >= 2 && !selected,
   });
+  const items = search === q && !result.isFetching ? (result.data?.items ?? []) : [];
+  function choose(person: (typeof items)[number]) {
+    setSelected(person);
+    setOpen(false);
+    input.current?.setCustomValidity('');
+    input.current?.focus();
+  }
   return (
     <div className="op-person-picker">
-      <label className="op-field">
-        <span>{label}</span>
-        <input
-          aria-label={label}
-          placeholder="სახელი ან ელფოსტა…"
-          value={selected?.name ?? q}
-          ref={(input) => {
-            input?.setCustomValidity(
-              required && !selected ? 'აირჩიეთ პიროვნება ძიების შედეგებიდან.' : '',
-            );
-          }}
-          onChange={(e) => {
-            setSelected(null);
-            setQ(e.target.value);
-          }}
-          required={required}
-        />
-      </label>
+      <Popover.Root open={open && !selected} onOpenChange={setOpen}>
+        <Popover.Anchor asChild>
+          <label className="op-field">
+            <span>{label}</span>
+            <input
+              aria-label={label}
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={open && !selected}
+              aria-controls={`${id}-list`}
+              aria-activedescendant={items[active] ? `${id}-${items[active]!.id}` : undefined}
+              placeholder="სახელი ან ელფოსტა…"
+              value={selected?.name ?? q}
+              ref={(el) => {
+                input.current = el;
+                el?.setCustomValidity(
+                  required && !selected ? 'აირჩიეთ პიროვნება ძიების შედეგებიდან.' : '',
+                );
+              }}
+              onFocus={() => !selected && setOpen(true)}
+              onChange={(e) => {
+                setSelected(null);
+                setQ(e.target.value);
+                setActive(0);
+                setOpen(true);
+              }}
+              required={required}
+              onKeyDown={(e) => {
+                if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
+                  e.preventDefault();
+                  setOpen(true);
+                  const next = Math.max(
+                    0,
+                    Math.min(items.length - 1, active + (e.key === 'ArrowDown' ? 1 : -1)),
+                  );
+                  setActive(next);
+                  document
+                    .getElementById(`${id}-${items[next]?.id}`)
+                    ?.scrollIntoView({ block: 'nearest' });
+                } else if (e.key === 'Enter' && open && items[active]) {
+                  e.preventDefault();
+                  choose(items[active]!);
+                } else if (e.key === 'Escape') {
+                  e.preventDefault();
+                  setOpen(false);
+                }
+              }}
+            />
+          </label>
+        </Popover.Anchor>
+        <Popover.Portal>
+          <Popover.Content
+            className="product-theme ux-popover ux-select-menu"
+            align="start"
+            sideOffset={5}
+            collisionPadding={12}
+            onOpenAutoFocus={(e) => e.preventDefault()}
+            onCloseAutoFocus={(e) => e.preventDefault()}
+            onInteractOutside={(e) => {
+              if (e.target === input.current) e.preventDefault();
+            }}
+          >
+            <div id={`${id}-list`} role="listbox" aria-label={label} className="ux-options">
+              {q.trim().length < 2 ? (
+                <p className="ux-option-empty">შეიყვანეთ მინიმუმ ორი სიმბოლო.</p>
+              ) : result.isFetching || search !== q ? (
+                <p className="ux-option-empty" role="status">
+                  იძებნება…
+                </p>
+              ) : result.isError ? (
+                <Button type="button" onClick={() => void result.refetch()}>
+                  ძიების ხელახლა ცდა
+                </Button>
+              ) : items.length ? (
+                items.map((person, index) => (
+                  <div
+                    key={person.id}
+                    id={`${id}-${person.id}`}
+                    role="option"
+                    aria-selected={active === index}
+                    data-active={active === index || undefined}
+                    className="ux-option ux-person-option"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onMouseMove={() => setActive(index)}
+                    onClick={() => choose(person)}
+                  >
+                    <strong>{person.name}</strong>
+                    <small>{person.context}</small>
+                  </div>
+                ))
+              ) : (
+                <p className="ux-option-empty" role="status">
+                  ჩანაწერი ვერ მოიძებნა.
+                </p>
+              )}
+            </div>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
       <input type="hidden" name={name} value={selected?.id ?? ''} />
       {selected && (
         <>
           <input type="hidden" name={`${name}Label`} value={selected.name} />
           <input type="hidden" name={`${name}Version`} value={selected.version ?? 1} />
         </>
-      )}
-      {!selected && result.isFetching && <p className="op-hint">იძებნება…</p>}
-      {!selected && result.isError && <ErrorState onRetry={() => void result.refetch()} />}
-      {!selected && result.data && (
-        <div className="op-picker-results">
-          {result.data.items.map((p) => (
-            <button type="button" key={p.id} onClick={() => setSelected(p)}>
-              <strong>{p.name}</strong>
-              <small>{p.context}</small>
-            </button>
-          ))}
-          {!result.data.items.length && <p>ჩანაწერი ვერ მოიძებნა.</p>}
-        </div>
       )}
       <small className="op-hint">
         მინიმუმ ორი სიმბოლო. ერთნაირი სახელები ავტომატურად არ ერთიანდება.

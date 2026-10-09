@@ -1,3 +1,4 @@
+import { choose } from './choose';
 import { test, expect, type Page } from '@playwright/test';
 import { browserOrigin } from '../../scripts/browser/environment';
 test.use({ actionTimeout: 15000 });
@@ -58,20 +59,25 @@ test('Gradebook real draft publication, scoped family reports and mobile assessm
       (e: { value: { kind: string } }) => e.value.kind === 'state',
     ),
   ).toBe(true);
-  await panel.locator('.gb-result-control select').first().selectOption('numeric');
+  await choose(panel.locator('.gb-result-control [role="combobox"]').first(), 'numeric');
   await panel.getByRole('spinbutton').first().fill('9');
   await expect(panel.getByText('შეუნახავია', { exact: true })).toBeVisible();
   // Cancelling a scope/route transition must not move the lens or discard local edits.
-  const originalCourse = await page.getByRole('combobox', { name: /საგნის კურსი/ }).inputValue();
+  const originalCourse = await page
+    .getByRole('combobox', { name: /საგნის კურსი/ })
+    .getAttribute('value');
   for (const change of [
-    () => page.getByRole('combobox', { name: /საგნის კურსი/ }).selectOption(id(610)),
-    () => page.getByRole('combobox', { name: /სემესტრი/ }).selectOption(id(12)),
+    () => choose(page.getByRole('combobox', { name: /საგნის კურსი/ }), id(610)),
+    () => choose(page.getByRole('combobox', { name: /სემესტრი/ }), id(12)),
     () => page.getByRole('link', { name: 'დასწრება', exact: true }).click(),
   ]) {
     page.once('dialog', (d) => d.dismiss());
     await change();
-    await expect(page.getByRole('combobox', { name: /საგნის კურსი/ })).toHaveValue(originalCourse);
-    await expect(page.getByRole('combobox', { name: /სემესტრი/ })).toHaveValue(id(11));
+    await expect(page.getByRole('combobox', { name: /საგნის კურსი/ })).toHaveAttribute(
+      'value',
+      originalCourse!,
+    );
+    await expect(page.getByRole('combobox', { name: /სემესტრი/ })).toHaveAttribute('value', id(11));
     await expect(panel.getByRole('spinbutton').first()).toHaveValue('9');
     expect(new URL(page.url()).pathname).toBe('/gradebook');
   }
@@ -84,7 +90,7 @@ test('Gradebook real draft publication, scoped family reports and mobile assessm
   await expect(panel.getByText('პირადი მონახაზი', { exact: true })).toBeVisible();
   await panel.getByRole('spinbutton').first().fill('6');
   page.once('dialog', (d) => d.accept());
-  await page.getByRole('combobox', { name: /საგნის კურსი/ }).selectOption(id(610));
+  await choose(page.getByRole('combobox', { name: /საგნის კურსი/ }), id(610));
   await expect(panel).toHaveCount(0);
   await page.goto(`/gradebook?course=${id(16000)}&assessment=${assessmentId}`);
   await expect(panel.getByRole('spinbutton').first()).toHaveValue('9');
@@ -196,7 +202,7 @@ test('written feedback resumes privately, publishes deliberately and preserves s
   await page.getByRole('button', { name: 'წერილობითი უკუკავშირი', exact: true }).click();
   await page.getByRole('button', { name: 'ჩანაწერი', exact: true }).click();
   let dialog = page.getByRole('dialog');
-  await dialog.getByRole('combobox', { name: 'მოსწავლე', exact: true }).selectOption(id(200));
+  await choose(dialog.getByRole('combobox', { name: 'მოსწავლე', exact: true }), id(200));
   const draftText = 'სატესტო უკუკავშირი — ტექსტის ანალიზი გაუმჯობესდა.';
   await dialog.getByLabel('აკადემიური კომენტარი', { exact: true }).fill(draftText);
   await dialog.getByRole('button', { name: 'მონახაზის შენახვა', exact: true }).click();
@@ -290,9 +296,7 @@ test('student extension, administrative decision, teacher recovery and versioned
     .filter({ hasText: 'შემაჯამებელი · წერითი დავალება' });
   await request.getByRole('button', { name: 'განხილვა', exact: true }).click();
   let dialog = admin.getByRole('dialog');
-  await dialog
-    .getByRole('combobox', { name: 'გადაწყვეტილება', exact: true })
-    .selectOption('approved');
+  await choose(dialog.getByRole('combobox', { name: 'გადაწყვეტილება', exact: true }), 'approved');
   await dialog
     .getByRole('checkbox', { name: 'პირადი / ოფლაინ განხილვა შედგა', exact: true })
     .check();
@@ -305,7 +309,7 @@ test('student extension, administrative decision, teacher recovery and versioned
   await admin.getByRole('button', { name: 'მუქი რეჟიმი', exact: true }).click();
   await admin.screenshot({ path: testInfo.outputPath('admin-recovery-dark.png') });
   await admin.getByRole('button', { name: 'წესები / კრიტერიუმები', exact: true }).click();
-  await admin.getByRole('combobox', { name: /საგნის კურსი/ }).selectOption(id(610));
+  await choose(admin.getByRole('combobox', { name: /საგნის კურსი/ }), id(610));
   await admin.getByRole('button', { name: 'ახალი ვერსია', exact: true }).click();
   dialog = admin.getByRole('dialog');
   await dialog
@@ -344,7 +348,7 @@ test('student extension, administrative decision, teacher recovery and versioned
   const panel = teacher.getByRole('complementary', { name: 'შეფასების დეტალები' });
   await panel.getByRole('button', { name: 'შესწორება', exact: true }).click();
   const row = panel.locator('.gb-entry-row').filter({ hasText: 'AG-2601' });
-  await row.getByRole('combobox').selectOption('numeric');
+  await choose(row.getByRole('combobox'), 'numeric');
   await row.getByRole('spinbutton').fill('9');
   await panel
     .getByRole('textbox', { name: 'შესწორების მიზეზი', exact: true })
@@ -368,20 +372,20 @@ test('Grade V formative homework, homeroom-only subject view and family report c
   test.setTimeout(180000);
   await login(page, 'მასწავლებელი');
   await page.goto(`/gradebook?course=${id(16200)}`);
-  await page.getByRole('combobox', { name: 'სემესტრი', exact: true }).selectOption(id(12));
+  await choose(page.getByRole('combobox', { name: 'სემესტრი', exact: true }), id(12));
   await page.getByRole('button', { name: 'შეფასება', exact: true }).click();
   let dialog = page.getByRole('dialog');
   await dialog
     .getByLabel('დასახელება', { exact: true })
     .fill('V კლასი · საშინაოს განმავითარებელი უკუკავშირი');
   await dialog.getByLabel('თარიღი', { exact: true }).fill('2027-02-02');
-  await dialog.getByRole('combobox', { name: 'კატეგორია', exact: true }).selectOption('homework');
+  await choose(dialog.getByRole('combobox', { name: 'კატეგორია', exact: true }), 'homework');
   await expect(dialog.getByRole('checkbox')).toBeChecked();
   await expect(dialog.getByRole('checkbox')).toBeDisabled();
   await dialog.getByRole('button', { name: 'მონახაზის შექმნა', exact: true }).click();
   const panel = page.getByRole('complementary', { name: 'შეფასების დეტალები' });
   await expect(panel.locator('.gb-entry-row')).toHaveCount(6);
-  await panel.locator('.gb-result-control select').first().selectOption('formative');
+  await choose(panel.locator('.gb-result-control [role="combobox"]').first(), 'formative');
   await panel
     .getByRole('textbox')
     .first()
@@ -393,29 +397,47 @@ test('Grade V formative homework, homeroom-only subject view and family report c
   await page.getByRole('button', { name: 'გასვლა', exact: true }).click();
   await page.getByLabel('ელფოსტა', { exact: true }).fill('homeroom@gradebook.demo.local');
   await page.getByLabel('პაროლი', { exact: true }).fill('AiaDemo-2026!');
-  await page.getByRole('button', { name: 'სივრცეში შესვლა', exact: true }).click();
+  // The custom homeroom account uses the same real sign-in budget as demo buttons.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = page.waitForResponse((r) => r.url().endsWith('/api/auth/sign-in/email'));
+    await page.getByRole('button', { name: 'სივრცეში შესვლა', exact: true }).click();
+    const result = await response;
+    if (result.status() !== 429) {
+      expect(result.ok(), await result.text()).toBe(true);
+      break;
+    }
+    const seconds = Number(
+      result.headers()['x-retry-after'] ?? result.headers()['retry-after'] ?? 60,
+    );
+    await page.waitForTimeout((seconds + 1) * 1000);
+  }
   await expect(page.locator('.overview-heading')).toBeVisible();
   await page.goto(`/gradebook?course=${id(611)}`);
-  await expect(page.getByRole('combobox', { name: /საგნის კურსი/ })).toHaveValue(id(611));
+  await expect(page.getByRole('combobox', { name: /საგნის კურსი/ })).toHaveAttribute(
+    'value',
+    id(611),
+  );
   await expect(page.getByRole('button', { name: 'შეფასება', exact: true })).toHaveCount(0);
   await page.getByRole('button', { name: 'წერილობითი უკუკავშირი', exact: true }).click();
   await page.getByRole('button', { name: 'ჩანაწერი', exact: true }).click();
   dialog = page.getByRole('dialog');
-  await expect(dialog.getByRole('combobox', { name: 'ჩანაწერის ტიპი', exact: true })).toHaveValue(
-    'homeroom_note',
-  );
   await expect(
-    dialog.getByRole('combobox', { name: 'მოსწავლე', exact: true }).locator('option'),
-  ).toHaveCount(3);
+    dialog.getByRole('combobox', { name: 'ჩანაწერის ტიპი', exact: true }),
+  ).toHaveAttribute('value', 'homeroom_note');
+  await dialog.getByRole('combobox', { name: 'მოსწავლე', exact: true }).click();
+  await expect(page.getByRole('option')).toHaveCount(3);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('listbox')).not.toBeVisible();
   await dialog.getByRole('button', { name: 'დახურვა', exact: true }).click();
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const parent = await context.newPage();
   await login(parent, 'მშობელი');
   await parent.goto('/gradebook');
-  await expect(
-    parent.getByRole('combobox', { name: 'მოსწავლე', exact: true }).locator('option'),
-  ).toHaveCount(3);
-  await parent.getByRole('combobox', { name: 'მოსწავლე', exact: true }).selectOption(id(200));
+  await parent.getByRole('combobox', { name: 'მოსწავლე', exact: true }).click();
+  await expect(parent.getByRole('option')).toHaveCount(3);
+  await parent.keyboard.press('Escape');
+  await expect(parent.getByRole('listbox')).not.toBeVisible();
+  await choose(parent.getByRole('combobox', { name: 'მოსწავლე', exact: true }), id(200));
   await parent.getByRole('button', { name: 'პროგრესი / ანგარიშები', exact: true }).click();
   await expect(parent.locator('.gb-report-rows article')).toHaveCount(1);
   await expect(parent.getByText(/ზუსტი საშუალო:/)).toBeVisible();

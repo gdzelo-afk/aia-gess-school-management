@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, it, expect } from 'vitest';
+import { beforeAll, afterAll, it, expect, vi } from 'vitest';
 import { eq, sql } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
 import { capabilitiesFor, type Viewer } from '../shared/contracts.js';
@@ -67,6 +67,10 @@ const change = (o: Awaited<ReturnType<typeof week>>['items'][number]): LessonCha
   exceptionalDay: o.exceptionalDay,
 });
 beforeAll(async () => {
+  // The fixture year/week and future-only writes share a deterministic school clock.
+  // Leave I/O timers real so PostgreSQL, auth and PGlite behave normally.
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(new Date('2026-10-05T04:00:00Z'));
   await database.migrate();
   await seedDemo();
   base = (await services.timetableDraft(admin, id(1600))).document;
@@ -74,6 +78,7 @@ beforeAll(async () => {
 afterAll(async () => {
   await app.close();
   await database.close();
+  vi.useRealTimers();
 });
 it('migrates and seeds without duplicating or replacing existing records', async () => {
   const before = await db.select().from(s.timetableVersion);

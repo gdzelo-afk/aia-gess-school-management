@@ -1,3 +1,5 @@
+import { DateInput } from '../DateInput';
+import { Select } from '../Select';
 import { useState, type FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button, Modal } from '../ui';
@@ -80,7 +82,7 @@ export function CreateAssessment({
       <form onSubmit={submit} className="gb-form">
         <label className="gb-field">
           კურსი
-          <select
+          <Select
             required
             value={offer}
             onChange={(e) => {
@@ -95,11 +97,11 @@ export function CreateAssessment({
                   {o.section} · {o.subject}
                 </option>
               ))}
-          </select>
+          </Select>
         </label>
         <label className="gb-field">
           ჯგუფი
-          <select value={group} onChange={(e) => setGroup(e.target.value)}>
+          <Select value={group} onChange={(e) => setGroup(e.target.value)}>
             <option value="">კურსის სრული სია</option>
             {setup.groups
               .filter((g) => g.offeringIds.includes(offer) && g.startsOn <= date && date < g.endsOn)
@@ -108,7 +110,7 @@ export function CreateAssessment({
                   {g.name}
                 </option>
               ))}
-          </select>
+          </Select>
         </label>
         <label className="gb-field">
           დასახელება
@@ -123,11 +125,16 @@ export function CreateAssessment({
         <div className="gb-form-pair">
           <label className="gb-field">
             თარიღი
-            <input type="date" required value={date} onChange={(e) => setDate(e.target.value)} />
+            <DateInput
+              type="date"
+              required
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
           </label>
           <label className="gb-field">
             კატეგორია
-            <select
+            <Select
               value={category}
               onChange={(e) => setCategory(e.target.value as typeof category)}
             >
@@ -136,7 +143,7 @@ export function CreateAssessment({
                   {label}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         </div>
         <label className="gb-checkbox">
@@ -154,14 +161,14 @@ export function CreateAssessment({
         {category === 'summative' && (
           <label className="gb-field">
             დამტკიცებული კრიტერიუმი
-            <select name="criteria">
+            <Select name="criteria">
               <option value="">კრიტერიუმის გარეშე</option>
               {criteria.data?.map((c) => (
                 <option key={c.id} value={c.id}>
                   ვერსია {c.revision} · {dateLabel(c.approvedAt.slice(0, 10))}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         )}
         <label className="gb-field">
@@ -175,11 +182,13 @@ export function CreateAssessment({
               ? 'ჩათვლა / არჩათვლა · არ შედის რიცხვით საშუალოში.'
               : '1–10 · მხოლოდ მთელი ქულა. შეუფასებელი შედეგი ნული არ არის.'}
         </p>
-        {error && (
-          <p className="gb-error" role="alert">
-            {error}
-          </p>
-        )}
+        <div className="ux-feedback-slot">
+          {error && (
+            <p className="gb-error" role="alert">
+              {error}
+            </p>
+          )}
+        </div>
         <Button type="submit" variant="primary" disabled={busy || !course?.policy}>
           მონახაზის შექმნა
         </Button>
@@ -249,7 +258,7 @@ export function WritingForm({
       >
         <label className="gb-field">
           ჩანაწერის ტიპი
-          <select disabled={!!saved} value={kind} onChange={(e) => setKind(e.target.value)}>
+          <Select disabled={!!saved} value={kind} onChange={(e) => setKind(e.target.value)}>
             {canTeach && (
               <>
                 <option value="guardian_note">საგნის მასწავლებლის კომენტარი მშობელს</option>
@@ -257,17 +266,17 @@ export function WritingForm({
               </>
             )}
             {homeroom && <option value="homeroom_note">დამრიგებლის ზოგადი კომენტარი</option>}
-          </select>
+          </Select>
         </label>
         <label className="gb-field">
           მოსწავლე
-          <select name="student" required disabled={!!saved}>
+          <Select name="student" required disabled={!!saved}>
             {data.pupils.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label className="gb-field">
           {kind === 'narrative'
@@ -282,11 +291,13 @@ export function WritingForm({
             disabled={!!saved}
           />
         </label>
-        {error && (
-          <p role="alert" className="gb-error">
-            {error}
-          </p>
-        )}
+        <div className="ux-feedback-slot">
+          {error && (
+            <p role="alert" className="gb-error">
+              {error}
+            </p>
+          )}
+        </div>
         {!saved ? (
           <Button type="submit" disabled={busy}>
             მონახაზის შენახვა
@@ -368,11 +379,11 @@ export function PolicyForm({
       >
         <label className="gb-field">
           შეფასების რეჟიმი
-          <select name="mode" defaultValue={course.policy?.offeringMode ?? 'policy_default'}>
+          <Select name="mode" defaultValue={course.policy?.offeringMode ?? 'policy_default'}>
             <option value="policy_default">საფეხურის წესი · 1–10 / განმავითარებელი</option>
             <option value="formative_only">მხოლოდ განმავითარებელი</option>
             <option value="pass_fail">ჩათვლა / არჩათვლა</option>
-          </select>
+          </Select>
         </label>
         <label className="gb-field">
           სავალდებულო შემაჯამებლების რაოდენობა
@@ -393,7 +404,7 @@ export function PolicyForm({
           ცვლილების საფუძველი
           <textarea name="reason" required minLength={5} maxLength={1000} />
         </label>
-        {error && <p role="alert">{error}</p>}
+        <div className="ux-feedback-slot">{error && <p role="alert">{error}</p>}</div>
         <Button variant="primary" disabled={busy} type="submit">
           ახალი ვერსიის შენახვა
         </Button>
@@ -481,7 +492,7 @@ export function CriteriaForm({
           დამტკიცების საფუძველი
           <textarea name="reason" required minLength={5} maxLength={1000} />
         </label>
-        {error && <p role="alert">{error}</p>}
+        <div className="ux-feedback-slot">{error && <p role="alert">{error}</p>}</div>
         <Button type="submit" variant="primary" disabled={busy}>
           კრიტერიუმის დამტკიცება
         </Button>

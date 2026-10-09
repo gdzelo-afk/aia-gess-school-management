@@ -1,3 +1,6 @@
+import { WorkspaceNav } from '../components/WorkspaceNav';
+import { DateInput } from '../components/DateInput';
+import { Select } from '../components/Select';
 import { useState } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -65,11 +68,22 @@ export function Attendance() {
     : 1;
   const enabled = viewer.capabilities.some((c) => c.startsWith('attendance:'));
   const range = useQuery({
-    queryKey: ['attendance', 'range', from, days, child],
-    queryFn: () =>
-      api<RangeView>(
+    queryKey: ['attendance', 'range', viewer.id, child, month ? 'history' : 'day', from, days],
+    queryFn: async () => ({
+      ...(await api<RangeView>(
         `/api/attendance/range?from=${from}&days=${days}${child ? '&studentId=' + child : ''}`,
-      ),
+      )),
+      historyDate: date,
+    }),
+    // Retain only a date-range transition within the SAME viewer/child history.
+    // No old roster may be shown under a new child, day-workspace or lesson.
+    placeholderData: (previous, query) =>
+      month &&
+      query?.queryKey[2] === viewer.id &&
+      query.queryKey[3] === child &&
+      query.queryKey[4] === 'history'
+        ? previous
+        : undefined,
     enabled,
     refetchInterval: 60000,
   });
@@ -95,6 +109,7 @@ export function Attendance() {
       </section>
     );
   const data = range.data;
+  const historyDate = range.isPlaceholderData ? (data?.historyDate ?? date) : date;
   const children = data?.children ?? [];
   const selectedChild = child || children[0]?.studentId;
   // Family month views always present one child at a time, including the initial load.
@@ -182,10 +197,16 @@ export function Attendance() {
         </div>
       </header>
       <div className="att-navigation">
-        <div className="att-tabs" role="tablist" aria-label="დასწრების სამუშაო სივრცე">
+        <WorkspaceNav
+          active={tab}
+          className="att-tabs"
+          role="tablist"
+          aria-label="დასწრების სამუშაო სივრცე"
+        >
           {tabs.map(([key, label]) => (
             <button
               role="tab"
+              tabIndex={tab === key ? 0 : -1}
               aria-selected={tab === key}
               key={key}
               onClick={() => {
@@ -202,7 +223,7 @@ export function Attendance() {
               )}
             </button>
           ))}
-        </div>
+        </WorkspaceNav>
         <div className="att-date-control">
           <IconButton label="წინა დღე" onClick={() => setDate(shiftDate(date, -1))}>
             <ArrowLeft size={16} />
@@ -210,7 +231,8 @@ export function Attendance() {
           <label className="sr-only" htmlFor="attendance-date">
             დასწრების თარიღი
           </label>
-          <input
+          <DateInput
+            variant="compact"
             id="attendance-date"
             type="date"
             value={date}
@@ -241,6 +263,9 @@ export function Attendance() {
       {feedback && (
         <p role="status" className="att-feedback">
           {feedback}
+          <button type="button" aria-label="შეტყობინების დახურვა" onClick={() => setFeedback('')}>
+            ×
+          </button>
         </p>
       )}
       {range.isPending ? (
@@ -311,7 +336,7 @@ export function Attendance() {
                     {school && (
                       <details>
                         <summary>მასწავლებელი</summary>
-                        <select
+                        <Select
                           aria-label="მასწავლებლის ფილტრი"
                           value={filter}
                           onChange={(e) => setFilter(e.target.value)}
@@ -322,7 +347,7 @@ export function Attendance() {
                               {name}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                       </details>
                     )}
                   </div>
@@ -378,17 +403,23 @@ export function Attendance() {
               </>
             )}
             {tab === 'history' && (
-              <HistoryView
-                data={data}
-                items={scopedItems}
-                daily={daily}
-                date={date}
-                setDate={setDate}
-                openLesson={openLesson}
-                school={school}
-                child={child}
-                setChild={setChild}
-              />
+              <div className="att-history-surface" aria-busy={range.isFetching}>
+                <p className="att-history-pending" role="status">
+                  {range.isPlaceholderData ? 'არჩეული პერიოდი იტვირთება…' : ''}
+                </p>
+                <HistoryView
+                  data={data}
+                  items={scopedItems}
+                  daily={daily}
+                  date={historyDate}
+                  setDate={setDate}
+                  openLesson={openLesson}
+                  school={school}
+                  child={child}
+                  setChild={setChild}
+                  pending={range.isPlaceholderData}
+                />
+              </div>
             )}
             {(tab === 'explanations' || tab === 'requests') && (
               <>
@@ -590,6 +621,7 @@ function HistoryView({
   school,
   child,
   setChild,
+  pending,
 }: {
   data: RangeView;
   items: RangeView['items'];
@@ -600,6 +632,7 @@ function HistoryView({
   school: boolean;
   child: string;
   setChild: (s: string) => void;
+  pending: boolean;
 }) {
   const students = [...new Map(data.daily.map((d) => [d.student.studentId, d.student])).values()];
   const conducted = items.filter(
@@ -615,11 +648,11 @@ function HistoryView({
     count = new Date(Number(date.slice(0, 4)), Number(date.slice(5, 7)), 0).getDate(),
     offset = (new Date(monthStart + 'T12:00:00Z').getUTCDay() + 6) % 7;
   return (
-    <>
+    <div className="att-history-data" inert={pending}>
       <div className="att-history-tools">
         <label>
           თვე
-          <select value={date.slice(0, 7)} onChange={(e) => setDate(e.target.value + '-01')}>
+          <Select value={date.slice(0, 7)} onChange={(e) => setDate(e.target.value + '-01')}>
             {Array.from({ length: 36 }, (_, i) => {
               const year = Number(date.slice(0, 4)) - 1 + Math.floor(i / 12);
               const value = `${year}-${String((i % 12) + 1).padStart(2, '0')}`;
@@ -629,19 +662,19 @@ function HistoryView({
                 </option>
               );
             })}
-          </select>
+          </Select>
         </label>
         {school && (
           <label>
             მოსწავლე
-            <select value={child} onChange={(e) => setChild(e.target.value)}>
+            <Select value={child} onChange={(e) => setChild(e.target.value)}>
               <option value="">ყველა მოსწავლე</option>
               {students.map((s) => (
                 <option key={s.studentId} value={s.studentId}>
                   {s.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         )}
       </div>
@@ -758,7 +791,7 @@ function HistoryView({
         items={items.filter((i) => i.occurrence.targetDate === date)}
         onOpen={openLesson}
       />
-    </>
+    </div>
   );
 }
 function ExplanationForm({
@@ -812,22 +845,27 @@ function ExplanationForm({
       >
         <label>
           მოსწავლე
-          <select value={child} onChange={(e) => setChild(e.target.value)} required>
+          <Select value={child} onChange={(e) => setChild(e.target.value)} required>
             {childrenList.map((c) => (
               <option key={c.studentId} value={c.studentId}>
                 {c.name}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <div className="att-form-pair">
           <label>
             პირველი დღე
-            <input type="date" value={start} onChange={(e) => setStart(e.target.value)} required />
+            <DateInput
+              type="date"
+              value={start}
+              onChange={(e) => setStart(e.target.value)}
+              required
+            />
           </label>
           <label>
             ბოლო დღე · ჩათვლით
-            <input
+            <DateInput
               type="date"
               value={end}
               min={start}
@@ -850,11 +888,13 @@ function ExplanationForm({
           განმარტებას მხოლოდ უფლებამოსილი ადმინისტრაცია განიხილავს. სამედიცინო დოკუმენტები და
           დიაგნოზი საჭირო არ არის.
         </p>
-        {error && (
-          <p role="alert" className="field-error">
-            {error}
-          </p>
-        )}
+        <div className="ux-feedback-slot">
+          {error && (
+            <p role="alert" className="field-error">
+              {error}
+            </p>
+          )}
+        </div>
         <footer>
           <Button type="button" onClick={onClose}>
             გაუქმება
@@ -973,7 +1013,7 @@ function Review({
                   <div className="att-adjust-entry">
                     <label>
                       ახალი მდგომარეობა
-                      <select
+                      <Select
                         value={e.status}
                         onChange={(ev) => {
                           const status = ev.target.value as AttendanceEntry['status'];
@@ -1001,7 +1041,7 @@ function Review({
                             {label}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     </label>
                     {e.status === 'late' && (
                       <label>
@@ -1075,11 +1115,13 @@ function Review({
               ? 'დადასტურება მხოლოდ ფაქტობრივ გაცდენას აქცევს საპატიოდ; დასწრება არ გამოიგონება.'
               : 'დადასტურება შეინახავს შემოთავაზებულ ცვლილებებს და მათ ისტორიას.'}
           </p>
-          {error && (
-            <p role="alert" className="field-error">
-              {error}
-            </p>
-          )}
+          <div className="ux-feedback-slot">
+            {error && (
+              <p role="alert" className="field-error">
+                {error}
+              </p>
+            )}
+          </div>
           <footer>
             <Button disabled={busy || reason.trim().length < 5} onClick={() => void decide(false)}>
               უარყოფა

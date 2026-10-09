@@ -572,3 +572,37 @@
   position: relative;
   overscroll-behavior-x: contain;
 }
+
+/* Keep background connectivity feedback below modal surfaces, without moving content. */
+.product-theme.session-notice {
+  position: fixed;
+  z-index: 40;
+  right: 16px;
+  top: 16px;
+  max-width: min(420px, calc(100vw - 32px));
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--product-shadow);
+  font-size: 12px;
+}
+.session-notice > svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--muted);
+}
+.session-notice p {
+  margin: 0 0 6px;
+  line-height: 1.6;
+}
+.session-notice .button {
+  padding: 4px 0;
+  min-height: 32px;
+}
+.product-shell #main:focus {
+  outline: none;
+}

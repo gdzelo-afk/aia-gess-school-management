@@ -1,3 +1,4 @@
+import { choose } from './choose';
 import { test, expect, type BrowserContext, type Page } from '@playwright/test';
 
 // Reuse this file's real director session; layout checks do not need another sign-in.
@@ -86,7 +87,7 @@ test('selected system covers functional students and honest academic/message wor
     await navigate(page, '/students');
     await expect(page.getByRole('region', { name: 'მოსწავლეთა სია' })).toBeVisible();
     await expect(page.locator('.product-shell')).toHaveCSS('font-family', /AIA Mersad/);
-    await page.getByLabel('კლასის ფილტრი').selectOption('VII ბ');
+    await choose(page.getByLabel('კლასის ფილტრი'), 'VII ბ');
     await expect(page.getByText('1–3 / 3 ჩანაწერი')).toBeVisible();
     await page.getByRole('button', { name: 'მოსწავლე', exact: true }).click();
     await expect(page.locator('th[aria-sort]')).toHaveAttribute('aria-sort', 'descending');
@@ -160,7 +161,7 @@ test('people directory filters keep usable search width and compact mobile spaci
       expect(search!.width).toBeGreaterThan(240);
       const toolbar = await page.locator('.directory-toolbar').boundingBox();
       expect(toolbar!.height).toBeLessThan(width === 390 ? 220 : 100);
-      for (const select of await page.locator('.directory-toolbar select').all()) {
+      for (const select of await page.locator('.directory-toolbar [role=combobox]').all()) {
         const box = await select.boundingBox();
         expect(box!.width).toBeGreaterThan(150);
         expect(box!.height).toBeLessThan(50);

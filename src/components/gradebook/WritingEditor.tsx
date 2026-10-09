@@ -119,11 +119,13 @@ export function WritingEditor({
           გამოქვეყნება
         </Button>
       )}
-      {error && (
-        <p className="gb-error" role="alert">
-          {error}
-        </p>
-      )}
+      <div className="ux-feedback-slot">
+        {error && (
+          <p className="gb-error" role="alert">
+            {error}
+          </p>
+        )}
+      </div>
       <div className="gb-history">
         <h3>ჩანაწერის ისტორია</h3>
         {history.isPending ? (

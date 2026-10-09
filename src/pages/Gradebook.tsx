@@ -1,3 +1,6 @@
+import { WorkspaceNav } from '../components/WorkspaceNav';
+import { DateInput } from '../components/DateInput';
+import { Select } from '../components/Select';
 import { useState, type KeyboardEvent } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -161,7 +164,7 @@ export function Gradebook() {
         )}
       </header>
       <div className="gb-navigation">
-        <nav aria-label="ჟურნალის სამუშაო არეები">
+        <WorkspaceNav active={tab} aria-label="ჟურნალის სამუშაო არეები">
           {[
             ...(school ? [['overview', 'მიმოხილვა']] : []),
             ['journal', family ? 'შეფასებები' : 'ჟურნალი'],
@@ -180,11 +183,11 @@ export function Gradebook() {
               {label}
             </button>
           ))}
-        </nav>
+        </WorkspaceNav>
         <div className="gb-term-select">
           <label>
             <span className="sr-only">სასწავლო წელი</span>
-            <select
+            <Select
               value={yearId}
               onChange={(e) => {
                 if (!open(null)) return;
@@ -198,11 +201,11 @@ export function Gradebook() {
                   {y.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
           <label>
             <span className="sr-only">სემესტრი</span>
-            <select
+            <Select
               value={semesterId}
               onChange={(e) => {
                 if (open(null)) setTerm(e.target.value);
@@ -213,7 +216,7 @@ export function Gradebook() {
                   {s.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         </div>
       </div>
@@ -222,7 +225,7 @@ export function Gradebook() {
           <label className="gb-lens">
             <BookOpen size={18} />
             <span className="sr-only">საგნის კურსი</span>
-            <select
+            <Select
               value={offeringId}
               onChange={(e) => {
                 if (open(null)) setCourse(e.target.value);
@@ -233,12 +236,12 @@ export function Gradebook() {
                   {o.section} · {o.subject}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
           {family && viewer.capabilities.includes('gradebook:children') && (
             <label className="gb-field">
               <span className="sr-only">მოსწავლე</span>
-              <select
+              <Select
                 value={child}
                 onChange={(e) => {
                   if (!open(null)) return;
@@ -252,7 +255,7 @@ export function Gradebook() {
                     {p.name}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
           )}
           {!family && tab === 'journal' && (
@@ -757,12 +760,12 @@ function RecoveryQueue({
           >
             <label className="gb-field">
               გადაწყვეტილება
-              <select name="status">
+              <Select name="status">
                 <option value="follow_up">პირადი განხილვის მოლოდინში</option>
                 <option value="review">განხილვაშია</option>
                 <option value="approved">დამტკიცება</option>
                 <option value="denied">უარყოფა</option>
-              </select>
+              </Select>
             </label>
             <label className="gb-checkbox">
               <input name="follow" type="checkbox" />
@@ -770,7 +773,7 @@ function RecoveryQueue({
             </label>
             <label className="gb-field">
               დამატებითი ვადა
-              <input name="date" type="date" />
+              <DateInput name="date" type="date" />
             </label>
             <label className="gb-field">
               დასაბუთება

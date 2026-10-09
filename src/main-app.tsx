@@ -11,10 +11,14 @@ import './styles/product-dashboard.css';
 import './styles/product-command.css';
 import './styles/product-workspaces.css';
 import './styles/product-operations.css';
+import './styles/product-interactions.css';
 import { App } from './App';
 import { queryClient } from './lib/api';
 import { Preferences } from './lib/preferences';
 import { ToastProvider } from './components/ui';
+import { installFocusModality } from './lib/focus-modality';
+const stopFocusTracking = installFocusModality();
+if (import.meta.hot) import.meta.hot.dispose(stopFocusTracking);
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>

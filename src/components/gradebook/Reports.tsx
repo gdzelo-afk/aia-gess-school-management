@@ -1,3 +1,4 @@
+import { Select } from '../Select';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../lib/api';
@@ -49,7 +50,7 @@ export function Reports({
         </div>
         <label className="gb-field">
           ანგარიში
-          <select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)}>
+          <Select value={kind} onChange={(e) => setKind(e.target.value as typeof kind)}>
             {Object.entries(reportLabels)
               .filter(
                 ([k]) =>
@@ -60,7 +61,7 @@ export function Reports({
                   {label}
                 </option>
               ))}
-          </select>
+          </Select>
         </label>
       </div>
       <p className="gb-muted">

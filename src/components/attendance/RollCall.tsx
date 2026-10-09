@@ -1,3 +1,4 @@
+import { Select } from '../Select';
 import { useEffect, useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -362,7 +363,7 @@ function RollCallEditor({
                           </label>
                           <label>
                             დროის წყარო
-                            <select
+                            <Select
                               value={v.timeSource}
                               onChange={(e) =>
                                 update(r.studentId, {
@@ -372,7 +373,7 @@ function RollCallEditor({
                             >
                               <option value="reported">მითითებული</option>
                               <option value="estimated">სავარაუდო</option>
-                            </select>
+                            </Select>
                           </label>
                         </>
                       )}

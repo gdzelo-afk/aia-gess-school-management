@@ -1,3 +1,4 @@
+import { choose } from './choose';
 import { test, expect, type Page } from '@playwright/test';
 const fixture = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 async function reviewed(page: Page) {
@@ -51,9 +52,11 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await page.getByLabel('ვერსიის სახელი', { exact: true }).fill(`სატესტო კვირა ${Date.now()}`);
   await page.getByLabel('დაწყება', { exact: true }).fill('2026-10-26');
   await page.getByLabel('დასრულება (არ შედის)', { exact: true }).fill('2026-11-02');
-  await page.getByLabel('არსებული ვერსიის კოპირება').selectOption(fixture(1600));
+  await choose(page.getByLabel('არსებული ვერსიის კოპირება'), fixture(1600));
   await reviewed(page);
-  const versionId = await page.getByLabel('განრიგის ვერსია', { exact: true }).inputValue();
+  const versionId = (await page
+    .getByLabel('განრიგის ვერსია', { exact: true })
+    .getAttribute('value'))!;
   await expect(page.locator('.tt-matrix')).toBeVisible();
   // Drag a whole section into its split-group period: real server validation must flag it.
   const source = page.locator('.tt-matrix td[data-period="1"][data-day="1"] .tt-tile');
@@ -76,8 +79,8 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await destination.locator('.tt-tile').filter({ hasText: 'VII ა · ქართული' }).click();
   await expect(page.locator('.tt-inspector')).toBeVisible();
   await page.getByRole('button', { name: 'რედაქტირება / გადატანა' }).click();
-  await page.getByLabel('კვირის დღე', { exact: true }).selectOption('1');
-  await page.getByLabel('პერიოდი', { exact: true }).selectOption(fixture(1400));
+  await choose(page.getByLabel('კვირის დღე', { exact: true }), '1');
+  await choose(page.getByLabel('პერიოდი', { exact: true }), fixture(1400));
   await reviewed(page);
   await expect(page.getByRole('button', { name: 'კონფლიქტები · 0', exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'გამოქვეყნების განხილვა', exact: true }).click();
@@ -123,10 +126,7 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   for (let i = 0; i < (await fields.count()); i++) {
     await fields.nth(i).locator('summary').click();
     await fields.nth(i).getByLabel('გაკვეთილის გაუქმება').uncheck();
-    await fields
-      .nth(i)
-      .getByLabel(`მასწავლებელი ${i + 1}`, { exact: true })
-      .selectOption(fixture(1));
+    await choose(fields.nth(i).getByLabel(`მასწავლებელი ${i + 1}`, { exact: true }), fixture(1));
   }
   await page.getByLabel('მიზეზი / გადაწყვეტილება').fill('ორი დღის ჩანაცვლება შეთანხმებულია');
   await page.getByRole('button', { name: 'შემოწმება', exact: true }).click();
@@ -152,7 +152,7 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   const gp = await gc.newPage();
   await login(gp, 'მშობელი');
   await gp.goto('/timetable');
-  await gp.getByLabel('შვილის განრიგი').selectOption(fixture(201));
+  await choose(gp.getByLabel('შვილის განრიგი'), fixture(201));
   await expect(gp.locator('.tt-matrix')).not.toContainText('VII ა · ქართული');
   expect(
     (

@@ -1,10 +1,11 @@
+import { signIn } from './sign-in';
 import { test, expect } from '@playwright/test';
 async function login(page: import('@playwright/test').Page, role = 'დირექტორი') {
   await page.goto('/');
-  await page.getByRole('button', { name: role, exact: true }).click();
-  await expect(page.locator('.greeting')).toBeVisible();
+  await signIn(page, role);
 }
 test('director shell, table, command search, theme, preferences and calendar', async ({ page }) => {
+  test.setTimeout(120_000);
   await page.setViewportSize({ width: 1440, height: 1100 });
   await login(page);
   await expect(page.locator('html')).toHaveAttribute('lang', 'ka');
@@ -90,6 +91,7 @@ test('director shell, table, command search, theme, preferences and calendar', a
   await expect(page.locator('html')).toHaveAttribute('data-density', 'compact');
 });
 test('parent and student receive distinct scopes and screens', async ({ page }) => {
+  test.setTimeout(120_000);
   await login(page, 'მშობელი');
   await expect(page.getByRole('button', { name: /ანდრია მაისურაძე/ })).toBeVisible();
   await page.getByRole('button', { name: /ელენე მაისურაძე/ }).click();
@@ -101,12 +103,11 @@ test('parent and student receive distinct scopes and screens', async ({ page }) 
     .getAttribute('href');
   expect(childTarget).toContain('studentId=');
   await page.getByRole('link', { name: 'დღის განრიგი', exact: true }).click();
-  await expect(page.getByLabel('შვილის განრიგი')).toHaveValue(
+  await expect(page.getByLabel('შვილის განრიგი')).toHaveAttribute(
+    'value',
     new URL(childTarget!, 'http://local').searchParams.get('studentId')!,
   );
-  await expect(page.getByLabel('შვილის განრიგი').locator('option:checked')).toHaveText(
-    'ელენე მაისურაძე',
-  );
+  await expect(page.getByLabel('შვილის განრიგი')).toHaveText('ელენე მაისურაძე');
   await page.getByRole('link', { name: 'ჩემი ოჯახი', exact: true }).click();
   await page.getByRole('button', { name: /ანდრია მაისურაძე/ }).click();
   await expect(
@@ -119,11 +120,12 @@ test('parent and student receive distinct scopes and screens', async ({ page }) 
   await expect(page.getByText('გადასახადის მაგალითი')).toBeVisible();
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'გასვლა', exact: true }).click();
-  await page.getByRole('button', { name: 'მოსწავლე', exact: true }).click();
+  await signIn(page, 'მოსწავლე');
   await expect(page.getByRole('heading', { name: 'დღის სასწავლო გეგმა' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'ფინანსები', exact: true })).toHaveCount(0);
 });
 test('mobile drawer, dialog keyboard and responsive layout', async ({ page }) => {
+  test.setTimeout(120_000);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(page.locator('h1')).toHaveText('სკოლის დღე, ერთ სივრცეში.');

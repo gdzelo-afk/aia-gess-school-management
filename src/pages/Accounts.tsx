@@ -1,3 +1,4 @@
+import { useSearchQuery } from '../lib/use-search-query';
 import { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -16,14 +17,19 @@ export function Accounts() {
     [roles, setRoles] = useState<AccountRow | null>(null),
     [command, setCommand] = useState<AccountCommand | null>(null),
     [link, setLink] = useState('');
-  const result = useQuery({
-    queryKey: ['accounts', q, offset, viewer.id],
-    queryFn: () =>
+  const search = useSearchQuery(q);
+  const result = useQuery<{ items: AccountRow[]; total: number; localDelivery: boolean }>({
+    queryKey: ['accounts', search, offset, viewer.id],
+    placeholderData: (previous, previousQuery) =>
+      previousQuery?.queryKey[3] === viewer.id ? previous : undefined,
+    queryFn: ({ signal }) =>
       api<{ items: AccountRow[]; total: number; localDelivery: boolean }>(
-        `/api/accounts?q=${encodeURIComponent(q)}&offset=${offset}`,
+        `/api/accounts?q=${encodeURIComponent(search)}&offset=${offset}`,
+        { signal },
       ),
-    enabled: allowed,
+    enabled: allowed && q === search,
   });
+  const refreshing = q !== search || result.isPlaceholderData;
   const save = async (c: AccountCommand) => {
     const r = await mutate('/api/accounts/actions', c);
     if (r.activationUrl) setLink(r.activationUrl);
@@ -68,7 +74,11 @@ export function Accounts() {
         <ErrorState onRetry={() => void result.refetch()} />
       ) : (
         <>
-          <div className="op-record-list">
+          <div
+            className="op-record-list ux-refresh-region"
+            aria-busy={refreshing}
+            inert={refreshing}
+          >
             {result.data.items.map((a) => (
               <article key={a.id}>
                 <div className="op-person-identity">
@@ -102,13 +112,13 @@ export function Accounts() {
             ))}
           </div>
           <div className="pagination">
-            <span>{result.data.total} ანგარიში</span>
+            <span role="status">{refreshing ? 'ახლდება…' : `${result.data.total} ანგარიში`}</span>
             <div>
-              <Button disabled={!offset} onClick={() => setOffset(offset - 25)}>
+              <Button disabled={!offset || refreshing} onClick={() => setOffset(offset - 25)}>
                 წინა
               </Button>
               <Button
-                disabled={offset + 25 >= result.data.total}
+                disabled={refreshing || offset + 25 >= result.data.total}
                 onClick={() => setOffset(offset + 25)}
               >
                 შემდეგი

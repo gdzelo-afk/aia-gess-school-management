@@ -14,6 +14,16 @@ Students retains scoped search, filtering, sorting, pagination and detail/financ
 
 Selected tokens stay under `.product-theme`; main chrome stays under `.product-shell`. Portaled dialogs/toasts receive the selected theme. Extend this system by function, not independent page art direction. **Preserve `/design-lab`, its navigation, all A/B/C sub-routes, typography surface and assets.** Its separate entry graph never imports product styles. A normal document link from the main design page opens the archive without mixing React/CSS graphs.
 
+## Shared interaction rules (UX cohesion review, 4 October 2026)
+
+- `Shell` owns the lazy-route pending boundary; navigation/chrome stay mounted. New route paths start at the header; query-only changes preserve working position. Timetable schedule content stays mounted across operational tabs. Do not animate away a remount or reset an editor for a viewport/sidebar change.
+- `Select` replaces production native menus, using a compact listbox and search for longer lists. `PersonPicker` searches the existing scoped API. Popovers use Radix positioning, Escape and focus handling; keyboard focus is visible, pointer focus has no extra halo. Hidden native controls retain form values/validation; controlled scope guards remain authoritative.
+- `DateInput` owns a compact Georgian calendar because OS date popups cannot guarantee localization. It retains ISO date-only form values, bounds, manual entry, spillover days and keyboard month/day navigation. Weekdays are `კვი.`, `ორშ.`, `სამშ.`, `ოთხ.`, `ხუთ.`, `პარ.`, `შაბ.`; footer actions are `გასუფთავება` and `დღეს`. It is a field control, not a replacement for the Calendar workspace.
+- Safe directory filtering may retain visibly pending, inert previous rows and disable pagination. Never carry previous child, course, lesson or academic records into a different context. Attendance/Gradebook await authoritative context data; local unsaved edits and existing guards remain intact.
+- Predictable validation uses a small stable inline slot; longer persistent errors may expand. Transient operational notices use dismissible overlays. Do not absolutely position all errors or reserve large blank panels.
+- Timetable periods scroll with the **page**, with no inner vertical height cap. Horizontal matrix containment remains. Other dense lists retain their useful scrolling.
+- Main-only `product-interactions.css` coordinates 120–200ms controls/popovers/rail motion and existing dialog primitives, respecting reduced motion. Portals use the product theme. Keep useful data-row rules; omit duplicate perimeter rules and decorative separators. Archived lab styling remains independent.
+
 ## Design logic
 
 A is the dominant spatial system: calm neutral chrome, controlled cobalt accent, restrained layering, readable opaque work surfaces, a priority panel and contextual count distribution. The date, geographic detail and cursor are reinterpreted in A's proportions and materials; no B console styling or C display-heading system is imported.
@@ -104,6 +114,26 @@ The current product is the base. Only the annotated header/entrance/chrome conce
 
 The shared desktop sidebar can collapse to a 72px icon rail. All real destinations remain; hover/focus labels use a portal outside the scrolling rail, Escape dismisses them, and active state stays visible. Only the `aia-sidebar-collapsed` presentation preference is stored locally. Below 901px the existing navigation dialog remains; its close handler explicitly restores focus to the mobile menu button. Semester context remains after navigation when expanded; collapse does not relocate it.
 
-Login is a direct ~60/40 split at large desktop widths, with a single fine divider and no full-width header or central gutter. Identity belongs to the left pane, theme utility to the upper right. Current coordinates/date/lens/message and form/security notice remain. The compact options row contains **ელფოსტის დამახსოვრება** and the sole recovery link. The checkbox stores only the email identifier after successful sign-in; unchecking removes it. It never stores passwords or changes session duration. Demo shortcuts remain gated by the existing demo configuration. Mobile puts identity and login first, followed by the reduced editorial lens/date composition. No lab labels, disclaimer or comparison actions enter the product.
+Login is a direct ~60/40 split at large desktop widths, with a single fine divider and no full-width header or central gutter. Identity belongs to the left pane, theme utility to the upper right. Current coordinates/date/lens/message and form/security notice remain. The compact options row contains **ელფოსტის დამახსოვრება** and the sole recovery link. The checkbox stores only the email identifier after successful sign-in; unchecking removes it. It never stores passwords or changes session duration. Demo shortcuts remain gated by the existing demo configuration. Phone layouts (≤760px, or short landscape ≤900×500px) show identity and the complete sign-in form only; the editorial section has no rendered footprint. Regular tablets and desktops retain the editorial composition. The mobile theme utility owns a 44px hit area above the identity, whose padding reserves that space. No lab labels, disclaimer or comparison actions enter the product.
 
 This refinement adds no UI dependency and changes no backend, authentication rules, contracts, migrations or demo data. The separate lab source/asset graph is untouched.
+
+### Precise interaction feedback and safe date transitions
+
+Main operational text tabs retain their underline language on hover/keyboard focus. Gradebook score selection uses restrained text/inset indicators and fine column boundaries, avoiding filled rectangular slabs. Full selectable rows/cards and date/listbox options remain intentional exceptions. All keyboard feedback remains visible in light/dark themes.
+
+Attendance History may retain its last authoritative month only for the same viewer/pupil context. The displayed content keeps its own period label, announces pending and disables stale drill-down until replacement; pupil/lesson/academic-scope changes require fresh data. Login's anonymous session revalidation must not unmount a form. Typed passwords live only in React memory and never survive document refresh through storage.
+
+### Form focus and compact date controls
+
+Main-product bordered text fields, textareas and Select triggers use a single accent border for pointer focus and a contiguous 2px inner focus band for keyboard navigation. A main-entry modality tracker distinguishes Tab/keyboard navigation from ordinary typing after a click; no interaction preference is persisted. Invalid fields retain their danger boundary and keyboard indicator. Custom Attendance radio groups, Gradebook matrix cells and command search keep their existing indicators. Checkbox/radio focus is not suppressed.
+
+Borderless scheduling-lens/searchable-menu inputs and compact date controls use a bottom boundary: 1px for pointer focus, 2px for keyboard focus. `DateInput` defaults to the ordinary field treatment; its explicit `compact` variant normalizes Attendance/Timetable toolbar height to 42px and balances Mersad's unused numeral descent with 10px/6px vertical padding around a 20px line. Attendance stays 142px wide; Timetable stays 170px with its existing 12px text. Date values, parsing, bounds and calendar behavior are unchanged. Large NeoBau numbers and other native numeric/time fields are not optically repositioned.
+
+### Keyboard and resilient working-state continuity
+
+Main-product Modal returns focus to its connected usable opener unless a caller deliberately overrides it. A Select reveals the selected/highlighted option using only its own list scroll; Tab/Shift+Tab closes the portalled list and continues the form. Search input uses combobox semantics with a valid active descendant. These behaviors must retain native form validation and server-derived scope/unsaved-change guards.
+
+WorkspaceNav uses manual arrow/Home/End focus traversal and keeps the focused/selected item visible within its own horizontal viewport. Activation remains explicit, so a guarded Gradebook transition is never bypassed. Pathname navigation focuses the named main region; query-only academic/history changes keep local interaction focus.
+
+A transient background session-check failure preserves resolved working state and offers a dismissible Georgian retry notice below modal surfaces, without content reflow. Initial session errors and real expiration retain their own bootstrap/authentication behavior. Directory typing is coalesced locally over 180ms, with old rows visibly pending/inert from the first change; cancellation and retention are not global query defaults. Academic, lesson and family-context changes still require authoritative scope data.
