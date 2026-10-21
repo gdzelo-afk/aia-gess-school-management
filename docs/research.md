@@ -2,6 +2,8 @@
 
 Reviewed 27 September 2026. Public context is not an operational requirements source. Counts, product scope, current EduPage use and one-campus structure are supplied by the user. Every sample pupil/staff/guardian is fictional.
 
+For the current public/proprietary distinction, maintainer web-embedding attestation and unresolved **public redistribution** rights, see [licensing and ownership status](licensing-status.md). The historical provenance notes below do not constitute legal clearance.
+
 ## School context
 
 [Official AIA-GESS website](https://www.aia-gess.ge/) identifies the school and highlights academic achievement, international educational activities and school news. These support a product emphasis on academic history, achievements, events and family communication; exact school workflows still require validation. No public student names or records were copied into fixtures.

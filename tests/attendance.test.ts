@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, it, expect } from 'vitest';
+import { beforeAll, afterAll, it, expect, vi } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { eq, sql } from 'drizzle-orm';
 import { capabilitiesFor, type Viewer, type Role } from '../shared/contracts.js';
@@ -482,34 +482,42 @@ it('derives exact split and combined/elective rosters using the existing occurre
   expect(elective.roster).toHaveLength(2);
 });
 it('excludes drafts, holidays and cancellations, respects moved and exceptional Saturday occurrences', async () => {
-  const now = at('2026-10-17', '12:00');
-  const draft = await tt({
-    action: 'draft.create',
-    yearId: id(10),
-    name: 'სატესტო პირადი ვერსია',
-    startsOn: '2026-11-02',
-    endsOn: '2026-11-09',
-    copyId: id(1600),
-  });
-  await expect(
-    a.attendanceLesson(admin, `${draft.id}:${id(1501)}:2026-11-02`, now),
-  ).rejects.toMatchObject({ statusCode: 404 });
-  await change(lesson('2026-10-12'), { cancelled: true });
-  await expect(a.attendanceLesson(teacher, lesson('2026-10-12'), now)).rejects.toMatchObject({
-    statusCode: 404,
-  });
-  expect(
-    (await a.attendanceRange(admin, '2026-10-12', 1, undefined, now)).items.some(
-      (i) => i.occurrence.id === lesson('2026-10-12'),
-    ),
-  ).toBe(false);
-  await change(lesson('2026-10-16', 1505), { targetDate: '2026-10-17', exceptionalDay: true });
-  const moved = await input(teacher, lesson('2026-10-16', 1505), now);
-  await act(teacher, { action: 'submit', ...moved }, now);
-  expect((await a.attendanceLesson(teacher, moved.occurrenceId, now)).occurrence.targetDate).toBe(
-    '2026-10-17',
-  );
-  expect((await a.attendanceRange(admin, '2026-12-30', 1, undefined, now)).items).toEqual([]);
+  // Timetable edits must be planned before this historical attendance fixture.
+  // Match the timetable suite's Date-only clock; database/I/O timers stay real.
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(at('2026-10-05', '08:00'));
+  try {
+    const now = at('2026-10-17', '12:00');
+    const draft = await tt({
+      action: 'draft.create',
+      yearId: id(10),
+      name: 'სატესტო პირადი ვერსია',
+      startsOn: '2026-11-02',
+      endsOn: '2026-11-09',
+      copyId: id(1600),
+    });
+    await expect(
+      a.attendanceLesson(admin, `${draft.id}:${id(1501)}:2026-11-02`, now),
+    ).rejects.toMatchObject({ statusCode: 404 });
+    await change(lesson('2026-10-12'), { cancelled: true });
+    await expect(a.attendanceLesson(teacher, lesson('2026-10-12'), now)).rejects.toMatchObject({
+      statusCode: 404,
+    });
+    expect(
+      (await a.attendanceRange(admin, '2026-10-12', 1, undefined, now)).items.some(
+        (i) => i.occurrence.id === lesson('2026-10-12'),
+      ),
+    ).toBe(false);
+    await change(lesson('2026-10-16', 1505), { targetDate: '2026-10-17', exceptionalDay: true });
+    const moved = await input(teacher, lesson('2026-10-16', 1505), now);
+    await act(teacher, { action: 'submit', ...moved }, now);
+    expect((await a.attendanceLesson(teacher, moved.occurrenceId, now)).occurrence.targetDate).toBe(
+      '2026-10-17',
+    );
+    expect((await a.attendanceRange(admin, '2026-12-30', 1, undefined, now)).items).toEqual([]);
+  } finally {
+    vi.useRealTimers();
+  }
 });
 it('snapshots survive changed teaching rosters and require deliberate administrative reconciliation', async () => {
   const date = '2026-10-19',

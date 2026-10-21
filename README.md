@@ -1,10 +1,33 @@
 # AIA-GESS · სასკოლო სივრცე
 
-A Georgian-only school workspace with Stage 1A academic structure/people, Stage 1B manual timetable, Stage 1C lesson attendance and Stage 1D academic Gradebook workflows. React/Vite + Fastify + Drizzle/PostgreSQL + Better Auth. This is a polished local demonstration and engineering baseline, **not a production-ready school system**.
+A Georgian-language school-management prototype developed voluntarily by a student development team. The team is building academic and administrative workflows to make school work easier for pupils, families and staff, without requesting compensation from the school for this development work. This is the management application, separate from the school's public website.
+
+The intended school population is approximately **830 students, 830 parents or guardians, 50 teachers and 20 other staff**. These are planning figures, **not existing production users**. The school has not formally committed to a production rollout.
+
+**Development prototype; publicly viewable, proprietary source.** Foundation and Stages 1A–1D have accepted development milestones. They are working foundations, not a production-ready school system. No open-source license is granted for the original application; see [licensing and ownership status](docs/licensing-status.md).
+
+## Implemented scope
+
+| Area                               | Current development capability                                                                                                                                                                               |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Foundation and accounts            | Password/session authentication, predefined roles and server-side resource scopes; invitations, activation/recovery and account disablement                                                                  |
+| Academic structure and people (1A) | Years/two semesters, school calendar, subjects, course offerings, effective enrollment/transfer, guardian rights, staff assignments and historical relationships                                             |
+| Timetable (1B)                     | Manual scheduling control room; private drafts/publication, effective occurrences, split/combined/elective groups, roster-based conflict checks, overrides, availability, substitutions and teacher requests |
+| Attendance (1C)                    | Actual lesson roster, local unsaved roll call followed by explicit submission; late/early events, correction history, guardian explanations, oversight and scoped family history                             |
+| Gradebook basics (1D)              | Draft/publication/correction workflows, formative/numeric/pass-fail assessment, Summative recovery, private versioned PDF criteria, academic comments and **provisional** reports                            |
+| Shared product experience          | Georgian interface, light/dark themes, responsive navigation, contextual inspectors, keyboard controls and role-specific dashboards                                                                          |
+
+Official semester/annual finalization, report cards, exams, assignments/submissions, operational finance, library, admissions, messaging and payroll are not implemented. Planned destinations identify themselves as unavailable. Staff attendance and external notification delivery are deferred. The preserved `/design-lab` is an isolated fictional A/B/C design archive, not additional operational functionality.
+
+## Architecture
+
+TypeScript and React/Vite on the client; Fastify, Drizzle ORM, PostgreSQL and Better Auth on the server. A modular monolith serves the browser build and API. Local development defaults to PGlite, an embedded PostgreSQL runtime. Committed migrations, scoped queries and immutable academic history are part of the implementation. There is no speculative multi-school tenancy or microservice layer.
+
+Start with [the documentation index](docs/README.md), [implementation status](docs/implementation-status.md), [architecture](docs/architecture.md) and [domain model](docs/domain-model.md). The [design system](docs/design-system.md) records the accepted product direction.
 
 ## Run locally
 
-Requires Node 22.12+ and npm. No Docker is needed for the default local database.
+Requires Node **22.12+**, npm and a local filesystem. Docker is not needed for the default database.
 
 ```sh
 npm ci
@@ -12,9 +35,9 @@ npm run setup
 npm run dev
 ```
 
-Open **http://localhost:5173**. Setup creates an ignored `.env` with a random local auth secret, applies migrations, and seeds fictional data in `.local/database` (PGlite, embedded PostgreSQL). Stop the app before running migration/seed commands against that embedded directory; one process owns it at a time. Setup can be repeated and preserves existing `.env`/data. No external services, emails or SMS are invoked.
+Open **http://localhost:5173**. Setup creates an ignored `.env` with a random local authentication secret, applies committed migrations and seeds fictional data in `.local/database`. Repeating setup preserves the existing environment and data. **Stop the app before migration/seed commands against that PGlite directory: it has one process owner.** No email/SMS provider is invoked.
 
-Select one of four demo roles on the sign-in screen, or sign in with:
+Select a demo persona on the sign-in screen, or use these deliberately public, fictional local accounts:
 
 | Persona  | Email                     |
 | -------- | ------------------------- |
@@ -23,56 +46,42 @@ Select one of four demo roles on the sign-in screen, or sign in with:
 | Parent   | `parent@demo.aia.local`   |
 | Student  | `student@demo.aia.local`  |
 
-Local demo password for these accounts: `AiaDemo-2026!`. All four passed browser sign-in and role/scope checks against the preserved normal local database on 3 October 2026. These credentials are deliberately public and fictional. Demo seeding is refused in production. Never use the demo database for real deployment. Repeated automated/manual sign-ins share a local request budget; HTTP 429 means wait one minute, not a wrong password. Do not run mutation browser tests on the manual-preview server.
+Local demo password: `AiaDemo-2026!`. These accounts passed normal-demo browser sign-in/scope checks on 9 October 2026; that is dated evidence, not a claim of a fresh check on every README view. Demo seeding is refused in production. Never put real school data in the demo. HTTP 429 indicates throttling; respect the retry timing rather than repeatedly signing in.
 
-## What works
+The sample calendar is configured for 2026–27. Some agenda/history examples use explicitly fictional September dates. Historical fixtures and illustrated amounts are not real school records.
 
-- Georgian login and four distinct dashboard experiences; original light/dark design, self-hosted Georgian typography, responsive navigation.
-- Real password/session authentication, role grants and SQL-scoped student queries (director 44, teacher 34, guardian 2 children, student 1 in the expanded fictional demo).
-- Scoped searchable student administration, effective enrollment/guardian history, academic year/semester/calendar configuration, subjects/offerings/elective rosters, staff/teaching assignments and account invitation/activation/recovery/disable.
-- `/timetable`: scheduling control room with one searchable section/group/teacher/room lens, aligned period matrix, contextual inspector, changes-before-publish review and operational conflict/request/availability/setup areas. Includes versioned private drafts/publication, configurable bell periods and numeric rooms, split/combined/elective groups, roster-based conflicts and reasoned overrides, dated substitutions, teacher availability and approval requests. Dashboard day rhythm reads the scoped published timetable; the illustrative next-meeting block remains an agenda concept.
-- `/attendance`: teacher lesson-first roll call with local-only Mark All Present and explicit atomic submission; timed late/early exceptions, reasoned corrections/history, locked teacher requests, guardian explanations, missing-roll-call oversight and scoped monthly history. Founders Office is read-only. Guardian event notices remain in-app only.
-- `/gradebook`: dense course journal, assessment-first mobile sheet, local draft editing and explicit publication, reasoned corrections/history, formative/1–10/pass-fail results, Summative recovery/extension decisions, guardian-only academic comments and annual narratives. Scoped reports expose exact and rounded **provisional**, never official, results. Private versioned PDF criteria and in-app notices preserve historical meaning.
-- Reviewed SQL migrations, repeatable fictional seed, temporal identity/academic baseline, protected audit events, metadata/outbox foundations.
-- Staff/parent/student sample data, illustrative 1–10 grades and GEL invoice preview. Fictional fixed-date agenda: 28 September 2026. Attendance seed adds an explicitly fictional historical week (21–25 September) idempotently; today/future roll calls stay unfilled.
+## Checks and development commands
 
-Other module destinations show an explicit planned state. Stage 1D Gradebook is accepted for the local/demo scope at `3293a50`, on `master` and tagged `stage-1d-complete-2026-10-03`. Finance, library, admissions, messaging and payroll writes remain unimplemented.
+| Command                    | Purpose                                                                   |
+| -------------------------- | ------------------------------------------------------------------------- |
+| `npm run setup`            | Create local environment, migrate and seed                                |
+| `npm run dev`              | Frontend :5173 and API :3001                                              |
+| `npm run check`            | ESLint, formatting, strict TypeScript, PGlite tests and production builds |
+| `npm run test:e2e`         | Isolated Chromium browser workflows                                       |
+| `npm run db:migrate`       | Apply reviewed, committed migrations                                      |
+| `npm run db:migrate:built` | Apply migrations with the compiled server entry                           |
+| `npm run db:seed`          | Fictional development seed only                                           |
+| `npm run build`            | Build browser, server and migration artifacts                             |
+| `npm start`                | Serve the built application/API on :3001                                  |
 
-## Selected product design
+The [Foundation checks workflow](.github/workflows/ci.yml) also runs integration tests against PostgreSQL and browser workflows on fresh fictional data. The accepted master revision `6cdf9b5` passed [post-merge CI](https://github.com/gdzelo-afk/aia-gess-school-management/actions/runs/37942417620): **161 tests on each database engine and 40 browser workflows**. These results belong to that revision/run, not to all branches or future commits. See [the readiness review](docs/repository-readiness.md) for current validation and known failures, including the separate preview branch.
 
-The real [Login](http://localhost:5173/login) and [Dashboard](http://localhost:5173/) now use the selected, refined Vector A system: Mersad interface typography, NeoBau numerical display, Option A Mersad display greeting, original A translucent lens artifact, deliberate light/dark modes and keyboard command search. The controlled Login/Dashboard refinement adds a live Georgian greeting/date, today-timetable action, collapsible desktop rail and direct login split; it is already accepted on master. Subsequent accepted shared UX corrections through `4b3c423` are consolidated on `integration/accepted-ux-pre-edupage`, with full GitHub PR and post-merge verification required for the UX completion milestone. Temporary Render infrastructure remains separate. Read [the canonical design system](docs/design-system.md). The same shell, tokens and controls now extend across main routes, including the functional Students workspace and operational Academics and explicitly planned Messages surfaces. The design-lab and all A/B/C references remain intact.
+Browser tests provision their own API :3101, frontend :5273, database and private-file directory under ignored `.local/browser-runs/run-*`; they refuse occupied ports and never borrow the normal preview/database. No manual seed or running preview is needed. Install Chromium with `npx playwright install --with-deps chromium`, and set `CHROME_PATH` to its executable if `/usr/bin/google-chrome` is unavailable. Local screenshots/traces remain ignored; CI publishes only fictional screenshots, not raw session-bearing trace archives. See [engineering guidance](docs/engineering.md).
 
-The [design lab](http://localhost:5173/design-lab) and [typography comparison](http://localhost:5173/design-lab/type) remain archival references, not active alternatives.
+For PostgreSQL development, configure a dedicated database through `DATABASE_URL`, then apply migrations; seed only in development demo mode. For `npm test` on PostgreSQL, set `TEST_DATABASE_URL`, `TEST_TIMETABLE_DATABASE_URL`, `TEST_ATTENDANCE_DATABASE_URL`, `TEST_GRADEBOOK_DATABASE_URL` and `TEST_GRADEBOOK_DEMO_DATABASE_URL` to **five distinct disposable databases**. Tests perform writes; never use real data.
 
-## Project context
+For a local built-app smoke, stop dev and run `npm run build`, then `APP_ORIGIN=http://localhost:3001 npm start`. This uses the local development/demo configuration. Production mode requires HTTPS, external PostgreSQL and demo disabled.
 
-Start with [docs/README.md](docs/README.md) and [implementation status](docs/implementation-status.md). [Design](docs/design-system.md), [domain model](docs/domain-model.md), [security](docs/security-privacy.md), and [roadmap](docs/roadmap.md) guide subsequent tasks. Update docs when requirements change.
+## Security, privacy and limitations
 
-## Commands
+Read [SECURITY.md](SECURITY.md) before reporting a vulnerability and [security/privacy requirements](docs/security-privacy.md) before handling data. **A private reporting channel is not yet configured**; the policy records the blocker and maintainer action without inventing a contact address. Do not publish secrets, school records or exploit details in issues.
 
-| Command                    | Purpose                                                             |
-| -------------------------- | ------------------------------------------------------------------- |
-| `npm run setup`            | Create local environment, migrate, seed                             |
-| `npm run dev`              | Vite :5173 and API :3001                                            |
-| `npm run check`            | Lint, formatting, strict types, integration tests, production build |
-| `npm run test:e2e`         | Chromium browser workflows; requires setup first                    |
-| `npm run db:generate`      | Generate reviewed migration after schema edits                      |
-| `npm run db:migrate`       | Apply committed migrations                                          |
-| `npm run db:migrate:built` | Apply migrations using the compiled production entry                |
-| `npm run db:seed`          | Non-production fictional seed only                                  |
-| `npm run build`            | Build browser and server artifacts                                  |
-| `npm start`                | Serve built app/API on :3001                                        |
+This repository review is not an external security audit, compliance certification or production authorization. Current dependency advisories and asset-rights gaps are recorded in the [readiness review](docs/repository-readiness.md) and [licensing status](docs/licensing-status.md). MFA, real invitation/recovery delivery, operational monitoring, backup/restore, provider/retention agreements, accessibility review and further security hardening remain launch gates. No student data should be deployed before school approval and those gates.
 
-For a local built-app smoke test, stop dev then run `APP_ORIGIN=http://localhost:3001 npm start` and open that origin. This intentionally retains development/demo mode. Production mode requires HTTPS, PostgreSQL and demo disabled.
+A separate, protected temporary Render review environment was deployed from `codex/temporary-review-preview`; its infrastructure is not part of master or the normal local setup. It is a fictional demonstration, not the school's production service. This readiness task does not change or redeploy it.
 
-Browser tests perform real writes against a fresh disposable database and private-file directory under `.local/browser-runs/run-*`. `npm run test:e2e` starts/migrates/seeds its own API :3101 and frontend :5273, provisions scoped fictional test identities, and refuses occupied ports. No manual seed command or running preview is needed. Normal :5173 and `.local/database` are not reused. The harness retains actual authentication/rate limits and paces requests. Chrome defaults to `/usr/bin/google-chrome`; set `CHROME_PATH` for another Chromium executable. Screenshots/traces remain ignored in `test-results/`. See `docs/engineering.md`.
+## Licensing and possible future tools
 
-## External PostgreSQL
+The original application is **proprietary and not released under an open-source license**. Copyright and other applicable rights remain with their respective rightsholders; formal ownership and contributor permissions still require verification. Public GitHub visibility permits viewing/forking under GitHub's terms but does not itself grant a general right to modify, redistribute or sublicense the original application. Third-party components retain their separate licenses. `private: true` prevents accidental npm publication; it does not make the GitHub repository private. `UNLICENSED` is a package marker, not the permissive Unlicense.
 
-Use a dedicated empty database and set `DATABASE_URL=postgresql://...` in `.env`. Apply the same migrations; seed only in demo development. `TEST_DATABASE_URL=postgresql://... TEST_TIMETABLE_DATABASE_URL=postgresql://... TEST_ATTENDANCE_DATABASE_URL=postgresql://... TEST_GRADEBOOK_DATABASE_URL=postgresql://... TEST_GRADEBOOK_DEMO_DATABASE_URL=postgresql://... npm test` runs integration tests against a **dedicated disposable test database**; do not point this at real data. Use five distinct fresh disposable databases for foundation, timetable, attendance, Gradebook domain and Gradebook demo tests. CI creates all five.
-
-## Deployment boundary
-
-`Dockerfile` packages the single Node application. PostgreSQL, TLS, secrets, actual invitation/recovery delivery, MFA, storage pipeline, delivery workers, monitoring and backup restore remain production work. See [release gates](docs/engineering.md). No hosting has been provisioned or deployed.
-
-Original AIA-GESS mark is used with user authorization. Legacy Noto fonts are SIL OFL; notices in `public/fonts/`. Selected Mersad/NeoBau/GL Tatishvili source records and embedded notices are in `public/fonts/product/`; production license verification is required before external distribution. Archived lab fonts retain separate records in `public/design-lab/fonts/`. Dependencies are governed by their own licenses; the private project has no public distribution license assigned.
+The team may later publish selected independent automation tools after checking their usefulness, ownership, separation from proprietary school code and licensing suitability. No such tools are ready for publication; no release date or open-source license is announced. See [licensing and asset evidence](docs/licensing-status.md).

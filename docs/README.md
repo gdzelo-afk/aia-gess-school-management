@@ -1,20 +1,23 @@
 # AIA-GESS product and engineering context
 
-Status: Stage 1A–1D and the controlled Login/Dashboard refinement are accepted on master (`e81f2f3`). All subsequent product UX corrections through `codex/ux-audit-phase2` (`4b3c423`) were manually accepted on 9 October 2026 and are consolidated on `integration/accepted-ux-pre-edupage`, with full PR and post-merge CI as release gates. Temporary Render infrastructure stays on its separate preview branch. Read this index, then `implementation-status.md` before changing code. The full product vision is larger than the implemented foundation.
+Status: Foundation and Stages 1A–1D, the controlled Login/Dashboard refinement and accepted UX corrections are integrated on master `6cdf9b5`, tagged `ux-consolidation-complete-2026-10-09`; PR and post-merge checks passed. The repository is intentionally public and the original application remains proprietary. The 22 October [readiness review](repository-readiness.md) is a separate, unmerged documentation/hygiene proposal. Temporary Render infrastructure stays on its preview branch. Read this index, then `implementation-status.md` before changing code. The full product vision is larger than the implemented foundation.
 
-| Document                                          | Use it for                                                |
-| ------------------------------------------------- | --------------------------------------------------------- |
-| [Product](product.md)                             | Principles, people, scope, feature/phase matrix           |
-| [Experience](experience.md)                       | Role dashboards, navigation, workflows, screen inventory  |
-| [Design system](design-system.md)                 | Typography, tokens, components, density, responsive rules |
-| [Domain model](domain-model.md)                   | Ownership, relationships, history and invariants          |
-| [Architecture](architecture.md)                   | Runtime boundaries, APIs, jobs, storage, reporting        |
-| [Security and privacy](security-privacy.md)       | Authentication, authorization, threats, Georgian context  |
-| [Engineering](engineering.md)                     | Repository rules, tests, operations, release gates        |
-| [Roadmap](roadmap.md)                             | Dependencies, acceptance gates, stakeholder questions     |
-| [Research](research.md)                           | Sources, font/license evidence, assumptions               |
-| [Decisions](decisions/README.md)                  | Short architecture decision records                       |
-| [Implementation status](implementation-status.md) | What actually works and what remains planned              |
+| Document                                          | Use it for                                                        |
+| ------------------------------------------------- | ----------------------------------------------------------------- |
+| [Product](product.md)                             | Principles, people, scope, feature/phase matrix                   |
+| [Experience](experience.md)                       | Role dashboards, navigation, workflows, screen inventory          |
+| [Design system](design-system.md)                 | Typography, tokens, components, density, responsive rules         |
+| [Domain model](domain-model.md)                   | Ownership, relationships, history and invariants                  |
+| [Architecture](architecture.md)                   | Runtime boundaries, APIs, jobs, storage, reporting                |
+| [Security and privacy](security-privacy.md)       | Authentication, authorization, threats, Georgian context          |
+| [Engineering](engineering.md)                     | Repository rules, tests, operations, release gates                |
+| [Roadmap](roadmap.md)                             | Dependencies, acceptance gates, stakeholder questions             |
+| [Licensing and ownership](licensing-status.md)    | Proprietary status, third-party evidence and rights actions       |
+| [Security reporting](../SECURITY.md)              | Reporting policy and current private-channel blocker              |
+| [Repository readiness](repository-readiness.md)   | Exposure review, verification, metadata proposal and open actions |
+| [Research](research.md)                           | Sources, font/license evidence, assumptions                       |
+| [Decisions](decisions/README.md)                  | Short architecture decision records                               |
+| [Implementation status](implementation-status.md) | What actually works and what remains planned                      |
 
 **Design decision, 28 September 2026:** evolved Vector A is selected and promoted throughout the main application, including Login, Dashboard, Students, Academics, Messages and command palette. Read the [canonical design system](design-system.md). The [visual lab](design-exploration.md) is preserved with all routes, navigation and A/B/C experiments intact. Styling promotion does not implement planned EMS features.
 
