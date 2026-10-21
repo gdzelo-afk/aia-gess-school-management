@@ -1,6 +1,7 @@
 import { choose } from './choose';
 import { test, expect, type Page } from '@playwright/test';
 import { browserOrigin } from '../../scripts/browser/environment';
+import { schoolDateAt } from '../../shared/attendance';
 test.use({ actionTimeout: 15000 });
 test.describe.configure({ timeout: 240000 });
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
@@ -300,7 +301,10 @@ test('student extension, administrative decision, teacher recovery and versioned
   await dialog
     .getByRole('checkbox', { name: 'პირადი / ოფლაინ განხილვა შედგა', exact: true })
     .check();
-  await dialog.getByLabel('დამატებითი ვადა', { exact: true }).fill('2026-10-09');
+  // The approved recovery must still be open when the teacher records it.
+  // A fixed calendar deadline silently expires as CI moves beyond that date.
+  const extendedUntil = schoolDateAt(new Date(Date.now() + 86400000));
+  await dialog.getByLabel('დამატებითი ვადა', { exact: true }).fill(extendedUntil);
   await dialog
     .getByRole('textbox', { name: 'დასაბუთება', exact: true })
     .fill('პირადი განხილვა შედგა; შეთანხმებულია ახალი ვადა.');

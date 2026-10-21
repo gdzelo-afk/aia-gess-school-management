@@ -45,4 +45,7 @@ jobs:
         if: always()
         with:
           name: browser-evidence
-          path: test-results
+          # Raw traces may contain authenticated requests/cookies even with fictional data.
+          path: test-results/**/*.png
+          if-no-files-found: ignore
+          retention-days: 7

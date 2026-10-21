@@ -48,17 +48,9 @@ Production managed daily backups/PITR recommended; encrypt at rest and restrict 
 
 ## Operational browser verification
 
-The browser suite writes real fictional records. Stop the normal dev server first. Use a new dedicated database directory per full run; do not reset the normal `.local/database`:
+The browser suite writes real fictional records and owns a separate runtime. Run `npm run test:e2e`; it provisions migrations/seed and fresh private storage automatically under `.local/browser-runs/run-*`. It refuses occupied API 3101/frontend 5273 ports and never reuses normal `.local/database` or the running :5173 preview. Do not pass a manual-preview database or run the Attendance fixture against it. See **Browser mutation isolation** below.
 
-```sh
-DATABASE_URL=pglite://.local/e2e-run npm run db:migrate
-DATABASE_URL=pglite://.local/e2e-run npm run db:seed
-DATABASE_URL=pglite://.local/e2e-run npm run test:e2e
-```
-
-Playwright starts the application with that environment when no server exists. Never reuse a normal running dev server for mutation tests. Use a fresh dedicated directory when repeating the full baseline-count suite. The Stage 1A and timetable browser journeys run after the original read-only/lab tests and create uniquely labeled records; they reuse administrator authentication, wait for the preceding suite’s sign-in window to expire and pace writes/full-page visual reloads to respect existing limits. They do not bypass auth. Playwright waits on the proxied `/api/health` endpoint so both Vite and the database-backed API are ready; waiting on HTML alone can race API startup. The directory-layout check reuses the real Director cookies established in its workspace test file; isolated execution still signs in normally. Stop the test server before resuming `npm run dev` against the normal database. Recovery delivery files remain private under ignored `.local/delivery`; tokens never belong in screenshots/logs shared externally.
-
-PostgreSQL integration verification uses separate disposable databases for `TEST_DATABASE_URL` (foundation/Stage 1A) and `TEST_TIMETABLE_DATABASE_URL` (Stage 1B). Never point both concurrent suites at the same database. Timetable migrations and fictional seed are part of the normal setup; seed preserves subsequent administrator edits.
+Playwright waits on the proxied `/api/health` endpoint so Vite and the database-backed API are ready. Workflows reuse legitimate sessions and pace requests to preserve authentication/rate limits. Local failed traces and screenshots remain ignored for diagnosis. CI publishes only fictional PNG screenshots with seven-day retention; raw traces can contain test cookies and must not be uploaded publicly. Never share delivery tokens or real school data in artifacts/logs. Current date-sensitive failure evidence is recorded in the [readiness review](repository-readiness.md), not treated as a passing baseline.
 
 ### Attendance acceptance data
 
@@ -68,9 +60,9 @@ PGlite tests use in-memory databases. PostgreSQL verification needs five distinc
 
 ## Accepted-stage branch protocol
 
-After explicit stakeholder acceptance, verify a clean tracked tree and the accepted remote commit, fast-forward (or merge without squashing) the accepted stage into `master`, push it, create and remotely verify an annotated completion tag, then branch the next stage from that milestone. Never rewrite published stage history. Implementation branches are pushed privately for review; do not merge/tag an unfinished or unaccepted stage automatically. Local private reference material, databases, uploads and browser artifacts must remain excluded from Git/build contexts.
+After explicit stakeholder acceptance, verify a clean tracked tree and the accepted remote commit, fast-forward (or merge without squashing) the accepted stage into `master`, push it, create and remotely verify an annotated completion tag, then branch the next stage from that milestone. Never rewrite published stage history. Implementation branches are pushed to the repository for review (the repository is intentionally public and proprietary); do not merge/tag an unfinished or unaccepted stage automatically. Local private reference material, databases, uploads and browser artifacts must remain excluded from Git/build contexts.
 
-Stage 1C was accepted at `77a35f9`; `master` and `stage-1c-complete-2026-10-01` now point to it. Stage 1D work belongs on `stage-1d-gradebook`. The Stage 1B tag is unchanged.
+Historical milestones remain: Stage 1B `0b311a8`, Stage 1C `77a35f9`, Stage 1D `3293a50`. Accepted master is now `6cdf9b5`, tagged `ux-consolidation-complete-2026-10-09`. Do not move those tags or interpret historical implementation-branch notes as the current branch.
 
 ### Browser mutation isolation
 
