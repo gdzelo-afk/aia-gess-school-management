@@ -6,17 +6,17 @@ AIA-GESS is a development prototype, not an approved production school system. S
 
 This policy is neither a security certification nor a response-time, bounty or support guarantee. The volunteer team has no published security SLA.
 
-## Reporting channel — configuration pending
+## Confidential vulnerability reporting
 
-**Verified on 22 October 2026: GitHub private vulnerability reporting is disabled, and no dedicated security email/contact is verified in this repository. There is currently no configured private intake channel.**
+Use GitHub's [Report a vulnerability](https://github.com/gdzelo-afk/aia-gess-school-management/security/advisories/new) form for this repository, also available under **Security → Advisories → Report a vulnerability**. A GitHub account/sign-in is required. Reports are private to the reporter and authorized maintainers/collaborators until coordinated disclosure; do not publish the report or create a public issue containing exploit details.
 
-Do not submit credentials, personal school information or reproducible exploit details in public issues, PRs or discussions. Do not assume an ordinary GitHub issue is private. If you already have a privately agreed maintainer contact, ask how to transmit the report securely before sending sensitive material; this repository does not publish or invent that contact. Otherwise, a public request to configure a private reporting channel should contain no vulnerability details.
+Private reporting was enabled and verified on 22 October 2026: the repository API reports it enabled, the public advisory page exposes the reporting control, and the authenticated private advisory form loads. No test vulnerability or advisory was submitted. This establishes an available intake channel, not a response-time guarantee or a security audit.
 
-Maintainer action: approve and enable GitHub's [private vulnerability reporting](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository), verify the repository's **Security → Advisories → Report a vulnerability** control is available, and update this policy with the tested intake link. Do not direct reporters to a submission endpoint before it works. This non-versioned setting remains pending separate maintainer approval.
+Do not submit credentials, personal school information or reproducible exploit details in public issues, PRs or discussions. If GitHub's private form is unavailable, do not substitute a public issue: send only a detail-free request for maintainers to restore private reporting. No dedicated security email is published or implied.
 
 ## Helpful report information
 
-Once a private channel is established, include:
+In your private report, include:
 
 - Affected commit/tag and local environment; distinguish product master from a preview branch.
 - Expected versus observed behavior, impact and minimal reproduction using fictional identities.

@@ -2,6 +2,10 @@
 
 Foundation implemented 27 September; selected frontend continued 28 September 2026. This is a local development foundation, not a production EMS release.
 
+## Confidential vulnerability reporting (22 October 2026)
+
+GitHub private vulnerability reporting is now enabled. The public reporting control and authenticated private form were verified without submitting a fabricated advisory; [SECURITY.md](../SECURITY.md) contains the tested intake link and reporting limits. This supersedes the private-channel blocker in the dated readiness review below; it does not certify production security.
+
 ## Repository readiness review (22 October 2026, PR acceptance pending)
 
 Accepted product master is `6cdf9b5`, merged through PR #1 and tagged `ux-consolidation-complete-2026-10-09`; its full master and tag CI passed. The repository is now intentionally public. `chore/repository-readiness-codex-oss` proposes reviewer-focused documentation, explicit proprietary/ownership status, an npm UNLICENSED marker, screenshot-only CI evidence with seven-day retention and repairs for time-dependent Gradebook/Attendance/focus test fixtures. It does not change product behavior, dependencies, schemas, accepted history, Render configuration or `/design-lab`.
