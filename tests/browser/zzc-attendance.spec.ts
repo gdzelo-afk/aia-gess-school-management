@@ -59,13 +59,15 @@ test('attendance teacher roll call, family explanations, administrative correcti
   );
   expect(templateResponse.ok(), await templateResponse.text()).toBe(true);
   const template = await templateResponse.json();
+  // Keep lesson and arrival offsets on one minute even if UI work crosses a clock tick.
+  const referenceTime = Date.now();
   const time = (delta: number) =>
     new Intl.DateTimeFormat('en-GB', {
       timeZone: 'Asia/Tbilisi',
       hour: '2-digit',
       minute: '2-digit',
       hourCycle: 'h23',
-    }).format(new Date(Date.now() + delta * 60000));
+    }).format(new Date(referenceTime + delta * 60000));
   const move = {
     date: today,
     occurrenceId: template.id,
