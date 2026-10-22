@@ -1,8 +1,16 @@
 # Repository readiness review — 22 October 2026
 
-Scope: public repository presentation, licensing evidence, accidental information exposure and maintenance documentation. Baseline: accepted `origin/master` **6cdf9b5**, UX milestone `ux-consolidation-complete-2026-10-09`. Preparation is on `chore/repository-readiness-codex-oss` for manual review; no merge, repository-setting change, application submission or next implementation stage is authorized by this review.
+Original review scope: public repository presentation, licensing evidence, accidental information exposure and maintenance documentation. Baseline: accepted `origin/master` **6cdf9b5**, UX milestone `ux-consolidation-complete-2026-10-09`. Preparation was on `chore/repository-readiness-codex-oss` for manual review; the original review did not authorize a merge, repository-setting change, application submission or next implementation stage.
 
-## Assessment and change classification
+## Post-merge closure — 22 October 2026
+
+The original review below records the `6cdf9b5` baseline and proposals, not current unresolved status. PR #2 and confidential-reporting PR #3 subsequently merged; accepted dependency [PR #4](https://github.com/gdzelo-afk/aia-gess-school-management/pull/4) merged into master as `a19174708ecd04b505caf8f810211aef3b5e6164`. Its [post-merge CI](https://github.com/gdzelo-afk/aia-gess-school-management/actions/runs/39734669704) passed all configured steps, including **163 PGlite tests, 163 PostgreSQL tests and 41 browser workflows**. Full and production npm audits reported **zero advisories at the recorded verification time**, resolving the advisories listed below; security feeds can change.
+
+Approved metadata, confidential reporting, Dependabot alerts, secret scanning, push protection and master PR/check protection were applied and verified. The 21 confirmed session-bearing historical artifact bundles were deleted and rechecked; clean evidence and workflow history were preserved. The original disabled-setting, reporting-blocker, unhandled-artifact and pending-remediation statements below are historical findings, superseded by these actions. See [implementation status](implementation-status.md), [SECURITY.md](../SECURITY.md) and [dependency maintenance](dependency-security-maintenance.md) for closure evidence and limits.
+
+[Tab visibility (#5)](https://github.com/gdzelo-afk/aia-gess-school-management/issues/5), [deprecation maintenance (#6)](https://github.com/gdzelo-afk/aia-gess-school-management/issues/6) and [historical branch artifact-policy backports (#7)](https://github.com/gdzelo-afk/aia-gess-school-management/issues/7) remain open. Production package-composition optimization, CodeQL entitlement and automatic security-update PRs remain deferred. Public asset redistribution, branding and contributor permissions remain subject to [rights verification](licensing-status.md). The application is still a public, proprietary development prototype; neither the audit result nor professional presentation establishes production readiness, complete legal clearance or open-source program eligibility.
+
+## Historical assessment and change classification
 
 | Area                | Original state                                                                                  | Authorized action in this PR                                                                      | Result for review                                                             | Remaining concern / separate action                                                       |
 | ------------------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
@@ -18,7 +26,7 @@ Scope: public repository presentation, licensing evidence, accidental informatio
 
 Safe work is limited to documents, non-publishing package metadata and artifact handling. Font removal/replacement, ownership grants, security remediation, history cleanup and repository settings need separate decisions. Product features, academic policy, schema, authentication, dependency versions, Render configuration and `/design-lab` are excluded. Date-fixture repairs keep existing assertions: Gradebook recovery uses tomorrow in Tbilisi rather than an expired fixed deadline, and the historical Attendance cancellation/move test uses the timetable suite’s established Date-only clock pattern. The teacher/family focus workflow now uses a seeded historical lesson’s legitimate local correction-request controls, with an explicit assertion that direct correction remains unavailable, instead of assuming the current lesson has started. Database/I/O timers and production policy remain unchanged.
 
-## Public exposure review
+## Historical public exposure review
 
 - Inspected all **234 baseline tracked files**, reachable history paths and **17 reachable commits** across local/remote refs and existing tags. Gitleaks **8.30.1**, with its release archive verified against GitHub's SHA-256, scanned `git --log-opts=--all --redact=100`; it reported **zero secret matches** (13 content commits processed). Findings/values were not transmitted to a scanner service.
 - No tracked real `.env`, local database/dump, private school document, session-state file, recording, runtime log or generated build was found in those trees/history. `.env.example` contains a placeholder; the documented local demo password and CI-only database password are intentional fictional credentials. No discovered credential was tested against an external system.
@@ -29,7 +37,7 @@ Safe work is limited to documents, non-publishing package metadata and artifact 
 
 No confirmed live credential compromise was identified. If later found, privately notify the owner for rotation/revocation before considering separately authorized history cleanup. This exposure audit does not replace application penetration testing, a full code-security review, legal privacy assessment or production hardening.
 
-## Dependency advisories — remediation deferred
+## Historical dependency advisories — subsequently remediated
 
 `npm audit --json` against the unchanged lockfile reported **6 affected package entries: 2 critical, 2 high, 2 moderate**. These are package/advisory severity labels, not six proven exploitable application vulnerabilities. No exploit was run and no automatic fix/upgrade was applied.
 
@@ -42,7 +50,7 @@ No confirmed live credential compromise was identified. If later found, privatel
 
 Importantly, `npm audit --omit=dev` still reports **4 affected entries (2 high, 2 moderate)**. `npm ls --omit=dev` resolves Vitest → Vite → source-map-js through Better Auth in this locked graph; labeling everything “development-only” would be misleading. This is an install-graph finding, not proof that Fastify serves those tools or that an attack is reachable. Review the production package composition and remediate with affected regression tests under separate authorization. Primary advisories include [Vitest](https://github.com/vitest-dev/vitest/security/advisories/GHSA-qxg6-89mg-rqv8), [Vite](https://github.com/vitejs/vite/security/advisories/GHSA-rq7h-c2jc-7f22) and [shell-quote](https://github.com/ljharb/shell-quote/security/advisories/GHSA-pqg4-j6r4-53mv). Audit results are time-bound, not a future clean-bill claim.
 
-## Engineering evidence
+## Historical engineering evidence
 
 Accepted product history is preserved: Stage 1B `0b311a8`, Stage 1C `77a35f9`, Stage 1D `3293a50`, and the normal [UX consolidation PR #1](https://github.com/gdzelo-afk/aia-gess-school-management/pull/1) merge `6cdf9b5`. All four milestone tags are unchanged. Git history includes real automation-assisted commits; it is not a verified contributor-ownership ledger.
 
@@ -52,7 +60,7 @@ The separate [preview-branch run](https://github.com/gdzelo-afk/aia-gess-school-
 
 A fresh local check initially passed 160/161 tests: Attendance’s fixed October cancellation/move fixture called the future-only timetable API using the real later date. The test now uses a scoped deterministic Date clock, restored in `finally`, while retaining the cancellation/move assertions. This is a fixture-clock repair, not permission to mutate protected historical schedules. The initial hosted readiness run passed 161 tests on both database engines and 39/40 browser workflows; the remaining focus workflow assumed current-day teacher controls were editable before lesson start. Its local correction-request fixture is now explicit; no attendance submission or lock bypass is introduced. Current local verification after these repairs: formatting, ESLint, strict TypeScript, all **161 PGlite tests**, CI YAML parsing and both focused real browser workflows (Gradebook extension/approval/recovery/private criteria; teacher/family focus and scope) passed. The frontend/server/migration production build also passed. Hosted PR CI results are recorded in the PR and final report; no historical PostgreSQL/browser count is presented as a fresh current-branch run. This document deliberately separates historical baseline evidence, current checks and known failures. Known non-blocking maintenance includes the PostgreSQL concurrent-query warning and the existing v4 Actions’ Node 20 runtime deprecation warning; no warning is suppressed and action/dependency upgrades are not bundled here. Logs/scanner inventories/downloaded CI artifacts stay ignored under `.local/repository-readiness/` and contain no intentionally published secret values.
 
-## Exact GitHub metadata proposal — not applied
+## Historical GitHub metadata proposal — subsequently applied
 
 - **Description:** `Student-led Georgian school-management system — TypeScript, React, Fastify and PostgreSQL; development prototype.`
 - **Topics:** `school-management`, `education`, `georgian`, `typescript`, `react`, `vite`, `fastify`, `postgresql`, `drizzle-orm`, `better-auth`.
@@ -63,6 +71,6 @@ The PR authorizes none of these non-versioned edits automatically. Maintainers s
 
 ## Professional review versus program eligibility
 
-The repository can be examined honestly as a working proprietary student-led prototype with explicit limitations. Ownership, public asset-distribution evidence, private reporting and dependency/CI follow-ups remain visible actions; preparation is not legal clearance or production approval.
+The repository can be examined honestly as a working proprietary student-led prototype with explicit limitations. Ownership/public asset-distribution confirmations and the maintenance issues linked above remain open; reporting and the identified dependency remediation are complete. Preparation is not legal clearance or production approval.
 
 [Codex for Open Source](https://developers.openai.com/community/codex-for-oss) supports open-source maintainers; its [program terms](https://learn.chatgpt.com/docs/codex-for-oss-terms) require truthful information and leave selection to OpenAI. **Public visibility and professional documentation do not establish eligibility.** This application is proprietary, with no claimed external adoption or ready independent OSS tools. Any later application must disclose that status and seek an eligibility determination rather than imply an open-source release. No application is drafted/submitted and no license is changed to manufacture eligibility.

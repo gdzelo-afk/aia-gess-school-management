@@ -2,7 +2,7 @@
 
 Engineering requirements, not legal advice. Legal policy and operational approval must be confirmed before handling real school data.
 
-For vulnerability reporting, see the root [SECURITY.md](../SECURITY.md); GitHub private reporting is enabled and its verified intake link is documented there. The [repository readiness review](repository-readiness.md) records current exposure/dependency findings. This engineering document describes requirements and implemented boundaries, not a security certification.
+For vulnerability reporting, see the root [SECURITY.md](../SECURITY.md); GitHub private reporting is enabled and its verified intake link is documented there. The [repository readiness review](repository-readiness.md) distinguishes historical exposure findings from subsequent closure; [dependency maintenance](dependency-security-maintenance.md) records the merged remediation and dated audit results. This engineering document describes requirements and implemented boundaries, not a security certification.
 
 ## Authentication
 

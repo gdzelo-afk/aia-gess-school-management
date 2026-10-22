@@ -50,7 +50,7 @@ Production managed daily backups/PITR recommended; encrypt at rest and restrict 
 
 The browser suite writes real fictional records and owns a separate runtime. Run `npm run test:e2e`; it provisions migrations/seed and fresh private storage automatically under `.local/browser-runs/run-*`. It refuses occupied API 3101/frontend 5273 ports and never reuses normal `.local/database` or the running :5173 preview. Do not pass a manual-preview database or run the Attendance fixture against it. See **Browser mutation isolation** below.
 
-Playwright waits on the proxied `/api/health` endpoint so Vite and the database-backed API are ready. Workflows reuse legitimate sessions and pace requests to preserve authentication/rate limits. Local failed traces and screenshots remain ignored for diagnosis. CI publishes only fictional PNG screenshots with seven-day retention; raw traces can contain test cookies and must not be uploaded publicly. Never share delivery tokens or real school data in artifacts/logs. Current date-sensitive failure evidence is recorded in the [readiness review](repository-readiness.md), not treated as a passing baseline.
+Playwright waits on the proxied `/api/health` endpoint so Vite and the database-backed API are ready. Workflows reuse legitimate sessions and pace requests to preserve authentication/rate limits. Local failed traces and screenshots remain ignored for diagnosis. CI publishes only fictional PNG screenshots with seven-day retention; raw traces can contain test cookies and must not be uploaded publicly. Never share delivery tokens or real school data in artifacts/logs. Historical preview-branch failures are recorded in the [readiness review](repository-readiness.md); current master verification and maintenance follow-ups are recorded in [implementation status](implementation-status.md).
 
 ### Attendance acceptance data
 
@@ -62,7 +62,7 @@ PGlite tests use in-memory databases. PostgreSQL verification needs five distinc
 
 After explicit stakeholder acceptance, verify a clean tracked tree and the accepted remote commit, fast-forward (or merge without squashing) the accepted stage into `master`, push it, create and remotely verify an annotated completion tag, then branch the next stage from that milestone. Never rewrite published stage history. Implementation branches are pushed to the repository for review (the repository is intentionally public and proprietary); do not merge/tag an unfinished or unaccepted stage automatically. Local private reference material, databases, uploads and browser artifacts must remain excluded from Git/build contexts.
 
-Historical milestones remain: Stage 1B `0b311a8`, Stage 1C `77a35f9`, Stage 1D `3293a50`. Accepted master is now `6cdf9b5`, tagged `ux-consolidation-complete-2026-10-09`. Do not move those tags or interpret historical implementation-branch notes as the current branch.
+Historical milestones remain: Stage 1B `0b311a8`, Stage 1C `77a35f9`, Stage 1D `3293a50`. The accepted UX milestone is `6cdf9b5`, tagged `ux-consolidation-complete-2026-10-09`; subsequent maintenance reached master through PRs #2–#4. Do not move those tags or interpret historical implementation-branch notes as the current branch.
 
 ### Browser mutation isolation
 
