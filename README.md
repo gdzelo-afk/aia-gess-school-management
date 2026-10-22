@@ -74,7 +74,7 @@ For a local built-app smoke, stop dev and run `npm run build`, then `APP_ORIGIN=
 
 ## Security, privacy and limitations
 
-Read [SECURITY.md](SECURITY.md) before reporting a vulnerability and [security/privacy requirements](docs/security-privacy.md) before handling data. **A private reporting channel is not yet configured**; the policy records the blocker and maintainer action without inventing a contact address. Do not publish secrets, school records or exploit details in issues.
+Read [SECURITY.md](SECURITY.md) before reporting a vulnerability and [security/privacy requirements](docs/security-privacy.md) before handling data. GitHub [private vulnerability reporting](https://github.com/gdzelo-afk/aia-gess-school-management/security/advisories/new) is enabled; the policy explains confidential reporting and its limits. Do not publish secrets, school records or exploit details in issues.
 
 This repository review is not an external security audit, compliance certification or production authorization. Current dependency advisories and asset-rights gaps are recorded in the [readiness review](docs/repository-readiness.md) and [licensing status](docs/licensing-status.md). MFA, real invitation/recovery delivery, operational monitoring, backup/restore, provider/retention agreements, accessibility review and further security hardening remain launch gates. No student data should be deployed before school approval and those gates.
 

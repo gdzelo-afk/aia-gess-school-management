@@ -13,7 +13,7 @@ Status: Foundation and Stages 1A–1D, the controlled Login/Dashboard refinement
 | [Engineering](engineering.md)                     | Repository rules, tests, operations, release gates                |
 | [Roadmap](roadmap.md)                             | Dependencies, acceptance gates, stakeholder questions             |
 | [Licensing and ownership](licensing-status.md)    | Proprietary status, third-party evidence and rights actions       |
-| [Security reporting](../SECURITY.md)              | Reporting policy and current private-channel blocker              |
+| [Security reporting](../SECURITY.md)              | Confidential reporting instructions and maintenance scope         |
 | [Repository readiness](repository-readiness.md)   | Exposure review, verification, metadata proposal and open actions |
 | [Research](research.md)                           | Sources, font/license evidence, assumptions                       |
 | [Decisions](decisions/README.md)                  | Short architecture decision records                               |
