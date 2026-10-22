@@ -1,16 +1,16 @@
 # Bounded dependency security maintenance
 
-Verified 22 October 2026. This is dependency maintenance for the accepted prototype, not a product release, penetration test or production-security certification. The separate maintenance PR requires manual acceptance; its candidate results do not mean that the older master lockfile has already been remediated.
+Accepted and merged 22 October 2026: [PR #4](https://github.com/gdzelo-afk/aia-gess-school-management/pull/4) merged normally into master as `a19174708ecd04b505caf8f810211aef3b5e6164`. The [post-merge pipeline](https://github.com/gdzelo-afk/aia-gess-school-management/actions/runs/39734669704) passed all configured steps, including **163 PGlite tests, 163 PostgreSQL tests and 41 browser workflows**, formatting, lint, strict TypeScript and production builds. Full and production npm audits reported **zero advisories at the recorded verification time**, resolving the previously identified advisories in the merged lockfile. This is maintenance for a public, proprietary development prototype, not a product release, penetration test or production-security certification.
 
 ## Exact changes
 
-| Package                 | Previous lock | Candidate lock | Purpose                                                    |
-| ----------------------- | ------------- | -------------- | ---------------------------------------------------------- |
-| Vite                    | 8.3.1         | 8.3.3          | Six development-server advisories                          |
-| Vitest / @vitest/mocker | 5.0.2         | 5.0.3          | Two mocker development/browser interception advisories     |
-| Concurrently            | 10.0.5        | 10.0.6         | Select patched shell-quote through the upstream dependency |
-| shell-quote             | 1.9.0         | 1.12.0         | Reject line terminators following shell-comment tokens     |
-| source-map-js           | 1.2.1         | 1.2.2          | Reject pathological indexed-map section offsets            |
+| Package                 | Previous lock | Merged lock | Purpose                                                    |
+| ----------------------- | ------------- | ----------- | ---------------------------------------------------------- |
+| Vite                    | 8.3.1         | 8.3.3       | Six development-server advisories                          |
+| Vitest / @vitest/mocker | 5.0.2         | 5.0.3       | Two mocker development/browser interception advisories     |
+| Concurrently            | 10.0.5        | 10.0.6      | Select patched shell-quote through the upstream dependency |
+| shell-quote             | 1.9.0         | 1.12.0      | Reject line terminators following shell-comment tokens     |
+| source-map-js           | 1.2.1         | 1.2.2       | Reject pathological indexed-map section offsets            |
 
 Related Vitest spy/magic-string resolutions follow those patch releases; Vitest now pins why-is-node-running 3.2.1 instead of the former 3.2.2 resolution. No application framework, authentication package, academic rules, schema, deployment configuration or override policy is changed. The existing esbuild override is retained; no new override is added.
 
@@ -27,7 +27,7 @@ The compiled Fastify application serves built files and does not start the Vite 
 
 Better Auth 1.7.6 declares an optional Vitest peer. In this lockfile, the root Vitest development dependency satisfies it, and `npm ci --omit=dev` still installs Vitest → Vite → source-map-js. An isolated `--omit=peer` trial does not remove that resolved graph. Better Auth's application entry does not import its separate test-utils subpath in the reviewed runtime graph.
 
-This PR keeps those installed packages patched; it does not hand-delete dependencies, weaken authentication, change Docker or claim that production contains no test tooling. A future clean production composition may be investigated separately with authentication/runtime regression coverage.
+The merged update keeps those installed packages patched; it does not hand-delete dependencies, weaken authentication, change Docker or claim that production contains no test tooling. A future clean production composition may be investigated separately with authentication/runtime regression coverage.
 
 ## Verification
 
@@ -35,6 +35,6 @@ The first hosted PR run exposed an existing minute-boundary fixture race: the le
 
 The mobile keyboard-navigation check now waits for the daily summary before traversing the tabs, retaining its focus, full-visibility and manual-activation assertions. A controlled response delay confirmed that the existing asynchronous overdue badge can widen an earlier tab after focus, clipping the last tab by approximately 14px; traversal after data readiness remains visible. This pre-existing late-layout focus edge is a separate UI follow-up, not a demonstrated dependency regression or a product fix in this PR.
 
-Candidate validation uses a clean installation and fictional isolated databases. Full and production npm audits report zero advisories at the recorded check time. The two new unit checks distinguish vulnerable and patched behavior without executing hostile commands or allocating pathological maps. The browser check exercises the actual Vite denial boundary. Formatting, ESLint, strict TypeScript and production builds passed. The complete suite passed 163 tests on PGlite and 163 on PostgreSQL; all 41 browser workflows passed. The actual development command started both children and denied the public environment-example Wasm probe. A clean production-only install passed compiled-runtime checks under HTTPS with PostgreSQL and demo mode disabled: Director, Teacher, Guardian and Student authentication, Secure/HttpOnly cookies, scoped reads, unrelated-student denial and Timetable/Attendance/Gradebook loads. The browser React renderer reported production bundle type 0 and no runtime errors. Hosted results must be checked against the PR revision before acceptance.
+Pre-merge validation used a clean installation and fictional isolated databases. Full and production npm audits reported zero advisories at the recorded 22 October check time. The two new unit checks distinguish vulnerable and patched behavior without executing hostile commands or allocating pathological maps. The browser check exercises the actual Vite denial boundary. Formatting, ESLint, strict TypeScript and production builds passed. The complete suite passed 163 tests on PGlite and 163 on PostgreSQL; all 41 browser workflows passed. The actual development command started both children and denied the public environment-example Wasm probe. A clean production-only install passed compiled-runtime checks under HTTPS with PostgreSQL and demo mode disabled: Director, Teacher, Guardian and Student authentication, Secure/HttpOnly cookies, scoped reads, unrelated-student denial and Timetable/Attendance/Gradebook loads. The browser React renderer reported production bundle type 0 and no runtime errors. The final PR/branch checks passed at `333de14`; the post-merge pipeline linked above independently verified master `a191747`.
 
-Security feeds can change. Zero audit advisories is not a guarantee that all vulnerabilities are known or that the application is production ready. Existing dependency deprecations and PostgreSQL concurrent-query warnings remain ordinary maintenance; broad upgrades are outside this bounded change.
+Security feeds can change. Zero audit advisories is not a guarantee that all vulnerabilities are known or that the application is production ready. Open maintenance remains separate: [late-layout tab visibility (#5)](https://github.com/gdzelo-afk/aia-gess-school-management/issues/5), [database/dependency/CI deprecations (#6)](https://github.com/gdzelo-afk/aia-gess-school-management/issues/6) and [historical branch artifact-policy backports (#7)](https://github.com/gdzelo-afk/aia-gess-school-management/issues/7). None is claimed fixed by the dependency merge. Asset/contributor rights remain subject to [licensing verification](licensing-status.md); no open-source application license or legal clearance is implied.
