@@ -2,6 +2,12 @@
 
 Foundation implemented 27 September; selected frontend continued 28 September 2026. This is a local development foundation, not a production EMS release.
 
+## Bounded dependency maintenance (22 October 2026, review pending)
+
+PR #2 was merged normally at `654a623`; confidential-reporting PR #3 was merged at `35bb43f`. Both complete post-merge pipelines passed formatting, lint, strict TypeScript, builds, 161 tests on each database engine and 40 browser workflows. The reporting channel is now enabled; the dated readiness findings below describe the earlier audit state.
+
+A separate [dependency-maintenance candidate](dependency-security-maintenance.md) updates only affected toolchain patches and their resolved dependencies. Clean full/production npm audits report zero advisories; formatting, lint, strict TypeScript, build, 163 PGlite tests, 163 PostgreSQL tests and all 41 isolated browser workflows passed. Production-only installation and compiled HTTPS/role-scope smoke passed. Hosted CI and manual acceptance remain required before this dependency branch can merge. These candidate results do not retroactively remediate the older master lockfile. No application, academic-policy, schema, Render or archival asset changes are included.
+
 ## Confidential vulnerability reporting (22 October 2026)
 
 GitHub private vulnerability reporting is now enabled. The public reporting control and authenticated private form were verified without submitting a fabricated advisory; [SECURITY.md](../SECURITY.md) contains the tested intake link and reporting limits. This supersedes the private-channel blocker in the dated readiness review below; it does not certify production security.
