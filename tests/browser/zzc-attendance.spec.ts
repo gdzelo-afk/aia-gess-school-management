@@ -1,6 +1,7 @@
 import { browserOrigin } from '../../scripts/browser/environment';
 import { test, expect, type Page, type BrowserContext } from '@playwright/test';
 import { schoolDateAt } from '../../shared/attendance';
+import type { LessonChange, TimetableConflict } from '../../shared/timetable';
 const shiftDate = (date: string, n: number) =>
   new Date(Date.parse(`${date}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
@@ -16,6 +17,31 @@ async function action(context: BrowserContext, url: string, body: unknown) {
   });
   expect(r.status(), await r.text()).toBe(200);
   return r.json();
+}
+async function applyLessonFixture(context: BrowserContext, change: LessonChange, reason: string) {
+  const changes = [change];
+  // Moving a real lesson to the current time can overlap the regular school day.
+  // Review only these fictional fixture collisions through the real admin contract.
+  const preview = (await action(context, '/api/timetable/preview', { changes })) as {
+    conflicts: TimetableConflict[];
+  };
+  for (const conflict of preview.conflicts) {
+    expect(['teacher', 'room', 'student']).toContain(conflict.kind);
+    expect(conflict.overridable).toBe(true);
+  }
+  const command = { action: 'exception.apply', changes, reason, overrides: [] };
+  if (preview.conflicts.length) {
+    const unreviewed = await context.request.post('/api/timetable/actions', {
+      headers: { origin: browserOrigin },
+      data: command,
+    });
+    expect(unreviewed.status()).toBe(409);
+    expect((await unreviewed.json()).error.code).toBe('TIMETABLE_CONFLICT');
+  }
+  await action(context, '/api/timetable/actions', {
+    ...command,
+    overrides: preview.conflicts.map(({ key }) => ({ key, reason })),
+  });
 }
 async function budget(page: Page) {
   const r = await page.request.get('/api/health');
@@ -82,12 +108,7 @@ test('attendance teacher roll call, family explanations, administrative correcti
     targetDate: today,
     exceptionalDay: true,
   };
-  await action(admin, '/api/timetable/actions', {
-    action: 'exception.apply',
-    changes: [move],
-    reason: 'დასწრების იზოლირებული ბრაუზერის შემოწმება',
-    overrides: [],
-  });
+  await applyLessonFixture(admin, move, 'დასწრების იზოლირებული ბრაუზერის შემოწმება');
   const teacherContext = await browser.newContext({ viewport: { width: 390, height: 844 } }),
     teacher = await teacherContext.newPage();
   teacher.on('pageerror', (e) => errors.push(e.message));
@@ -100,12 +121,11 @@ test('attendance teacher roll call, family explanations, administrative correcti
       `/api/timetable/template?versionId=${versionId}&lessonId=${lessonId}&date=${today}`,
     )
   ).json();
-  await action(admin, '/api/timetable/actions', {
-    action: 'exception.apply',
-    changes: [{ ...move, expectedRevision: refreshed.revision, start: time(-25), end: time(20) }],
-    reason: 'გაკვეთილის ფაქტობრივი დროის სატესტო შესწორება',
-    overrides: [],
-  });
+  await applyLessonFixture(
+    admin,
+    { ...move, expectedRevision: refreshed.revision, start: time(-25), end: time(20) },
+    'გაკვეთილის ფაქტობრივი დროის სატესტო შესწორება',
+  );
   await teacher.reload();
   await expect(teacher.locator('.att-unresolved')).toHaveCount(3);
   await teacher.getByRole('button', { name: 'ყველა ესწრება', exact: true }).click();
