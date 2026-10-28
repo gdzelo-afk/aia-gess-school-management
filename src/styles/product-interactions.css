@@ -55,6 +55,15 @@
     border-color var(--motion-fast),
     color var(--motion-fast);
 }
+/* Keep the existing raised-button feedback smooth after the shared button rule. */
+.product-theme :is(.product-primary, .product-secondary) {
+  transition:
+    background-color var(--motion-surface),
+    border-color var(--motion-surface),
+    color var(--motion-fast),
+    box-shadow var(--motion-surface),
+    transform var(--motion-fast) var(--motion-ease);
+}
 .product-theme button:active:not(:disabled) {
   filter: brightness(0.97);
 }
@@ -125,7 +134,7 @@
   color: var(--ink);
   border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 10px 30px #00000020;
+  box-shadow: var(--product-context-shadow);
   transform-origin: var(--radix-popover-content-transform-origin);
   animation: ux-popover-in var(--motion-fast) var(--motion-ease);
 }
@@ -498,6 +507,13 @@
     overflow: hidden;
     position: relative;
   }
+  /* Visible labels should settle with the marker, not snap ahead of its fade. */
+  .product-shell:not(.sidebar-collapsed) .sidebar .nav-link {
+    transition:
+      background 150ms,
+      color var(--motion-fast) ease-out,
+      font-weight var(--motion-surface) var(--motion-ease);
+  }
   .product-shell .sidebar .nav-link svg {
     flex-shrink: 0;
   }
@@ -709,6 +725,23 @@
 .product-theme .nav-current {
   position: absolute;
   right: 3px;
+  display: block;
+  opacity: 0;
+  transform: scaleY(0.65);
+  pointer-events: none;
+  transition:
+    opacity var(--motion-fast) ease-out,
+    transform var(--motion-surface) var(--motion-ease);
+}
+.product-theme .nav-link.active .nav-current {
+  opacity: 1;
+  transform: scaleY(1);
+}
+/* Keep the expanded hairline at one geometry throughout the fade. Scaling this
+   narrow rounded bar changes its rasterized shape at fractional browser zoom. */
+.product-shell:not(.sidebar-collapsed) .sidebar .nav-current {
+  transform: none;
+  transition: opacity var(--motion-fast) ease-out;
 }
 .product-mobile-rail .nav-link {
   min-width: 0;
@@ -724,6 +757,7 @@
   flex-shrink: 0;
 }
 .sidebar-tooltip {
+  box-shadow: var(--product-tooltip-shadow);
   width: max-content;
   max-width: min(280px, calc(100vw - 16px));
   max-height: calc(100dvh - 16px);

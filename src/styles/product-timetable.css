@@ -1833,3 +1833,39 @@
   margin-top: 5px;
   font-size: 9px;
 }
+
+/* Subtle workspace finish: stable matrix geometry, light on context surfaces. */
+.product-theme .tt-matrix thead th {
+  background: linear-gradient(180deg, var(--rail), var(--surface));
+  box-shadow: var(--product-control-highlight);
+}
+.product-theme .tt-matrix .tt-axis {
+  background: var(--rail);
+}
+.product-theme .tt-tile {
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    box-shadow var(--motion-surface);
+}
+.product-theme .tt-tile:not(.is-dragging):not(:disabled):is(:hover, :focus-visible) {
+  box-shadow: var(--product-raised-shadow);
+}
+.product-theme .tt-tile-title > svg {
+  transition:
+    opacity var(--motion-fast),
+    transform var(--motion-surface) var(--motion-ease);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-theme
+    .tt-tile:not([draggable='true']):not(:disabled):is(:hover, :focus-visible)
+    .tt-tile-title
+    > svg {
+    transform: translate(1px, -1px);
+  }
+}
+@media (min-width: 1101px) {
+  .product-theme .tt-layout > .tt-inspector {
+    background: linear-gradient(90deg, var(--rail), transparent 85%);
+  }
+}

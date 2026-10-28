@@ -1047,3 +1047,40 @@
     max-height: 100dvh;
   }
 }
+
+/* Keep score cells transparent; depth separates the journal and its inspector. */
+.product-theme .gb-scroll,
+.product-theme .gb-layout > .gb-inspector {
+  box-shadow: var(--product-raised-shadow);
+}
+.product-theme .gb-table thead th,
+.product-theme .gb-inspector-head {
+  background: linear-gradient(180deg, var(--rail), var(--surface));
+}
+.product-theme .gb-table thead th:first-child {
+  background: var(--rail);
+}
+.product-theme .gb-table tbody th {
+  box-shadow: 3px 0 6px color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.product-theme .gb-table :is(th, td) button {
+  transition:
+    color var(--motion-fast),
+    text-decoration-color var(--motion-fast);
+}
+.product-theme .gb-savebar {
+  box-shadow: var(--product-sticky-shadow);
+}
+.product-theme :is(.gb-course-overview, .gb-mobile-assessments) > button > svg {
+  transition:
+    color var(--motion-fast),
+    transform var(--motion-surface) var(--motion-ease);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-theme
+    :is(.gb-course-overview, .gb-mobile-assessments)
+    > button:not(:disabled):is(:hover, :focus-visible)
+    > svg {
+    transform: translateX(2px);
+  }
+}

@@ -258,10 +258,14 @@
   align-items: start;
 }
 .overview-focus {
-  background: var(--surface);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 4%, var(--surface)),
+    var(--surface) 58%
+  );
   border: 1px solid var(--product-line);
   border-radius: 12px;
-  box-shadow: var(--product-shadow);
+  box-shadow: var(--product-raised-shadow);
   padding: 25px 28px 0;
   min-width: 0;
   overflow: hidden;
@@ -338,11 +342,7 @@
     transform 160ms var(--product-ease),
     color 160ms;
 }
-.overview-priorities > a:hover > svg {
-  color: var(--accent);
-  transform: translate(2px, -2px);
-}
-.overview-priorities > a:hover strong {
+.overview-priorities > a:is(:hover, :focus-visible) strong {
   color: var(--accent);
 }
 .overview-focus > footer {
@@ -375,7 +375,7 @@
   border: 1px solid var(--product-line);
   border-radius: 12px;
   padding: 22px 23px 15px;
-  box-shadow: var(--product-shadow);
+  box-shadow: var(--product-raised-shadow);
 }
 .overview-distribution-body {
   display: flex;
@@ -470,6 +470,7 @@
   border-radius: 12px;
   background: var(--accent-soft);
   border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+  box-shadow: var(--product-raised-shadow);
 }
 .overview-meeting-time {
   flex-shrink: 0;
@@ -780,6 +781,44 @@
 }
 .overview-family-links > a:hover {
   color: var(--accent);
+}
+/* Only directional icons travel. Text, hit areas and data panels stay still. */
+.product-dashboard :is(a, button) > :is(.lucide-arrow-up-right, .lucide-arrow-right),
+.overview-news > button > span:last-child > svg {
+  transition:
+    transform 160ms var(--product-ease),
+    color 160ms;
+}
+.product-dashboard :is(a, button):focus-visible > :is(.lucide-arrow-up-right, .lucide-arrow-right),
+.overview-news > button:focus-visible > span:last-child {
+  color: var(--accent);
+}
+.overview-person-list > a:focus-visible strong,
+.overview-family-links > a:focus-visible,
+.overview-section-head > a:focus-visible,
+.overview-inline-link:focus-visible,
+.overview-news > button:focus-visible > strong {
+  color: var(--accent);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-dashboard :is(a, button):hover > .lucide-arrow-up-right,
+  .overview-news > button:hover > span:last-child > .lucide-arrow-up-right {
+    transform: translate(2px, -2px);
+    color: var(--accent);
+  }
+  .product-dashboard :is(a, button):hover > .lucide-arrow-right {
+    transform: translateX(3px);
+    color: var(--accent);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .product-dashboard :is(a, button):focus-visible > .lucide-arrow-up-right,
+  .overview-news > button:focus-visible > span:last-child > .lucide-arrow-up-right {
+    transform: translate(2px, -2px);
+  }
+  .product-dashboard :is(a, button):focus-visible > .lucide-arrow-right {
+    transform: translateX(3px);
+  }
 }
 .overview-muted {
   font-size: 12px;

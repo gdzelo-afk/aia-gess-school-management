@@ -22,6 +22,12 @@
   flex-direction: column;
   isolation: isolate;
   overflow: hidden;
+  /* A quiet pool of light anchors the existing lens; the form stays opaque. */
+  background: radial-gradient(
+    ellipse at 66% 43%,
+    color-mix(in srgb, var(--accent) 9%, transparent),
+    transparent 56%
+  );
 }
 .entrance-place {
   display: flex;
@@ -197,6 +203,26 @@
   width: 100%;
   height: 48px;
   margin-top: 6px;
+}
+.entrance-submit > .lucide-arrow-right,
+.entrance-demo-roles button > .lucide-arrow-up-right {
+  transition: transform 160ms var(--product-ease);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .entrance-submit:enabled:not([aria-busy='true']):hover > .lucide-arrow-right {
+    transform: translateX(3px);
+  }
+  .entrance-demo-roles button:enabled:hover > .lucide-arrow-up-right {
+    transform: translate(2px, -2px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .entrance-submit:enabled:focus-visible > .lucide-arrow-right {
+    transform: translateX(3px);
+  }
+  .entrance-demo-roles button:enabled:focus-visible > .lucide-arrow-up-right {
+    transform: translate(2px, -2px);
+  }
 }
 .entrance-help {
   display: flex;

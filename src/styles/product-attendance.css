@@ -1330,3 +1330,51 @@
   color: var(--muted);
   font-size: 12px;
 }
+
+/* Depth belongs to the current lesson, calendar and persistent action surface. */
+.product-theme :is(.att-current, .att-month) {
+  box-shadow: var(--product-raised-shadow);
+}
+.product-theme .att-current {
+  background: linear-gradient(120deg, var(--rail), var(--surface) 70%);
+}
+.product-theme .att-submit {
+  box-shadow: var(--product-sticky-shadow);
+}
+.product-theme :is(.att-current, .att-lessons > button, .att-daily-list > button) > svg {
+  transition:
+    color var(--motion-fast),
+    transform var(--motion-surface) var(--motion-ease);
+}
+.product-theme .att-status-controls label span {
+  transition:
+    color var(--motion-fast),
+    background-color var(--motion-fast),
+    box-shadow var(--motion-fast);
+}
+.product-theme .att-status-controls label.selected span {
+  box-shadow: var(--product-control-highlight);
+}
+.product-theme .att-row-detail svg {
+  transition: transform var(--motion-surface) var(--motion-ease);
+}
+@media (hover: hover) {
+  .product-theme .att-status-controls label:not(.selected):not(:has(input:disabled)):hover span,
+  .product-theme .att-calendar button:not([aria-pressed='true']):not(:disabled):hover {
+    background-color: var(--rail);
+    color: var(--ink);
+  }
+  .product-theme .att-queue > button:not(:disabled):hover strong {
+    color: var(--accent);
+  }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-theme
+    :is(.att-current, .att-lessons > button, .att-daily-list > button):not(:disabled):is(
+      :hover,
+      :focus-visible
+    )
+    > svg {
+    transform: translateX(2px);
+  }
+}
