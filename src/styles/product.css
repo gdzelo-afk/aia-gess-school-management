@@ -324,3 +324,34 @@
   max-width: 380px;
   margin: 30px auto;
 }
+
+/* Secondary routes share the same purposeful surfaces as the working views. */
+.product-shell .settings-layout > .card {
+  border: 0;
+  box-shadow: var(--product-raised-shadow);
+}
+.product-shell .settings-layout .account-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.product-shell .settings-form .switch-row {
+  border: 0;
+  background: var(--rail);
+  border-radius: 8px;
+  padding: 16px;
+}
+.product-shell .card:has(> .empty-state:only-child) {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.product-theme .error-state h2 {
+  font-size: 20px;
+  font-weight: 450;
+  line-height: 1.5;
+}
+.product-theme .error-state p {
+  font-size: 13px;
+  line-height: 1.8;
+}

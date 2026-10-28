@@ -527,8 +527,11 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  border-block: 1px solid var(--border);
-  padding: 15px 0;
+  border: 0;
+  border-radius: 8px;
+  background: var(--rail);
+  padding: 16px 18px;
+  margin-bottom: 8px;
 }
 .tt-state-band > div:first-child {
   display: flex;
@@ -568,7 +571,7 @@
 .tt-workspace-nav {
   display: flex;
   gap: 26px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 0;
   overflow: auto;
 }
 .tt-workspace-nav button {
@@ -954,7 +957,6 @@
   color: var(--muted);
   line-height: 1.7;
   padding-bottom: 15px;
-  border-bottom: 1px solid var(--border);
 }
 .tt-inspector-body {
   padding-top: 6px;
@@ -994,8 +996,7 @@
   display: flex;
   gap: 12px;
   justify-content: space-between;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
 }
 .tt-lesson-facts dt {
   color: var(--muted);
@@ -1091,7 +1092,6 @@
   display: flex;
   gap: 16px;
   padding-bottom: 15px;
-  border-bottom: 1px solid var(--border);
 }
 .tt-queue-states button {
   padding: 5px 0;
@@ -1582,7 +1582,7 @@
     width: 100%;
   }
   .tt-state-band {
-    padding: 13px 0;
+    padding: 14px;
   }
   .tt-state-actions {
     flex-wrap: wrap;
