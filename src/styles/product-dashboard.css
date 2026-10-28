@@ -217,7 +217,6 @@
   gap: 12px;
   align-items: center;
   min-width: 0;
-  border-right: 1px solid var(--border);
 }
 .overview-signal > strong {
   font-size: 46px;
@@ -258,11 +257,14 @@
   align-items: start;
 }
 .overview-focus {
-  background: var(--surface);
-  border: 1px solid var(--product-line);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--accent) 4%, var(--surface)),
+    var(--surface) 58%
+  );
   border-radius: 12px;
-  box-shadow: var(--product-shadow);
-  padding: 25px 28px 0;
+  box-shadow: var(--product-raised-shadow);
+  padding: 28px 28px 0;
   min-width: 0;
   overflow: hidden;
 }
@@ -296,23 +298,22 @@
   color: var(--accent);
 }
 .overview-focus > h2 {
-  font-size: 31px;
+  font-size: 34px;
   line-height: 1.25;
   font-weight: 450;
   letter-spacing: -0.035em;
-  margin: 20px 0 26px;
+  margin: 24px 0 20px;
 }
 .overview-priorities > a {
   display: flex;
   gap: 14px;
   align-items: center;
   padding: 21px 0;
-  border-top: 1px solid var(--product-line);
   transition: background 150ms;
 }
 .overview-priorities > a > .product-number {
   font-size: 15px;
-  color: var(--muted);
+  color: var(--accent);
   align-self: flex-start;
   margin-top: 1px;
 }
@@ -338,17 +339,12 @@
     transform 160ms var(--product-ease),
     color 160ms;
 }
-.overview-priorities > a:hover > svg {
-  color: var(--accent);
-  transform: translate(2px, -2px);
-}
-.overview-priorities > a:hover strong {
+.overview-priorities > a:is(:hover, :focus-visible) strong {
   color: var(--accent);
 }
 .overview-focus > footer {
-  border-top: 1px solid var(--product-line);
   padding: 16px 28px;
-  margin: 0 -28px;
+  margin: 8px -28px 0;
   background: color-mix(in srgb, var(--rail) 60%, var(--surface));
   font-size: 10px;
   color: var(--muted);
@@ -371,11 +367,7 @@
   width: auto;
 }
 .overview-distribution {
-  background: var(--surface);
-  border: 1px solid var(--product-line);
-  border-radius: 12px;
   padding: 22px 23px 15px;
-  box-shadow: var(--product-shadow);
 }
 .overview-distribution-body {
   display: flex;
@@ -459,8 +451,7 @@
 .overview-distribution footer {
   font-size: 10px;
   color: var(--muted);
-  border-top: 1px solid var(--product-line);
-  padding-top: 12px;
+  padding-top: 16px;
 }
 .overview-next-meeting {
   display: flex;
@@ -470,6 +461,7 @@
   border-radius: 12px;
   background: var(--accent-soft);
   border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+  box-shadow: var(--product-raised-shadow);
 }
 .overview-meeting-time {
   flex-shrink: 0;
@@ -521,8 +513,7 @@
 }
 .overview-events {
   display: flex;
-  margin-top: 18px;
-  border-top: 1px solid var(--border);
+  margin-top: 14px;
 }
 :is(.overview-events button, .overview-events > a) {
   display: flex;
@@ -532,7 +523,6 @@
   text-align: left;
   padding: 20px;
   gap: 14px;
-  border-right: 1px solid var(--border);
   transition: color 150ms;
 }
 :is(.overview-events button, .overview-events > a):first-child {
@@ -540,7 +530,6 @@
 }
 :is(.overview-events button, .overview-events > a):last-child {
   padding-right: 0;
-  border-right: 0;
 }
 .overview-events time {
   font-size: 18px;
@@ -585,7 +574,6 @@
   font-size: 11px;
   padding-top: 14px;
   margin-top: 2px;
-  border-top: 1px solid var(--border);
   color: var(--muted);
 }
 .overview-inline-link:hover {
@@ -600,8 +588,7 @@
 .overview-people,
 .overview-news {
   min-width: 0;
-  border-top: 1px solid var(--border);
-  padding-top: 19px;
+  padding-top: 12px;
 }
 .overview-person-list {
   margin-top: 16px;
@@ -611,7 +598,6 @@
   align-items: center;
   gap: 11px;
   padding: 12px 0;
-  border-bottom: 1px solid var(--border);
   font-size: 12px;
 }
 .overview-person-list > a > .avatar {
@@ -658,7 +644,6 @@
   width: 100%;
   text-align: left;
   padding: 19px 0 16px;
-  border-bottom: 1px solid var(--border);
 }
 .overview-news-meta {
   display: flex;
@@ -781,6 +766,44 @@
 .overview-family-links > a:hover {
   color: var(--accent);
 }
+/* Only directional icons travel. Text, hit areas and data panels stay still. */
+.product-dashboard :is(a, button) > :is(.lucide-arrow-up-right, .lucide-arrow-right),
+.overview-news > button > span:last-child > svg {
+  transition:
+    transform 160ms var(--product-ease),
+    color 160ms;
+}
+.product-dashboard :is(a, button):focus-visible > :is(.lucide-arrow-up-right, .lucide-arrow-right),
+.overview-news > button:focus-visible > span:last-child {
+  color: var(--accent);
+}
+.overview-person-list > a:focus-visible strong,
+.overview-family-links > a:focus-visible,
+.overview-section-head > a:focus-visible,
+.overview-inline-link:focus-visible,
+.overview-news > button:focus-visible > strong {
+  color: var(--accent);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-dashboard :is(a, button):hover > .lucide-arrow-up-right,
+  .overview-news > button:hover > span:last-child > .lucide-arrow-up-right {
+    transform: translate(2px, -2px);
+    color: var(--accent);
+  }
+  .product-dashboard :is(a, button):hover > .lucide-arrow-right {
+    transform: translateX(3px);
+    color: var(--accent);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .product-dashboard :is(a, button):focus-visible > .lucide-arrow-up-right,
+  .overview-news > button:focus-visible > span:last-child > .lucide-arrow-up-right {
+    transform: translate(2px, -2px);
+  }
+  .product-dashboard :is(a, button):focus-visible > .lucide-arrow-right {
+    transform: translateX(3px);
+  }
+}
 .overview-muted {
   font-size: 12px;
   line-height: 1.7;
@@ -828,9 +851,6 @@
   .overview-signal-note {
     display: none;
   }
-  .overview-signal:last-of-type {
-    border: 0;
-  }
   .overview-signal > strong {
     font-size: 40px;
   }
@@ -864,7 +884,7 @@
     padding: 22px 22px 0;
   }
   .overview-focus > footer {
-    margin: 0 -22px;
+    margin: 8px -22px 0;
     padding: 15px 22px;
   }
   .overview-focus > h2 {
@@ -1054,8 +1074,6 @@
   }
   :is(.overview-events button, .overview-events > a) {
     padding: 17px 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--border);
     flex-wrap: nowrap;
   }
   .overview-events time {

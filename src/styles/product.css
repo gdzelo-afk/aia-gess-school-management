@@ -44,6 +44,12 @@
   --product-overlay: #26354d40;
   --product-glass: #ffffffed;
   --product-shadow: 0 2px 5px #273f6404, 0 12px 28px #273f6404;
+  --product-raised-shadow: inset 0 1px 0 #ffffffb3, 0 1px 2px #273f6405, 0 8px 24px #273f6408;
+  --product-context-shadow: inset 0 1px 0 #ffffffc2, 0 3px 8px #273f640d, 0 16px 32px #273f6414;
+  --product-tooltip-shadow: 0 2px 6px #273f6412, 0 8px 20px #273f6414;
+  --product-sticky-shadow: 0 -4px 16px #273f640a, inset 0 1px 0 #ffffffb3;
+  --product-control-highlight: inset 0 1px 0 #ffffff29;
+  --product-control-shadow: 0 2px 6px #25324a14;
   --product-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   font-family: var(--product-ui);
   font-size: 14px;
@@ -72,6 +78,12 @@
   --product-overlay: #05091199;
   --product-glass: #1b2332f5;
   --product-shadow: 0 2px 4px #0002, 0 12px 28px #0001;
+  --product-raised-shadow: inset 0 1px 0 #eaf0fb08, 0 1px 2px #00000020, 0 8px 24px #0000001a;
+  --product-context-shadow: inset 0 1px 0 #eaf0fb0d, 0 3px 8px #00000040, 0 16px 32px #00000033;
+  --product-tooltip-shadow: 0 2px 6px #00000033, 0 8px 20px #00000033;
+  --product-sticky-shadow: 0 -4px 16px #00000026, inset 0 1px 0 #eaf0fb08;
+  --product-control-highlight: inset 0 1px 0 #ffffff40;
+  --product-control-shadow: 0 2px 6px #00000026;
   color-scheme: dark;
 }
 .product-theme h1,
@@ -152,9 +164,12 @@
   color: var(--on-accent);
   border: 1px solid transparent;
 }
-.product-primary:hover:not(:disabled) {
+.product-primary:not(:disabled):not([aria-busy='true']) {
+  box-shadow: var(--product-control-highlight);
+}
+.product-primary:hover:not(:disabled):not([aria-busy='true']) {
   background: color-mix(in srgb, var(--accent) 88%, var(--ink));
-  box-shadow: 0 3px 8px #25324a18;
+  box-shadow: var(--product-control-highlight), var(--product-control-shadow);
 }
 .product-primary:active:not(:disabled),
 .product-secondary:active {
@@ -308,4 +323,35 @@
 .product-initial-loading .skeleton-group {
   max-width: 380px;
   margin: 30px auto;
+}
+
+/* Secondary routes share the same purposeful surfaces as the working views. */
+.product-shell .settings-layout > .card {
+  border: 0;
+  box-shadow: var(--product-raised-shadow);
+}
+.product-shell .settings-layout .account-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.product-shell .settings-form .switch-row {
+  border: 0;
+  background: var(--rail);
+  border-radius: 8px;
+  padding: 16px;
+}
+.product-shell .card:has(> .empty-state:only-child) {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.product-theme .error-state h2 {
+  font-size: 20px;
+  font-weight: 450;
+  line-height: 1.5;
+}
+.product-theme .error-state p {
+  font-size: 13px;
+  line-height: 1.8;
 }
