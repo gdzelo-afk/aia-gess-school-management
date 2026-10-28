@@ -110,7 +110,7 @@ export function SidebarLink({
       >
         <item.icon size={18} aria-hidden="true" />
         <span className="nav-label">{item.label}</span>
-        {item.path === '/' && <span className="nav-current" />}
+        <span className="nav-current" aria-hidden="true" />
       </NavLink>
       {collapsed &&
         top !== null &&

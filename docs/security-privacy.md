@@ -2,6 +2,8 @@
 
 Engineering requirements, not legal advice. Legal policy and operational approval must be confirmed before handling real school data.
 
+For vulnerability reporting, see the root [SECURITY.md](../SECURITY.md); GitHub private reporting is enabled and its verified intake link is documented there. The [repository readiness review](repository-readiness.md) distinguishes historical exposure findings from subsequent closure; [dependency maintenance](dependency-security-maintenance.md) records the merged remediation and dated audit results. This engineering document describes requirements and implemented boundaries, not a security certification.
+
 ## Authentication
 
 Better Auth owns password hashing, sessions and trusted-origin/CSRF behavior. Foundation enables email/password login with server-held session cookies; public registration is disabled. Demo accounts are provisioned by an explicit non-production seed command. No user may assign themselves a role. Production disables demo mode and requires strong configured secret, HTTPS origin and external PostgreSQL.

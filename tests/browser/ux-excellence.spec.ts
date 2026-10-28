@@ -91,6 +91,8 @@ test('keyboard continuity: dialog return, local selector scrolling, forward Tab 
   expect(await page.evaluate(() => document.activeElement?.tagName)).not.toBe('BODY');
   await page.goto('/attendance');
   await page.setViewportSize({ width: 390, height: 600 });
+  // Exercise the ready workspace; the async overdue badge changes the tab widths.
+  await expect(page.getByRole('region', { name: 'დღის შეჯამება' })).toBeVisible();
   const tabs = page.getByRole('tablist');
   const today = tabs.getByRole('tab', { name: 'დღეს', exact: true });
   await today.focus();

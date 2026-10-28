@@ -1,6 +1,6 @@
 # Product vision and scope
 
-A calm, trustworthy school workspace: staff complete daily work quickly; leadership sees exceptions that require action; families understand each child's next step. One school, approximately 830 students, 50 teachers and 20 other staff. Guardian accounts increase the number of users beyond the student/staff headcount.
+A calm, trustworthy school workspace: staff complete daily work quickly; leadership sees exceptions that require action; families understand each child's next step. One school, approximately 830 students, 50 teachers and 20 other staff. Approximately 830 parent/guardian accounts are also intended. These are planning figures, not existing production users; school rollout is not formally committed. The project is developed voluntarily by student developers, without requesting development compensation from the school.
 
 ## Principles
 
@@ -29,7 +29,7 @@ F = this foundation; 1 = first school workflows; 2 = subsequent core; 3 = extend
 | Students             | Enrollment, contacts, guardians, transfers, status history, documents, academic/attendance history, restricted notes                 | F sample read model; 1                                                          |
 | Staff                | Employment intervals, teaching assignments, homerooms, schedules, attendance                                                         | 1; payroll later                                                                |
 | Timetable            | Manual lessons, conflicts, rooms, substitutions, special days, changes                                                               | 1 after structure; generator deferred                                           |
-| Attendance           | Student/staff, lesson marks, late arrival, early departure, authorized absence, corrections and notifications                        | 1 after roster and lesson instances; no parent absence submission               |
+| Attendance           | Student/staff, lesson marks, late arrival, early departure, authorized absence, corrections and notifications                        | 1C student attendance/explanations; staff deferred; guardian cannot mark        |
 | Teaching             | Today's classes, seating charts, lesson plans, quick attendance, assignments, homework, submissions, attachments, review             | 1 basics; 2 submissions/planning                                                |
 | Assessment           | 1–10 grades, bulk entry, import/export, notes, exams, results, electives                                                             | 1 gradebook; 2 exams/electives; no weighted categories                          |
 | Academic records     | Semester report cards, comments, attendance summaries, revisions, transcripts, certificates                                          | 2 after publication policy                                                      |

@@ -4,7 +4,7 @@
 .product-theme .op-tabs {
   display: flex;
   gap: 24px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 0;
   overflow: auto;
   margin-bottom: 28px;
 }
@@ -49,8 +49,10 @@
 .product-theme .op-year-overview {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  border-block: 1px solid var(--border);
-  padding: 30px 0;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--product-raised-shadow);
+  padding: 28px;
   gap: 40px;
 }
 .product-theme .op-year-overview > div > span {
@@ -72,7 +74,6 @@
   display: flex;
   gap: 24px;
   padding: 18px 0;
-  border-bottom: 1px solid var(--border);
 }
 .product-theme .op-year-overview article > span {
   font-size: 32px;
@@ -83,7 +84,7 @@
   font-weight: 500;
 }
 .product-theme .op-record-list {
-  border-top: 1px solid var(--border);
+  border-top: 0;
   width: 100%;
   min-width: 0;
 }
@@ -178,7 +179,8 @@
   min-height: 44px;
 }
 .product-theme .op-form-grid fieldset {
-  border: 1px solid var(--border);
+  border: 0;
+  background: var(--rail);
   padding: 16px;
   display: grid;
   gap: 14px;
@@ -194,8 +196,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
+  padding-top: 12px;
   margin-top: 24px;
 }
 .product-theme .op-review {
@@ -208,8 +209,19 @@
 }
 .product-theme .op-review dl {
   margin: 20px 0;
-  border-block: 1px solid var(--border);
-  padding: 14px 0;
+  background: var(--rail);
+  border-radius: 8px;
+  padding: 18px;
+}
+.product-theme .op-review dl > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 16px;
+  padding: 7px 0;
+}
+.product-theme .op-review dt {
+  color: var(--muted);
+  font-size: 12px;
 }
 .product-theme .op-review dd {
   margin: 0;
@@ -253,9 +265,8 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .product-theme .op-history {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
+  margin-top: 28px;
+  padding-top: 12px;
 }
 .product-theme .op-history h3 {
   font-size: 15px;
@@ -303,9 +314,14 @@
 .op-access .op-access-form {
   max-width: 480px;
   margin: 80px auto;
+  padding: 32px;
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: var(--product-raised-shadow);
 }
 .op-access h1 {
-  font-size: 34px;
+  font-size: 30px;
+  line-height: 1.4;
   margin: 14px 0 30px;
 }
 .op-access form {
@@ -350,17 +366,14 @@
   .op-access.product-theme {
     padding: 24px;
   }
+  .op-access .op-access-form {
+    margin: 48px auto;
+    padding: 24px 20px;
+  }
+  .op-access h1 {
+    font-size: 26px;
+  }
 }
-.product-theme .op-review dl > div {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 8px 0;
-}
-.product-theme .op-review dt {
-  color: var(--muted);
-}
-
 .product-theme .op-form-grid:has([name='term1Start']) > .op-field:first-child {
   grid-column: 1 / -1;
 }
@@ -376,4 +389,26 @@
 .product-theme .op-check {
   justify-content: flex-start;
   min-height: 36px;
+}
+
+/* Form hierarchy comes from labels and spacing, not a second frame. */
+.product-theme.op-dialog .dialog-title {
+  font-size: 24px;
+  line-height: 1.45;
+  letter-spacing: -0.02em;
+}
+.product-theme.op-dialog .dialog-description {
+  line-height: 1.8;
+  margin-top: 10px;
+}
+@media (max-width: 700px) {
+  .product-theme .op-year-overview {
+    padding: 20px;
+  }
+  .product-theme .op-review dl {
+    padding: 14px;
+  }
+  .product-theme .op-review dl > div {
+    gap: 12px;
+  }
 }

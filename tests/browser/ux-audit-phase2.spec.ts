@@ -291,8 +291,13 @@ test('teacher and family fields receive shared focus corrections without changin
     await keyboardField(field);
   }
   await page.keyboard.press('Escape');
-  await navigate(page, '/attendance');
+  // A current lesson may not have started yet (or exist on a weekend).
+  // Use the seeded historical lesson's real correction-request controls;
+  // opening a local proposal never unlocks or rewrites its attendance.
+  await navigate(page, '/attendance?date=2026-09-21');
   await page.locator('.att-lessons > button').first().click();
+  await expect(page.getByRole('button', { name: 'შესწორება', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'შესწორების მოთხოვნა', exact: true }).click();
   const pupil = page.locator('.att-pupil').first();
   await pupil.getByLabel('დაგვიანება', { exact: true }).check();
   await pointerField(pupil.locator('input[type=time]'));

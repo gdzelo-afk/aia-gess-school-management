@@ -47,7 +47,6 @@
   color: var(--muted);
 }
 .gb-navigation {
-  border-bottom: 1px solid var(--border);
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -295,7 +294,7 @@
   display: none;
 }
 .gb-inspector {
-  border: 1px solid var(--border);
+  border: 1px solid transparent;
   border-radius: 10px;
   background: var(--surface);
   min-width: 0;
@@ -311,7 +310,7 @@
   top: 0;
   background: var(--rail);
   padding: 15px 18px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid transparent;
   z-index: 3;
 }
 .gb-back {
@@ -481,11 +480,20 @@
   gap: 15px;
 }
 .gb-checkbox {
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: 10px;
   font-size: 12px;
   line-height: 1.5;
+}
+.product-theme .gb-checkbox input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+  accent-color: var(--accent);
 }
 .gb-modal {
   width: min(620px, calc(100vw - 32px)) !important;
@@ -611,13 +619,11 @@
 }
 .gb-statline {
   display: flex;
-  border-top: 1px solid var(--border);
   margin: 30px 0;
 }
 .gb-statline > div {
   flex: 1;
   padding: 25px;
-  border-right: 1px solid var(--border);
 }
 .gb-statline strong {
   display: block;
@@ -664,12 +670,13 @@
   max-width: 850px;
 }
 .gb-policy-summary {
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  padding: 20px 0;
+  background: var(--rail);
+  border-radius: 8px;
+  padding: 22px;
   margin-bottom: 36px;
 }
 .gb-policy-summary dl {
+  margin: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
@@ -934,6 +941,9 @@
   .gb-statline span {
     font-size: 11px;
   }
+  .gb-policy-summary {
+    padding: 18px;
+  }
   .gb-policy-summary dl {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -1045,5 +1055,42 @@
   }
   .gb-inspector-sheet .gb-inspector {
     max-height: 100dvh;
+  }
+}
+
+/* Keep score cells transparent; depth separates the journal and its inspector. */
+.product-theme .gb-scroll,
+.product-theme .gb-layout > .gb-inspector {
+  box-shadow: var(--product-raised-shadow);
+}
+.product-theme .gb-table thead th,
+.product-theme .gb-inspector-head {
+  background: linear-gradient(180deg, var(--rail), var(--surface));
+}
+.product-theme .gb-table thead th:first-child {
+  background: var(--rail);
+}
+.product-theme .gb-table tbody th {
+  box-shadow: 3px 0 6px color-mix(in srgb, var(--ink) 4%, transparent);
+}
+.product-theme .gb-table :is(th, td) button {
+  transition:
+    color var(--motion-fast),
+    text-decoration-color var(--motion-fast);
+}
+.product-theme .gb-savebar {
+  box-shadow: var(--product-sticky-shadow);
+}
+.product-theme :is(.gb-course-overview, .gb-mobile-assessments) > button > svg {
+  transition:
+    color var(--motion-fast),
+    transform var(--motion-surface) var(--motion-ease);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .product-theme
+    :is(.gb-course-overview, .gb-mobile-assessments)
+    > button:not(:disabled):is(:hover, :focus-visible)
+    > svg {
+    transform: translateX(2px);
   }
 }

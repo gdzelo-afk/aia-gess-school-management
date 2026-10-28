@@ -1,5 +1,32 @@
-import { choose } from './choose';
 import { test, expect, type Page } from '@playwright/test';
+import { choose } from './choose';
+import calendarSource from '../../scripts/fixtures/calendar-2026-27.json' with { type: 'json' };
+import { parseDemoCalendar } from '../../server/db/calendar-import';
+import { addDays } from '../../src/lib/calendar-control';
+import { schoolTime } from '../../src/lib/school-time';
+
+// Draft creation must stay in the future without losing the five-day roster fixture.
+function futureTeachingWeek() {
+  const calendar = parseDemoCalendar(calendarSource);
+  const tomorrow = addDays(schoolTime(new Date()).date, 1);
+  const earliest = tomorrow > calendar.startsOn ? tomorrow : calendar.startsOn;
+  const weekday = new Date(`${earliest}T12:00:00Z`).getUTCDay();
+  let start = addDays(earliest, (8 - weekday) % 7);
+  for (; addDays(start, 7) <= calendar.endsOn; start = addDays(start, 7)) {
+    const end = addDays(start, 7);
+    const withinTerm = calendar.semesters.some(
+      (term) => term.startsOn <= start && end <= term.endsOn,
+    );
+    const blocked = Array.from({ length: 5 }, (_, day) => addDays(start, day)).some((date) =>
+      calendar.events.some(
+        (event) => event.kind !== 'milestone' && event.startsOn <= date && date < event.endsOn,
+      ),
+    );
+    if (withinTerm && !blocked) return { start, end, absenceEnd: addDays(start, 2) };
+  }
+  throw new Error('No future full teaching week remains in the demo calendar.');
+}
+
 const fixture = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 async function reviewed(page: Page) {
   await page.getByRole('button', { name: 'გადახედვა', exact: true }).click();
@@ -25,6 +52,7 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   browser,
 }) => {
   test.setTimeout(300000);
+  const { start, end, absenceEnd } = futureTeachingWeek();
   // The preceding suites share localhost's real authentication budget.
   await page.waitForTimeout(31000);
   await page.waitForTimeout(31000);
@@ -50,8 +78,8 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
 
   await page.getByRole('button', { name: 'სამუშაო ვერსია', exact: true }).click();
   await page.getByLabel('ვერსიის სახელი', { exact: true }).fill(`სატესტო კვირა ${Date.now()}`);
-  await page.getByLabel('დაწყება', { exact: true }).fill('2026-10-26');
-  await page.getByLabel('დასრულება (არ შედის)', { exact: true }).fill('2026-11-02');
+  await page.getByLabel('დაწყება', { exact: true }).fill(start);
+  await page.getByLabel('დასრულება (არ შედის)', { exact: true }).fill(end);
   await choose(page.getByLabel('არსებული ვერსიის კოპირება'), fixture(1600));
   await reviewed(page);
   const versionId = (await page
@@ -87,7 +115,7 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await page.getByRole('button', { name: 'გამოქვეყნების დადასტურება', exact: true }).click();
   await reviewed(page);
   await expect(page.getByRole('status')).toContainText('გამოქვეყნებულია');
-  await page.getByLabel('განრიგის კვირა').fill('2026-10-26');
+  await page.getByLabel('განრიგის კვირა').fill(start);
   await expect(page.locator('.tt-matrix .tt-tile')).toHaveCount(13);
   await scope(page, '201', 'ოთახი 201');
   await expect(page.locator('.tt-matrix .tt-tile')).toHaveCount(1);
@@ -105,8 +133,8 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await expect(tp.getByRole('button', { name: 'სამუშაო ვერსია', exact: true })).toHaveCount(0);
   await tp.getByRole('button', { name: 'ჩემი მიუწვდომლობა', exact: true }).click();
   await tp.getByRole('button', { name: 'დროებითი მიუწვდომლობის მოთხოვნა' }).click();
-  await tp.getByLabel('დაწყება', { exact: true }).fill('2026-10-26');
-  await tp.getByLabel('დასრულება (არ შედის)', { exact: true }).fill('2026-10-28');
+  await tp.getByLabel('დაწყება', { exact: true }).fill(start);
+  await tp.getByLabel('დასრულება (არ შედის)', { exact: true }).fill(absenceEnd);
   await tp.getByLabel('მიზეზი', { exact: true }).fill('სატესტო ორი დღით მიუწვდომლობა');
   await tp.getByRole('button', { name: 'დაკავშირებული გაკვეთილების ნახვა' }).click();
   await expect(tp.locator('.tt-affected')).toContainText('ქართული');
@@ -144,7 +172,7 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   const sp = await sc.newPage();
   await login(sp, 'მოსწავლე');
   await sp.goto('/timetable');
-  await sp.getByLabel('განრიგის კვირა').fill('2026-10-26');
+  await sp.getByLabel('განრიგის კვირა').fill(start);
   await expect(sp.locator('.tt-matrix')).toContainText('თამარ ჯაფარიძე');
   await expect(sp.locator('.tt-matrix')).not.toContainText('VII ა · ჯგუფი 2');
   expect((await sp.request.get(`/api/timetable/drafts/${versionId}`)).status()).toBe(403);
@@ -155,13 +183,11 @@ test('timetable draft editing, conflicts, publication, requests and role-scoped 
   await choose(gp.getByLabel('შვილის განრიგი'), fixture(201));
   await expect(gp.locator('.tt-matrix')).not.toContainText('VII ა · ქართული');
   expect(
-    (
-      await gp.request.get(`/api/timetable/week?from=2026-10-26&studentId=${fixture(203)}`)
-    ).status(),
+    (await gp.request.get(`/api/timetable/week?from=${start}&studentId=${fixture(203)}`)).status(),
   ).toBe(404);
   // Visual matrix reuses sessions. Phones get a day view, not a squeezed weekly canvas.
   await page.goto('/timetable');
-  await page.getByLabel('განრიგის კვირა').fill('2026-10-26');
+  await page.getByLabel('განრიგის კვირა').fill(start);
   for (const theme of ['light', 'dark']) {
     await page.evaluate((t) => localStorage.setItem('aia-theme', t), theme);
     await page.reload();
