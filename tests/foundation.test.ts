@@ -12,7 +12,7 @@ const { buildApp } = await import('../server/app.js');
 const { student, guardianLink, roleGrant, teachingAssignment, person } =
   await import('../server/db/schema.js');
 const { fixtureId: id, demoPassword } = await import('../server/db/fixtures.js');
-const { parseConfig } = await import('../server/config.js');
+const { parseConfig, config } = await import('../server/config.js');
 const app = await buildApp(false);
 const cookies: Record<string, string> = {};
 async function get(path: string, role = 'director') {
@@ -36,6 +36,91 @@ beforeAll(async () => {
 afterAll(async () => {
   await app.close();
   await database.close();
+});
+describe('protected preview overview presentation', () => {
+  const passcode = 'fictional-preview-test-passcode-at-least-24-characters';
+  const authorization = `Basic ${Buffer.from(`reviewer:${passcode}`).toString('base64')}`;
+  const previewGet = (path: string, role = 'director') =>
+    app.inject({
+      method: 'GET',
+      url: path,
+      headers: { authorization, cookie: cookies[role] ?? '' },
+    });
+  const usePreview = () => {
+    config.DEMO_MODE = false;
+    config.PREVIEW_MODE = true;
+    config.PREVIEW_ACCESS_USERNAME = 'reviewer';
+    config.PREVIEW_ACCESS_PASSWORD = passcode;
+  };
+
+  it('restores the local fictional overview without widening any role scope', async () => {
+    const previous = { ...config };
+    try {
+      const roles = ['director', 'teacher', 'parent', 'student'];
+      const local = await Promise.all(
+        roles.map(async (role) => (await get('/api/foundation/overview', role)).json()),
+      );
+      usePreview();
+      for (const [index, role] of roles.entries()) {
+        const response = await previewGet('/api/foundation/overview', role);
+        expect(response.statusCode).toBe(200);
+        expect(response.json()).toEqual(local[index]);
+        expect(response.json().demo).toBe(true);
+        expect(response.json().agenda.length).toBeGreaterThan(0);
+        expect(response.json().announcements.length).toBeGreaterThan(0);
+        if (role !== 'director') expect(response.json().school).toBeNull();
+      }
+      expect(local.map((item) => item.totalStudents)).toEqual([44, 35, 2, 1]);
+    } finally {
+      Object.assign(config, previous);
+    }
+  });
+
+  it('keeps ordinary non-preview production presentation free of fictional events', async () => {
+    const previous = { ...config };
+    try {
+      config.DEMO_MODE = false;
+      config.PREVIEW_MODE = false;
+      const response = await get('/api/foundation/overview');
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        demo: false,
+        totalStudents: 44,
+        agenda: [],
+        announcements: [],
+      });
+    } finally {
+      Object.assign(config, previous);
+    }
+  });
+
+  it('retains the passcode, session requirement and non-demo finance/config behavior', async () => {
+    const previous = { ...config };
+    try {
+      usePreview();
+      expect((await app.inject({ method: 'GET', url: '/' })).statusCode).toBe(401);
+      expect((await get('/api/foundation/overview')).statusCode).toBe(401);
+      expect((await previewGet('/api/foundation/overview', 'anonymous')).statusCode).toBe(401);
+      expect((await previewGet('/api/config')).json().demo).toBe(false);
+      expect(
+        (await previewGet(`/api/foundation/students/${id(200)}/finance-preview`, 'parent')).json(),
+      ).toEqual({ demo: false, status: 'planned' });
+      expect(() =>
+        parseConfig({
+          ...process.env,
+          NODE_ENV: 'production',
+          APP_ORIGIN: 'https://review.example',
+          DATABASE_URL: 'postgresql://localhost/test',
+          DEMO_MODE: 'true',
+          PREVIEW_MODE: 'true',
+          PREVIEW_ACCESS_USERNAME: 'reviewer',
+          PREVIEW_ACCESS_PASSWORD: passcode,
+        }),
+      ).toThrow('Demo mode is forbidden in production.');
+    } finally {
+      Object.assign(config, previous);
+    }
+  });
 });
 describe('foundational database and authentication', () => {
   it('applies migrations and idempotent fictional seeds', async () => {

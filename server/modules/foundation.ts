@@ -123,6 +123,9 @@ const executiveAgenda: AgendaItem[] = [
   },
 ];
 export async function overview(viewer: Viewer): Promise<FoundationOverview> {
+  // The gated fictional preview uses the demo composition without enabling
+  // development-only authentication, delivery or financial examples.
+  const showDemoOverview = config.DEMO_MODE || config.PREVIEW_MODE;
   const page = await listStudents(viewer, { q: '', limit: 6, offset: 0, sort: 'asc' });
   const currentYear = (
     await db.select().from(academicYear).where(eq(academicYear.status, 'active')).limit(1)
@@ -161,14 +164,14 @@ export async function overview(viewer: Viewer): Promise<FoundationOverview> {
   const family = viewer.roles.includes('guardian') || viewer.roles.includes('student');
   return {
     viewer,
-    demo: config.DEMO_MODE,
+    demo: showDemoOverview,
     snapshotDate: '2026-09-28',
     schoolName: 'აია-ჯესსი',
     academicYear: currentYear?.name ?? 'სასწავლო წელი არ არის არჩეული',
     students: page.items,
     totalStudents: page.total,
     school,
-    agenda: !config.DEMO_MODE
+    agenda: !showDemoOverview
       ? []
       : teacher
         ? [
@@ -198,7 +201,7 @@ export async function overview(viewer: Viewer): Promise<FoundationOverview> {
               },
             ]
           : executiveAgenda,
-    announcements: config.DEMO_MODE
+    announcements: showDemoOverview
       ? [
           {
             id: 'notice-1',

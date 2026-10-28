@@ -2,6 +2,12 @@
 
 Foundation implemented 27 September; selected frontend continued 28 September 2026. This is a local development foundation, not a production EMS release.
 
+## Temporary protected preview Dashboard parity (28 October 2026)
+
+Preview-branch-only: the Foundation overview permits its existing fictional presentation when `PREVIEW_MODE=true`, restoring the approved local Dashboard composition, sample agenda and announcements on Render. Scoped pupils/school aggregates are unchanged. Global `DEMO_MODE=false`, production runtime protections, disabled local delivery/mock finance and passcode/session requirements remain. Ordinary non-preview production and the accepted product master are untouched. See [temporary preview](temporary-review-preview.md); verification is recorded with the deployment evidence.
+
+The focused Foundation/preview suites passed **38 checks on PGlite**, including complete overview equality for the four canonical roles, ordinary non-preview presentation, passcode/session denial, global non-demo configuration/finance and production demo-mode rejection. Targeted ESLint/formatting, strict TypeScript and production builds passed. Deployed runtime verification separately checks that local delivery remains disabled.
+
 ## Subtle design refinement (27–28 October 2026, accepted)
 
 `codex/design-subtle-polish` compares a presentation-only variant with accepted baseline `85021ec`: baseline at `localhost:5173`, variant at `127.0.0.1:5174`, using separate fictional demo databases and hostnames to keep browser sessions independent. Four product CSS files refine Login lens lighting, Dashboard panel depth and directional feedback, and shared button/popover/tooltip finish. Layout, palette, fonts, input-focus geometry, domain behavior and `/design-lab` are unchanged; reduced motion remains respected.
