@@ -2,6 +2,7 @@ import { browserOrigin } from '../../scripts/browser/environment';
 import { test, expect, type Page, type BrowserContext } from '@playwright/test';
 import { schoolDateAt } from '../../shared/attendance';
 import type { LessonChange, TimetableConflict } from '../../shared/timetable';
+import { attendanceFixtureWait, attendanceFixtureWindow } from './attendance-fixture';
 const shiftDate = (date: string, n: number) =>
   new Date(Date.parse(`${date}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
@@ -56,7 +57,7 @@ test('attendance teacher roll call, family explanations, administrative correcti
   browser,
   page,
 }) => {
-  test.setTimeout(360000);
+  test.setTimeout(480000); // Includes the bounded real midnight fixture wait.
   page.setDefaultTimeout(15000);
   // This suite follows the two long write journeys; respect the shared real auth budget.
   await page.waitForTimeout(62000);
@@ -65,68 +66,77 @@ test('attendance teacher roll call, family explanations, administrative correcti
   await page.setViewportSize({ width: 1440, height: 1000 });
   await login(page, 'დირექტორი');
   const admin = page.context();
-  const today = schoolDateAt(new Date());
+  const futureDate = shiftDate(schoolDateAt(new Date()), 1);
   // The expanded demo has a newer publication from October 5. Resolve the
   // actual active version; historical checks below intentionally retain the old one.
   const setupResponse = await page.request.get('/api/timetable/setup');
   expect(setupResponse.ok()).toBe(true);
   const setup = await setupResponse.json();
-  const version = setup.versions.find(
-    (v: { status: string; startsOn: string; endsOn: string }) =>
-      v.status === 'published' && v.startsOn <= today && today < v.endsOn,
-  );
-  expect(version).toBeTruthy();
-  const versionId = version.id;
-  // On a non-weekday template creates an explicit exceptional occurrence.
-  const weekday = new Date(`${today}T12:00:00Z`).getUTCDay() || 7;
-  const lessonId = id(1500 + (weekday <= 5 ? weekday : 1));
-  const templateResponse = await page.request.get(
-    `/api/timetable/template?versionId=${versionId}&lessonId=${lessonId}&date=${today}`,
-  );
-  expect(templateResponse.ok(), await templateResponse.text()).toBe(true);
-  const template = await templateResponse.json();
-  // Keep lesson and arrival offsets on one minute even if UI work crosses a clock tick.
-  const referenceTime = Date.now();
-  const time = (delta: number) =>
-    new Intl.DateTimeFormat('en-GB', {
-      timeZone: 'Asia/Tbilisi',
-      hour: '2-digit',
-      minute: '2-digit',
-      hourCycle: 'h23',
-    }).format(new Date(referenceTime + delta * 60000));
-  const move = {
-    date: today,
-    occurrenceId: template.id,
-    expectedRevision: template.revision,
+  async function templateOn(date: string) {
+    const version = setup.versions.find(
+      (v: { status: string; startsOn: string; endsOn: string }) =>
+        v.status === 'published' && v.startsOn <= date && date < v.endsOn,
+    );
+    expect(version).toBeTruthy();
+    // On a non-weekday the real template contract creates an exceptional occurrence.
+    const weekday = new Date(`${date}T12:00:00Z`).getUTCDay() || 7;
+    const lessonId = id(1500 + (weekday <= 5 ? weekday : 1));
+    const response = await page.request.get(
+      `/api/timetable/template?versionId=${version.id}&lessonId=${lessonId}&date=${date}`,
+    );
+    expect(response.ok(), await response.text()).toBe(true);
+    return response.json();
+  }
+  const futureTemplate = await templateOn(futureDate);
+  const assignment = {
     cancelled: false,
     teacherId: id(2),
     roomId: id(1300),
     groupId: id(1410),
     periodId: id(1400),
-    start: time(10),
-    end: time(55),
-    targetDate: today,
     exceptionalDay: true,
   };
-  await applyLessonFixture(admin, move, 'დასწრების იზოლირებული ბრაუზერის შემოწმება');
+  await applyLessonFixture(
+    admin,
+    {
+      ...assignment,
+      date: futureDate,
+      occurrenceId: futureTemplate.id,
+      expectedRevision: futureTemplate.revision,
+      start: '09:00',
+      end: '09:45',
+      targetDate: futureDate,
+    },
+    'დასწრების იზოლირებული ბრაუზერის შემოწმება',
+  );
   const teacherContext = await browser.newContext({ viewport: { width: 390, height: 844 } }),
     teacher = await teacherContext.newPage();
   teacher.on('pageerror', (e) => errors.push(e.message));
   await login(teacher, 'მასწავლებელი');
-  await teacher.goto(lessonUrl(template.id, today));
+  await teacher.goto(lessonUrl(futureTemplate.id, futureDate));
   await expect(teacher.locator('.att-state-line')).toContainText('ჯერ არ დაწყებულა');
   await expect(teacher.getByRole('button', { name: 'ყველა ესწრება', exact: true })).toHaveCount(0);
-  const refreshed = await (
-    await page.request.get(
-      `/api/timetable/template?versionId=${versionId}&lessonId=${lessonId}&date=${today}`,
-    )
-  ).json();
+  // Resolve future visibility and live roll call independently, so midnight or
+  // a timetable publication boundary cannot mix their dates or revisions.
+  const wait = attendanceFixtureWait(new Date());
+  if (wait) await page.waitForTimeout(wait);
+  const clock = attendanceFixtureWindow(new Date());
+  const today = clock.date;
+  const template = await templateOn(today);
   await applyLessonFixture(
     admin,
-    { ...move, expectedRevision: refreshed.revision, start: time(-25), end: time(20) },
+    {
+      ...assignment,
+      date: today,
+      occurrenceId: template.id,
+      expectedRevision: template.revision,
+      start: clock.start,
+      end: clock.end,
+      targetDate: today,
+    },
     'გაკვეთილის ფაქტობრივი დროის სატესტო შესწორება',
   );
-  await teacher.reload();
+  await teacher.goto(lessonUrl(template.id, today));
   await expect(teacher.locator('.att-unresolved')).toHaveCount(3);
   await teacher.getByRole('button', { name: 'ყველა ესწრება', exact: true }).click();
   const opened = await (
@@ -138,10 +148,10 @@ test('attendance teacher roll call, family explanations, administrative correcti
   expect(opened.entries).toHaveLength(0);
   const pupils = teacher.locator('.att-pupil');
   await pupils.nth(0).getByRole('radio', { name: 'დაგვიანება', exact: true }).check();
-  await pupils.nth(0).getByLabel('მოსვლის დრო').fill(time(-12));
-  await expect(pupils.nth(0)).toContainText('≈ 13 წუთით');
+  await pupils.nth(0).getByLabel('მოსვლის დრო').fill(clock.arrival);
+  await expect(pupils.nth(0)).toContainText(`≈ ${clock.lateness} წუთით`);
   await pupils.nth(0).getByLabel('ადრე გასვლა', { exact: true }).check();
-  await pupils.nth(0).getByLabel('გასვლის დრო').fill(time(-2));
+  await pupils.nth(0).getByLabel('გასვლის დრო').fill(clock.departure);
   await pupils.nth(1).getByRole('radio', { name: 'არ ესწრება', exact: true }).check();
   await expect(teacher.locator('.att-state-line')).toContainText('შეუნახავი');
   expect(await teacher.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
