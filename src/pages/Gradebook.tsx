@@ -1,7 +1,7 @@
 import { WorkspaceNav } from '../components/WorkspaceNav';
 import { DateInput } from '../components/DateInput';
 import { Select } from '../components/Select';
-import { useState, type KeyboardEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowUpRight, BookOpen, ChevronRight, Plus, Search, ShieldCheck } from 'lucide-react';
@@ -116,15 +116,78 @@ export function Gradebook() {
     enabled: !!yearId && tab === 'setup',
   });
   const selected = params.get('assessment');
-  const open = (id: string | null) => {
+  const [focusedPupil, setFocusedPupil] = useState<string | undefined>();
+  const [closingDetail, setClosingDetail] = useState(false);
+  const panelOpener = useRef<HTMLElement | null>(null);
+  const panelAssessment = useRef(selected);
+  const returnFocusRequested = useRef(false);
+  const open = (id: string | null, pupilId?: string) => {
     const panel = document.querySelector('.gb-inspector[data-dirty="true"]');
-    if (panel && !window.confirm('შეუნახავი ცვლილებები დაიკარგება. გაგრძელება?')) return false;
+    if (id !== selected && panel && !window.confirm('შეუნახავი ცვლილებები დაიკარგება. გაგრძელება?'))
+      return false;
+    returnFocusRequested.current = false;
+    setClosingDetail(false);
+    if (id) panelAssessment.current = id;
+    if (
+      id &&
+      document.activeElement instanceof HTMLElement &&
+      !document.activeElement.closest('.gb-inspector')
+    )
+      panelOpener.current = document.activeElement;
+    setFocusedPupil(pupilId);
     setParams((p) => {
       if (id) p.set('assessment', id);
       else p.delete('assessment');
       return p;
     });
     return true;
+  };
+  const restorePanelFocus = useCallback(() => {
+    if (!returnFocusRequested.current || document.querySelector('.gb-inspector')) return;
+    if (panelOpener.current?.isConnected && panelOpener.current.getClientRects().length)
+      panelOpener.current.focus({ preventScroll: true });
+    else {
+      // After a resize the original matrix cell can be hidden; return to its mobile assessment.
+      const mobileOpener = panelAssessment.current
+        ? document.querySelector<HTMLButtonElement>(
+            `.gb-mobile-assessments [data-assessment-id="${CSS.escape(panelAssessment.current)}"]`,
+          )
+        : null;
+      if (mobileOpener?.getClientRects().length) mobileOpener.focus({ preventScroll: true });
+      else document.getElementById('main')?.focus({ preventScroll: true });
+    }
+  }, []);
+  useEffect(() => {
+    if (!selected) restorePanelFocus();
+  }, [selected, restorePanelFocus]);
+  useEffect(() => {
+    if (!closingDetail) return;
+    const timer = window.setTimeout(() => {
+      setParams((p) => {
+        p.delete('assessment');
+        return p;
+      });
+      setFocusedPupil(undefined);
+      setClosingDetail(false);
+    }, 220);
+    return () => window.clearTimeout(timer);
+  }, [closingDetail, setParams]);
+  const closePanel = () => {
+    if (closingDetail) return;
+    if (
+      document.querySelector('.gb-inspector[data-dirty="true"]') &&
+      !window.confirm('შეუნახავი ცვლილებები დაიკარგება. გაგრძელება?')
+    )
+      return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setParams((p) => {
+        p.delete('assessment');
+        return p;
+      });
+      setFocusedPupil(undefined);
+    } else setClosingDetail(true);
+    returnFocusRequested.current = true;
+    // Restore after the closed state commits; sheets also wait for their focus trap.
   };
   const refresh = () => void cache.invalidateQueries({ queryKey: ['gradebook'] });
   const course = journal.data?.offerings.find((o) => o.id === offeringId),
@@ -134,7 +197,7 @@ export function Gradebook() {
     return <EmptyState denied title="ჟურნალი მიუწვდომელია" />;
   return (
     <section
-      className={`gradebook-workspace ${selected ? 'has-inspector' : ''}`}
+      className={`gradebook-workspace ${selected ? 'has-inspector' : ''} ${focusedPupil ? 'has-mark-detail' : ''} ${closingDetail ? 'is-detail-closing' : ''}`}
       aria-label="აკადემიური ჟურნალი"
     >
       <header className="gb-page-heading">
@@ -373,7 +436,13 @@ export function Gradebook() {
                   {family ? (
                     <FamilyJournal data={journal.data} onOpen={open} />
                   ) : (
-                    <Matrix data={journal.data} search={search} selected={selected} onOpen={open} />
+                    <Matrix
+                      data={journal.data}
+                      search={search}
+                      selected={selected}
+                      focusedPupil={focusedPupil}
+                      onOpen={open}
+                    />
                   )}
                 </>
               ) : (
@@ -496,9 +565,21 @@ export function Gradebook() {
               </>
             )}
           </div>
-          {selected && (
-            <AssessmentPanel id={selected} onClose={() => open(null)} onSaved={refresh} />
-          )}
+          <div className="gb-detail-slot" inert={closingDetail}>
+            {selected && (
+              <div className="gb-detail-content">
+                <AssessmentPanel
+                  id={selected}
+                  focusedPupil={focusedPupil}
+                  closing={closingDetail}
+                  onShowRoster={() => setFocusedPupil(undefined)}
+                  onClose={closePanel}
+                  onRestoreFocus={restorePanelFocus}
+                  onSaved={refresh}
+                />
+              </div>
+            )}
+          </div>
         </div>
       )}
       {form === 'create' && setup.data && (
@@ -550,15 +631,40 @@ function Matrix({
   data,
   search,
   selected,
+  focusedPupil,
   onOpen,
 }: {
   data: Journal;
   search: string;
   selected: string | null;
-  onOpen: (id: string) => void;
+  focusedPupil?: string;
+  onOpen: (id: string, pupilId?: string) => void;
 }) {
   const pupils = data.pupils.filter((p) => p.name.includes(search) || p.number.includes(search));
-  const assessments = data.items.filter((a) => a.status !== 'void');
+  const groups = [
+    ...(['classwork', 'homework', 'summative'] as const).map((category) => ({
+      key: category,
+      label: categoryLabels[category],
+      items: data.items.filter(
+        (a) => a.status !== 'void' && a.mode !== 'formative_only' && a.category === category,
+      ),
+    })),
+    {
+      key: 'formative',
+      label: 'განმავითარებელი · ქულის გარეშე',
+      items: data.items.filter((a) => a.status !== 'void' && a.mode === 'formative_only'),
+    },
+  ].filter((group) => group.items.length);
+  const assessments = groups.flatMap((group) => group.items);
+  const groupStarts = new Set(groups.map((group) => group.items[0]!.id));
+  const dateSequences = new Map<string, number>();
+  for (const group of groups) {
+    for (const assessment of group.items) {
+      const peers = group.items.filter((item) => item.date === assessment.date);
+      if (peers.length > 1)
+        dateSequences.set(assessment.id, peers.findIndex((item) => item.id === assessment.id) + 1);
+    }
+  }
   const move = (e: KeyboardEvent<HTMLButtonElement>, r: number, c: number) => {
     const delta = (
       { ArrowDown: [1, 0], ArrowUp: [-1, 0], ArrowLeft: [0, -1], ArrowRight: [0, 1] } as Record<
@@ -581,18 +687,51 @@ function Matrix({
           <caption className="sr-only">
             მოსწავლეები და შეფასებები. ისრებით გადაადგილება; Enter — დეტალები.
           </caption>
+          <colgroup>
+            <col />
+          </colgroup>
+          {groups.map((group) => (
+            <colgroup key={group.key} span={group.items.length} />
+          ))}
           <thead>
-            <tr>
-              <th>
+            <tr className="gb-category-row">
+              <th rowSpan={2} scope="col" className="gb-pupil-heading">
                 მოსწავლე <small>{pupils.length}</small>
               </th>
+              {groups.map((group) => (
+                <th
+                  key={group.key}
+                  scope="colgroup"
+                  colSpan={group.items.length}
+                  className="gb-category-heading"
+                >
+                  <span>{group.label}</span>
+                </th>
+              ))}
+            </tr>
+            <tr className="gb-date-row">
               {assessments.map((a) => (
-                <th key={a.id} className={selected === a.id ? 'is-selected' : ''}>
-                  <button onClick={() => onOpen(a.id)}>
-                    <small>{dateLabel(a.date)}</small>
-                    <strong>{a.title}</strong>
-                    <span>{categoryLabels[a.category]}</span>
-                    <em className={`gb-status ${a.status}`}>{stateLabels[a.status]}</em>
+                <th
+                  key={a.id}
+                  scope="col"
+                  className={`${selected === a.id ? 'is-selected' : ''} ${groupStarts.has(a.id) ? 'gb-group-start' : ''}`}
+                >
+                  <button
+                    onClick={() => onOpen(a.id)}
+                    title={`${a.title} · ${dateLabel(a.date)} · ${stateLabels[a.status]}${dateSequences.has(a.id) ? ` · შეფასება ${dateSequences.get(a.id)}` : ''}`}
+                    aria-label={`${a.title} · ${dateLabel(a.date)} · ${stateLabels[a.status]}${dateSequences.has(a.id) ? ` · შეფასება ${dateSequences.get(a.id)}` : ''}`}
+                  >
+                    <span className="gb-assessment-date">
+                      {a.date.slice(8, 10)}
+                      <span> / </span>
+                      {a.date.slice(5, 7)}
+                    </span>
+                    {dateSequences.has(a.id) && (
+                      <sup className="gb-date-sequence" aria-hidden="true">
+                        {dateSequences.get(a.id)}
+                      </sup>
+                    )}
+                    {a.status === 'draft' && <span className="gb-draft-dot" aria-hidden="true" />}
                   </button>
                 </th>
               ))}
@@ -600,8 +739,11 @@ function Matrix({
           </thead>
           <tbody>
             {pupils.map((p, r) => (
-              <tr key={p.id}>
-                <th>
+              <tr
+                key={p.id}
+                className={selected && focusedPupil === p.id ? 'is-current-pupil' : ''}
+              >
+                <th scope="row">
                   <span className="gb-index">{String(r + 1).padStart(2, '0')}</span>
                   <span>
                     {p.name}
@@ -611,17 +753,16 @@ function Matrix({
                 {assessments.map((a, c) => {
                   const e = a.entries.find((e) => e.studentId === p.id);
                   return (
-                    <td key={a.id} className={selected === a.id ? 'is-selected' : ''}>
+                    <td
+                      key={a.id}
+                      className={`${selected === a.id ? 'is-selected' : ''} ${groupStarts.has(a.id) ? 'gb-group-start' : ''}`}
+                    >
                       <button
                         data-gb-cell={`${r}:${c}`}
                         onKeyDown={(event) => move(event, r, c)}
-                        onClick={() => onOpen(a.id)}
+                        onClick={() => onOpen(a.id, p.id)}
                         aria-label={`${p.name} · ${a.title} · ${valueLabel(e?.value)}`}
-                        className={
-                          e?.value.kind === 'state' && e.value.state === 'recovery_required'
-                            ? 'needs-recovery'
-                            : ''
-                        }
+                        className={`gb-value-${e?.value.kind ?? 'state'} ${e?.value.kind === 'state' && e.value.state === 'recovery_required' ? 'needs-recovery' : ''} ${selected === a.id && focusedPupil === p.id ? 'is-current' : ''}`}
                       >
                         {valueLabel(e?.value, true)}
                       </button>
@@ -645,7 +786,7 @@ function Matrix({
       </div>
       <div className="gb-mobile-assessments">
         {assessments.map((a) => (
-          <button key={a.id} onClick={() => onOpen(a.id)}>
+          <button key={a.id} data-assessment-id={a.id} onClick={() => onOpen(a.id)}>
             <div>
               <small>
                 {dateLabel(a.date)} · {categoryLabels[a.category]}
@@ -661,6 +802,9 @@ function Matrix({
         {!assessments.length && <EmptyState title="ჯერ შეფასება არ არის" />}
       </div>
       <p className="gb-matrix-legend">
+        <span className="gb-draft-key">
+          <i className="gb-draft-dot" /> პირადი მონახაზი
+        </span>
         — ჯერ არ შეფასებულა · გაცდ. არ ესწრებოდა · აღდგ. აღსადგენია · ნ/ვ არ ექვემდებარება.
         მდგომარეობები ქულად არ ითვლება.
       </p>

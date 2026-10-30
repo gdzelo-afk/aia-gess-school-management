@@ -1,5 +1,12 @@
 import { Select } from '../Select';
-import { useEffect, useState, useSyncExternalStore, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Check, Pencil, History as HistoryIcon, Save, Send, X } from 'lucide-react';
 import {
@@ -28,11 +35,19 @@ const subscribeWidth = (fn: () => void) => {
 };
 export function AssessmentPanel({
   id,
+  focusedPupil,
+  closing,
+  onShowRoster,
   onClose,
+  onRestoreFocus,
   onSaved,
 }: {
   id: string;
+  focusedPupil?: string;
+  closing: boolean;
+  onShowRoster: () => void;
   onClose: () => void;
+  onRestoreFocus: () => void;
   onSaved: () => void;
 }) {
   const narrow = useSyncExternalStore(
@@ -45,24 +60,35 @@ export function AssessmentPanel({
     queryFn: () => api<Assessment>(`/api/gradebook/assessments/${id}`),
     staleTime: 0,
   });
-  if (data.isPending)
+  if (data.isPending || data.isError)
     return (
-      <aside className="gb-inspector">
-        <Skeleton rows={6} />
-      </aside>
-    );
-  if (data.isError)
-    return (
-      <aside className="gb-inspector">
-        <ErrorState onRetry={() => void data.refetch()} />
-      </aside>
+      <PanelFrame narrow={narrow} open={!closing} onClose={onClose} onRestoreFocus={onRestoreFocus}>
+        <aside className="gb-inspector" aria-label="შეფასების დეტალები">
+          <header className="gb-inspector-head">
+            <button className="gb-back" onClick={onClose}>
+              <ArrowLeft size={16} /> ჟურნალში დაბრუნება
+            </button>
+          </header>
+          <div className="gb-inspector-body">
+            {data.isPending ? (
+              <Skeleton rows={6} />
+            ) : (
+              <ErrorState onRetry={() => void data.refetch()} />
+            )}
+          </div>
+        </aside>
+      </PanelFrame>
     );
   return (
     <Editor
       key={`${id}:${data.data.revision}`}
       data={data.data}
       narrow={narrow}
+      focusedPupil={focusedPupil}
+      closing={closing}
+      onShowRoster={onShowRoster}
       onClose={onClose}
+      onRestoreFocus={onRestoreFocus}
       onSaved={() => {
         void data.refetch();
         onSaved();
@@ -73,12 +99,20 @@ export function AssessmentPanel({
 function Editor({
   data,
   narrow,
+  focusedPupil,
+  closing,
+  onShowRoster,
   onClose,
+  onRestoreFocus,
   onSaved,
 }: {
   data: Assessment;
   narrow: boolean;
+  focusedPupil?: string;
+  closing: boolean;
+  onShowRoster: () => void;
   onClose: () => void;
+  onRestoreFocus: () => void;
   onSaved: () => void;
 }) {
   const [editing, setEditing] = useState(data.status === 'draft'),
@@ -99,6 +133,31 @@ function Editor({
     });
   const dirty = JSON.stringify(entries) !== JSON.stringify(data.entries);
   const canEdit = data.canEdit;
+  const inspector = useRef<HTMLElement | null>(null);
+  const previousPupil = useRef(focusedPupil);
+  useEffect(() => {
+    const pupilToReveal = focusedPupil ?? previousPupil.current;
+    previousPupil.current = focusedPupil;
+    if (!pupilToReveal) return;
+    // The visible row changes; the complete assessment stays in the local working state.
+    const frame = requestAnimationFrame(() => {
+      const row = inspector.current?.querySelector<HTMLElement>(
+        `[data-student-id="${pupilToReveal}"]`,
+      );
+      const panel = inspector.current?.querySelector<HTMLElement>('.gb-inspector-body');
+      if (!row || !panel) return;
+      const top =
+        row.getBoundingClientRect().top - panel.getBoundingClientRect().top + panel.scrollTop - 12;
+      panel.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
+      row.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [focusedPupil, narrow, editing]);
+  const revealContext = () => {
+    requestAnimationFrame(() => {
+      inspector.current?.querySelector('.gb-inspector-body')?.scrollTo({ top: 0 });
+    });
+  };
   useEffect(() => {
     if (!dirty && !detailsDirty) return;
     const unload = (e: BeforeUnloadEvent) => e.preventDefault();
@@ -159,6 +218,7 @@ function Editor({
   const update = (studentId: string, value: ResultValue) =>
     setEntries((old) => old.map((e) => (e.studentId === studentId ? { ...e, value } : e)));
   const move = (e: KeyboardEvent<HTMLElement>, index: number) => {
+    if (focusedPupil) return;
     if (
       (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter') &&
       e.target instanceof HTMLInputElement
@@ -184,32 +244,51 @@ function Editor({
   };
   const content = (
     <aside
-      className="gb-inspector"
+      ref={inspector}
+      className={`gb-inspector ${editing ? 'is-editing' : 'is-reading'} ${focusedPupil ? 'is-single-pupil' : ''}`}
       data-dirty={dirty || detailsDirty}
       aria-label="შეფასების დეტალები"
+      onKeyDown={(event) => {
+        if (
+          !narrow &&
+          event.key === 'Escape' &&
+          !event.defaultPrevented &&
+          event.currentTarget.contains(event.target as Node)
+        ) {
+          event.stopPropagation();
+          close();
+        }
+      }}
     >
       <header className="gb-inspector-head">
-        <button className="gb-back" onClick={close}>
-          <ArrowLeft size={16} /> ჟურნალში დაბრუნება
-        </button>
-        <span className={`gb-status ${data.status}`}>{stateLabels[data.status]}</span>
-      </header>
-      <div className="gb-inspector-body">
+        <div className="gb-inspector-topline">
+          <button className="gb-back" onClick={close}>
+            <ArrowLeft size={16} /> ჟურნალში დაბრუნება
+          </button>
+          <span className={`gb-status ${data.status}`}>{stateLabels[data.status]}</span>
+        </div>
         <div className="eyebrow">
           {categoryLabels[data.category]} · {dateLabel(data.date)}
         </div>
-        <h2>{data.title}</h2>
-        <p className="gb-muted">
-          {data.labels.subject} · {data.labels.teacher}
-        </p>
-        {data.description && <p>{data.description}</p>}
+        <h2 title={data.title}>{data.title}</h2>
+        {focusedPupil && (
+          <button className="gb-roster-link" onClick={onShowRoster}>
+            მთელი შეფასების ნახვა <span aria-hidden="true">· {data.roster.length}</span>
+          </button>
+        )}
         <div className="gb-panel-tools">
           {canEdit && !editing && (
             <Button onClick={() => setEditing(true)}>
               <Pencil size={15} /> შესწორება
             </Button>
           )}
-          <Button variant="ghost" onClick={() => setHistory(!history)}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              setHistory(!history);
+              revealContext();
+            }}
+          >
             <HistoryIcon size={15} /> ისტორია
           </Button>
           {editing && data.status === 'published' && (
@@ -223,30 +302,37 @@ function Editor({
               გაუქმება
             </Button>
           )}
+          {canEdit && !focusedPupil && data.status === 'published' && !editing && (
+            <Button
+              variant="ghost"
+              onClick={() => {
+                if (detailsDirty && !window.confirm('შეუნახავი ცვლილებები დაიკარგება. გაგრძელება?'))
+                  return;
+                if (details) {
+                  setDescriptionDraft({
+                    action: 'assessment.describe',
+                    title: data.title,
+                    description: data.description,
+                    activity: data.activity,
+                    reason: '',
+                  });
+                }
+                setDetailsDirty(false);
+                setDetails(!details);
+                revealContext();
+              }}
+            >
+              აღწერა / გაუქმება
+            </Button>
+          )}
         </div>
-        {canEdit && data.status === 'published' && !editing && (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              if (detailsDirty && !window.confirm('შეუნახავი ცვლილებები დაიკარგება. გაგრძელება?'))
-                return;
-              if (details) {
-                setDescriptionDraft({
-                  action: 'assessment.describe',
-                  title: data.title,
-                  description: data.description,
-                  activity: data.activity,
-                  reason: '',
-                });
-              }
-              setDetailsDirty(false);
-              setDetails(!details);
-            }}
-          >
-            აღწერა / გაუქმება
-          </Button>
-        )}
-        {details && (
+      </header>
+      <div className="gb-inspector-body">
+        <p className="gb-muted gb-assessment-context">
+          {data.labels.subject} · {data.labels.teacher}
+        </p>
+        {data.description && <p>{data.description}</p>}
+        {details && !focusedPupil && (
           <AssessmentDescription
             data={data}
             onSaved={onSaved}
@@ -257,7 +343,7 @@ function Editor({
             }}
           />
         )}
-        {history && <HistoryDetail id={data.id} roster={data.roster} />}
+        {history && <HistoryDetail id={data.id} roster={data.roster} studentId={focusedPupil} />}
         {data.criteriaId && <CriteriaDetail id={data.criteriaId} />}
         {data.reconciliation && (
           <div className="gb-notice">
@@ -301,9 +387,16 @@ function Editor({
         )}
         <div className="gb-entry-roster">
           {data.roster.map((p, index) => {
+            if (focusedPupil && p.studentId !== focusedPupil) return null;
             const value = entries.find((e) => e.studentId === p.studentId)!.value;
             return (
-              <div className="gb-entry-row" key={p.studentId} onKeyDown={(e) => move(e, index)}>
+              <div
+                className={`gb-entry-row ${focusedPupil === p.studentId ? 'is-current' : ''}`}
+                data-student-id={p.studentId}
+                tabIndex={-1}
+                key={p.studentId}
+                onKeyDown={(e) => move(e, index)}
+              >
                 <div className="gb-entry-identity">
                   <span className="gb-index">{String(index + 1).padStart(2, '0')}</span>
                   <div>
@@ -391,7 +484,7 @@ function Editor({
             <Save size={16} />
             {data.status === 'draft' ? 'მონახაზის შენახვა' : 'შესწორების შენახვა'}
           </Button>
-          {data.status === 'draft' && (
+          {data.status === 'draft' && !focusedPupil && (
             <Button
               variant="primary"
               disabled={busy || dirty || !!data.reconciliation}
@@ -402,7 +495,7 @@ function Editor({
           )}
         </footer>
       )}
-      {confirm && (
+      {confirm && !focusedPupil && (
         <div className="gb-publish-review" role="region" aria-label="გამოქვეყნების გადახედვა">
           <strong>შეფასება ოჯახისთვის ხილული გახდება</strong>
           <p>
@@ -419,18 +512,41 @@ function Editor({
       )}
     </aside>
   );
+  return (
+    <PanelFrame narrow={narrow} open={!closing} onClose={onClose} onRestoreFocus={onRestoreFocus}>
+      {content}
+    </PanelFrame>
+  );
+}
+function PanelFrame({
+  narrow,
+  open,
+  onClose,
+  onRestoreFocus,
+  children,
+}: {
+  narrow: boolean;
+  open: boolean;
+  onClose: () => void;
+  onRestoreFocus: () => void;
+  children: ReactNode;
+}) {
   return narrow ? (
     <Modal
-      open
+      open={open}
       onOpenChange={onClose}
       title="შეფასების დეტალები"
       description="შეფასება, შედეგები და ისტორია"
       className="gb-inspector-sheet"
+      onCloseAutoFocus={(event) => {
+        event.preventDefault();
+        onRestoreFocus();
+      }}
     >
-      {content}
+      {children}
     </Modal>
   ) : (
-    content
+    children
   );
 }
 function ResultControl({
@@ -515,7 +631,15 @@ function ResultControl({
     </div>
   );
 }
-export function HistoryDetail({ id, roster }: { id: string; roster: Assessment['roster'] }) {
+export function HistoryDetail({
+  id,
+  roster,
+  studentId,
+}: {
+  id: string;
+  roster: Assessment['roster'];
+  studentId?: string;
+}) {
   const q = useQuery({
     queryKey: ['gradebook', 'history', id],
     queryFn: () => api<History>(`/api/gradebook/assessments/${id}/history`),
@@ -538,6 +662,7 @@ export function HistoryDetail({ id, roster }: { id: string; roster: Assessment['
           {h.after
             .filter(
               (e) =>
+                (!studentId || e.studentId === studentId) &&
                 h.before.find((b) => b.studentId === e.studentId) &&
                 JSON.stringify(h.before.find((b) => b.studentId === e.studentId)!.value) !==
                   JSON.stringify(e.value),
