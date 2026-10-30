@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { signIn } from './sign-in';
 
 async function openLogin(page: Page) {
   await page.goto('/login');
@@ -6,7 +7,7 @@ async function openLogin(page: Page) {
 }
 async function enter(page: Page, role = 'დირექტორი') {
   await openLogin(page);
-  await page.getByRole('button', { name: role, exact: true }).click();
+  await signIn(page, role);
   await expect(page.locator('.overview-heading')).toBeVisible();
 }
 
@@ -55,6 +56,7 @@ test('canonical login keeps validation, password controls and real authenticatio
 test('command palette supports Meta/Ctrl K, keyboard traversal, scope, focus return and recovery', async ({
   page,
 }) => {
+  test.setTimeout(90_000); // Includes a real authentication reset when the suite shares its budget.
   await page.setViewportSize({ width: 1440, height: 1000 });
   await enter(page, 'მშობელი');
   const trigger = page.locator('.search-trigger');
@@ -159,7 +161,7 @@ test('main login, dashboard and command render in both themes at desktop, tablet
         await page.context().addCookies(sessionCookies);
         await page.goto('/');
       } else {
-        await page.getByRole('button', { name: 'დირექტორი', exact: true }).click();
+        await signIn(page, 'დირექტორი');
       }
       await expect(page.locator('.overview-signals')).toBeVisible();
       sessionCookies ??= await page.context().cookies();
@@ -208,9 +210,12 @@ test('login distinguishes throttling from invalid credentials without weakening 
 });
 
 test('dashboard live date, today route and persistent accessible icon rail', async ({ page }) => {
+  test.setTimeout(90_000);
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.clock.install({ time: new Date('2026-10-02T07:59:30Z') });
   await enter(page);
+  // Authenticate on wall time first; a genuine rate-limit wait must not change the date fixture.
+  await page.clock.install({ time: new Date('2026-10-02T07:59:30Z') });
+  await page.reload();
   await expect(page.locator('.greeting')).toContainText('დილა მშვიდობისა, თამარ.');
   await expect(page.locator('.overview-heading time')).toHaveText('პარასკევი, 2 ოქტომბერი');
   await page.clock.fastForward(60_000);
