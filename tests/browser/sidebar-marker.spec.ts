@@ -4,6 +4,7 @@ import { signIn } from './sign-in';
 test('expanded sidebar markers fade without changing shape between destinations', async ({
   page,
 }) => {
+  test.setTimeout(120_000); // Includes the real shared API/authentication reset.
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto('/');
   await signIn(page, 'დირექტორი');
